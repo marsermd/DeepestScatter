@@ -24,7 +24,7 @@ This is an enchancement on paper by Disney Research [Deep Scattering](http://drz
 - [ ] Generate more clouds
 - [ ] Gather dataset of (cloud_id, point_in_cloud, sun_direction, view_direction, radiance)
 - [ ] Gather dataset of samples around the point according to the original paper
-- [ ] Separate the dataset for training, test, validation with total size of 15`000`000; leave a few clouds out of those sets for visual evaluation
+- [ ] Separate the dataset for training, test, validation with total size of 15\`000\`000; leave a few clouds out of those sets for visual evaluation
 
 *Training*
 - [ ] Build a model in keras as described in the original paper
