@@ -17,6 +17,7 @@ This is an enchancement on paper by Disney Research [Deep Scattering](http://drz
 - [x] Implement multiple scattering using Monte-Carlo method
 - [x] Implement progressive path tracing   
   <img src="https://github.com/marsermd/DeepestScatter/raw/master/images/multiple_scattering_0.png" width="200"/>   
+- [ ] Implement custom progressive path tracing with auto exposure
 - [ ] Profile result, apply importance-based sampling if needed and possible   
 
 *Dataset*
