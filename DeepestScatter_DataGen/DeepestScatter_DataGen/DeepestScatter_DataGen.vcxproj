@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Mie.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="sutil\Arcball.cpp" />
@@ -29,6 +30,8 @@
     <CudaCompile Include="src\CUDA\pinholeCamera.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\CUDA\random.cuh" />
+    <ClInclude Include="src\Mie.h" />
     <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\CUDA\rayData.cuh" />
     <ClInclude Include="sutil\Arcball.h" />

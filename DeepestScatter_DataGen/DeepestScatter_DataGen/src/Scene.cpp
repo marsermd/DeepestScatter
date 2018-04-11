@@ -2,20 +2,33 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <algorithm>
+#include <memory>
 #include <iostream>
 #include <fstream>
 #include <optix.h>
+
+#include "GL/freeglut.h"
+
+#include "Mie.h"
 #include "../sutil/sutil.h"
 
 Scene::Scene(uint32_t width, uint32_t height, float sampleStep) :
-    width(width), height(height), sampleStep(sampleStep), opticalDensityMultiplier(sampleStep * 512)
+    width(width), height(height), sampleStep(sampleStep), opticalDensityMultiplier(sampleStep * 400)
 {
     context = optix::Context::create();
+
+    context["lightDirection"]->setFloat(0.5f, -0.5f, -0.5f);
+    context["lightIntensity"]->setFloat(0.5f);
 
     context->setRayTypeCount(1);
     context->setEntryPointCount(1);
 
     screenBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);
+    progressiveBuffer = context->createBuffer(RT_BUFFER_PROGRESSIVE_STREAM, RT_FORMAT_UNSIGNED_BYTE4, width, height);
+    progressiveBuffer->bindProgressiveStream(screenBuffer);
+    float gamma = 4.2f;
+    progressiveBuffer->setAttribute(RT_BUFFER_ATTRIBUTE_STREAM_GAMMA, sizeof(float), &gamma);
 }
 
 
@@ -38,8 +51,6 @@ void Scene::addCloud(const std::string &path)
 
     optix::Program inScatter = loadProgram("inScatter.cu", "inScatter");
     inScatter["resultBuffer"]->setBuffer(inScatterOut);
-    inScatter["lightDirection"]->setFloat(0.5, -0.8, 0.2);
-    inScatter["lightIntensity"]->setFloat(1);
     context->setRayGenerationProgram(0, inScatter);
 
     context->validate();
@@ -79,6 +90,14 @@ void Scene::addCloud(const std::string &path)
     cloudGroup->setAcceleration(context->createAcceleration("MedianBvh", "Bvh"));
 
     context["objectRoot"]->set(cloudGroup);
+
+    context->setRayGenerationProgram(0, camera);
+    context["radianceRayType"]->setUint(0u);
+}
+
+void Scene::startProgressive()
+{
+    context->launchProgressive(0, width, height, 500000000);
 }
 
 void Scene::init()
@@ -86,37 +105,38 @@ void Scene::init()
     context["sampleStep"]->setFloat(sampleStep);
     context["opticalDensityMultiplier"]->setFloat(opticalDensityMultiplier);
 
+    context["mie"]->setTextureSampler(Mie::getMieSampler(context));
+    context["choppedMie"]->setTextureSampler(Mie::getChoppedMieSampler(context));
+    context["choppedMieIntegral"]->setTextureSampler(Mie::getChoppedMieIntegralSampler(context));
+
     camera = loadProgram("pinholeCamera.cu", "pinholeCamera");
     context["resultBuffer"]->setBuffer(screenBuffer);
 
-    camera["eye"]->setFloat(0, 0, -1.5);
-    camera["U"]->setFloat(1, 0, 0);
-    camera["V"]->setFloat(0, 1, 0);
-    camera["W"]->setFloat(0, 0, 1);
-
-    exception = loadProgram("pinholeCamera.cu", "exception");
-    context->setExceptionProgram(0, exception);
-    context["errorColor"]->setFloat(1, 0.6, 0.6);
-
-    miss = loadProgram("pinholeCamera.cu", "miss");
-    context->setMissProgram(0, miss);
-    context["missColor"]->setFloat(0.3, 0.3, 0.3);
-
-    cameraEye = optix::make_float3(0, 0, -1.5);
-    cameraLookat = optix::make_float3(0, 0, 0);
+    cameraEye = optix::make_float3(0, 0, -1);
+    cameraLookat = optix::make_float3(0, -0.2f, 0);
     cameraUp = optix::make_float3(0, 1, 0);
 
     cameraRotate = optix::Matrix4x4::identity();
+    updateCamera();
+
+    exception = loadProgram("pinholeCamera.cu", "exception");
+    context->setExceptionProgram(0, exception);
+    context["errorColor"]->setFloat(1, 0.6f, 0.6f);
+
+    miss = loadProgram("pinholeCamera.cu", "miss");
+    context->setMissProgram(0, miss);
+    context["missColor"]->setFloat(0.1f, 0.15f, 0.2f);
 }
 
 void Scene::rotateCamera(optix::float2 from, optix::float2 to)
 {
     cameraRotate = arcball.rotate(from, to);
+    updateCamera();
 }
 
 void Scene::updateCamera()
 {
-    const float vfov = 60.0f;
+    const float vfov = 70.0f;
     const float aspectRatio = static_cast<float>(width) /
         static_cast<float>(height);
 
@@ -146,14 +166,31 @@ void Scene::updateCamera()
     camera["W"]->setFloat(w);
 }
 
+
 void Scene::display()
 {
-    context->setRayGenerationProgram(0, camera);
-    context["radianceRayType"]->setUint(0u);
-    context->validate();
-    context->launch(0, width, height);
+    //context->validate();
+    //context->launch(0, width, height);
 
-    sutil::displayBufferGL(screenBuffer);
+    bool ready = progressiveBuffer->getProgressiveUpdateReady();
+    while (!ready)
+    {
+        Sleep(1);
+        ready = progressiveBuffer->getProgressiveUpdateReady();
+    }
+    if (ready)
+    {
+        GLenum glDataType = GL_UNSIGNED_BYTE;
+        GLenum glFormat = GL_RGBA;
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+
+        GLvoid* imageData = progressiveBuffer->map();
+        glDrawPixels(width, height, glFormat, glDataType, imageData);
+        progressiveBuffer->unmap();
+    }
+
+    startProgressive();
 }
 
 optix::Buffer Scene::loadVolumetricData(const std::string &path, bool border)
@@ -164,37 +201,40 @@ optix::Buffer Scene::loadVolumetricData(const std::string &path, bool border)
     fin.read(reinterpret_cast<char*>(&sizeY), sizeof(uint32_t));
     fin.read(reinterpret_cast<char*>(&sizeZ), sizeof(uint32_t));
 
-    uint32_t totalSize = sizeX * sizeY * sizeZ;
+    uint32_t maxSize = std::max({ sizeX, sizeY, sizeZ });
+    uint32_t sourceSize = sizeX * sizeY * sizeZ;
+    uint32_t targetSize = maxSize * maxSize * maxSize;
 
     std::cout << "Creating buffer" << std::endl;
 
     optix::Buffer buffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT);
-    buffer->setSize(sizeX, sizeY, sizeZ);
+    buffer->setSize(maxSize, maxSize, maxSize);
 
     {
-        float_t* density = (float_t*)buffer->map();
-
-        std::cout << "Trying to read volumetric data of " << sizeX << "x" << sizeY << "x" << sizeZ << " with total elements " << totalSize << std::endl;
-        fin.read(reinterpret_cast<char*>(&density[0]), sizeof(float_t) * totalSize);
+        std::unique_ptr<float_t[]> sourceDensity(new float_t[sourceSize]);
+        std::cout << "Trying to read volumetric data of " << sizeX << "x" << sizeY << "x" << sizeZ << std::endl;
+        fin.read(reinterpret_cast<char*>(&sourceDensity[0]), sizeof(float_t) * sourceSize);
         std::cout << "Read has completed successfuly" << std::endl;
 
-        int pos = 0;
-        for (int i = 0; i < sizeZ; i++)
-        {
-            for (int j = 0; j < sizeY; j++)
-            {
-                for (int k = 0; k < sizeX; k++)
-                {
-                    bool isFace = false;
-                    isFace |= i == 0 || i == sizeZ - 1;
-                    isFace |= j == 0 || j == sizeY - 1;
-                    isFace |= k == 0 || k == sizeX - 1;
+        float_t* density = (float_t*)buffer->map();
 
-                    if (isFace)
-                    {
-                        density[pos] = 0;
-                    }
-                    else
+        std::memset(density, 0, sizeof(float_t) * maxSize);
+
+        for (uint32_t z = 0; z < sizeZ; z++)
+        {
+            for (uint32_t y = 0; y < sizeY; y++)
+            {
+                for (uint32_t x = 0; x < sizeX; x++)
+                {
+                    uint32_t targetPos = x + maxSize * y + maxSize * maxSize * z;
+                    uint32_t sourcePos = sizeX * sizeY * z + sizeX * y + x;
+
+                    bool isFace = false;
+                    isFace |= x == 0 || x == maxSize - 1;
+                    isFace |= y == 0 || y == maxSize - 1;
+                    isFace |= z == 0 || z == maxSize - 1;
+
+                    if (!isFace)
                     {
                         /*
                         Converting physical density to optical density. This allows to make calculations independent from step size.
@@ -222,11 +262,8 @@ optix::Buffer Scene::loadVolumetricData(const std::string &path, bool border)
 
                         Q.E.D.
                         */
-                        density[pos] = -logf(1 - density[pos] / 255.0f);
+                        density[targetPos] = -logf(1 - sourceDensity[sourcePos] / 30.0f);
                     }
-
-
-                    pos++;
                 }
             }
         }

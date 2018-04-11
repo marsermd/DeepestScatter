@@ -98,9 +98,11 @@ int main(int argc, char* argv[])
 
         glutInitialize(&argc, argv);
 
-        scene = std::shared_ptr<Scene>(new Scene(width, height, 1.f/512.f));
+        scene = std::shared_ptr<Scene>(new Scene(width, height, 1.f/128.f));
         scene->init();
         scene->addCloud(inputFile);
+
+        scene->startProgressive();
 
         glutRun();
 
@@ -114,8 +116,11 @@ int main(int argc, char* argv[])
 
 void glutDisplay()
 {
-    scene->updateCamera();
+    double t1 = sutil::currentTime();
     scene->display();
+    double t2 = sutil::currentTime();
+    std::cout << "MS/FAME: " << (t2 - t1) * 1000 << std::endl;
+
     glutSwapBuffers();
 }
 

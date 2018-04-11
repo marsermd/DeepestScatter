@@ -1,5 +1,4 @@
-#ifndef RAY_DATA_CUH
-#define RAY_DATA_CUH
+#pragma once
 
 #include <optix.h>
 #include <optixu/optixu_math_namespace.h>
@@ -10,5 +9,3 @@ struct PerRayData_radiance
     float importance;
     int depth;
 };
-
-#endif //RAY_DATA_CUH

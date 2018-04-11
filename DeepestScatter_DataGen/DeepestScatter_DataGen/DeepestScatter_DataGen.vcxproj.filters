@@ -47,6 +47,7 @@
       <Filter>sutil\tinyobjloader</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene.cpp" />
+    <ClCompile Include="src\Mie.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\CUDA\inScatter.cu">
@@ -103,6 +104,10 @@
       <Filter>CUDA</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene.h" />
+    <ClInclude Include="src\Mie.h" />
+    <ClInclude Include="src\CUDA\random.cuh">
+      <Filter>CUDA</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="sutil\rply-1.01\LICENSE">

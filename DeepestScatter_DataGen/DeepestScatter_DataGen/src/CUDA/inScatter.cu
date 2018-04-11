@@ -36,8 +36,7 @@ RT_PROGRAM void inScatter()
     float transmitance = 1;
     for (int i = 0; i < stepCount; i++)
     {
-        // TODO:division by 2 is an temporary hack to produce better images until multiple scatter is implemented
-        float density = tex3D(cloud, samplePos.x, samplePos.y, samplePos.z).x * opticalDensityMultiplier.x / 6;
+        float density = tex3D(cloud, samplePos.x, samplePos.y, samplePos.z).x * opticalDensityMultiplier.x;
 
         transmitance *= expf(-density);
         samplePos += stepToLight;

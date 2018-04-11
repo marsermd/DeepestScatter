@@ -14,12 +14,14 @@ public:
     Scene(uint32_t width, uint32_t height, float sampleStep);
     ~Scene();
 
+    void init();
     /**
     * Load cloud from binary file that consists of
     * sizeX:uint32, sizeY:uint32, sizeZ:uint32, density:float32[sizeX * sizeY * sizeZ]
     */
     void addCloud(const std::string &path);
-    void init();
+
+    void startProgressive();
 
     void rotateCamera(optix::float2 from, optix::float2 to);
     void updateCamera();
@@ -32,6 +34,7 @@ private:
     uint32_t width, height;
     optix::Context context;
     optix::Buffer  screenBuffer;
+    optix::Buffer  progressiveBuffer;
 
     optix::Buffer           cloudBuffer;
     optix::TextureSampler   cloudSampler;
@@ -46,6 +49,7 @@ private:
     optix::float3         cameraLookat;
     optix::float3         cameraEye;
     optix::Matrix4x4      cameraRotate;
+
     sutil::Arcball arcball;
     optix::Program camera;
     optix::Program exception;

@@ -2,6 +2,7 @@
 #include <optixu/optixu_math_namespace.h>
 #include "rayData.cuh"
 
+
 using namespace optix;
 
 rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
