@@ -4,20 +4,19 @@ Real-time photo-realistic clouds path tracer with Lorenz-Mie scattering.
 This is an enchancement on paper by Disney Research [Deep Scattering](http://drz.disneyresearch.com/~jnovak/publications/DeepScattering/DeepScattering.pdf).
 
 # State of the project
-
-<img src="https://github.com/marsermd/DeepestScatter/raw/master/images/naive_cloud_cube_rendering.png" width="400"/>  
-
 *Preparation*
 - [x] Generate a sample cloud in Houdini
 - [x] Exporter of volumetric data from Houdini
 - [x] Importer of volumetric data for python and c++
 
 *Ground Truth*
-- [x] Naive implementation of path tracer that only takes into account [Beer-Lambert law](https://en.wikipedia.org/wiki/Beer%E2%80%93Lambert_law) and direct scattering
-- [x] Interactive visualisation of results  
-- [ ] Naive implementation that also takes into account [Lorenz-Mie](https://en.wikipedia.org/wiki/Mie_scattering) phase function.
-- [ ] Implement multiple scattering using Monte-Carlo method
-- [ ] Implement progressive path tracing
+- [x] Naive implementation of path tracer that only takes into account [Beer-Lambert law](https://en.wikipedia.org/wiki/Beer%E2%80%93Lambert_law) and direct scattering 
+  <img src="https://github.com/marsermd/DeepestScatter/raw/master/images/naive_cloud_cube_rendering.png" width="200"/>
+- [x] Interactive visualisation of results
+- [x] Naive implementation that also takes into account [Lorenz-Mie](https://en.wikipedia.org/wiki/Mie_scattering) phase function.
+- [x] Implement multiple scattering using Monte-Carlo method
+- [x] Implement progressive path tracing   
+  <img src="https://github.com/marsermd/DeepestScatter/raw/master/images/multiple_scattering_0.png" width="200"/>   
 - [ ] Profile result, apply importance-based sampling if needed and possible   
 
 *Dataset*
