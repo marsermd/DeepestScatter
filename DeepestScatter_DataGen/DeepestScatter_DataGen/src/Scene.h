@@ -21,20 +21,24 @@ public:
     */
     void addCloud(const std::string &path);
 
-    void startProgressive();
+    void restartProgressive();
 
     void rotateCamera(optix::float2 from, optix::float2 to);
     void updateCamera();
     void display();
 
+    void increaseExposure();
+    void decreaseExposure();
+
 private:
     float sampleStep;
     float opticalDensityMultiplier;
+    uint32_t subframeId = 0;
 
     uint32_t width, height;
     optix::Context context;
-    optix::Buffer  screenBuffer;
     optix::Buffer  progressiveBuffer;
+    optix::Buffer  screenBuffer;
 
     optix::Buffer           cloudBuffer;
     optix::TextureSampler   cloudSampler;
@@ -52,8 +56,15 @@ private:
 
     sutil::Arcball arcball;
     optix::Program camera;
+    optix::Program clearScreen;
     optix::Program exception;
     optix::Program miss;
+
+    optix::Program reinhardFirstPass;
+    optix::Program reinhardSecondPass;
+    optix::Program reinhardLastPass;
+
+    float_t midGrey = 0.18f;
 
     /**
     * Read from binary file that consists of

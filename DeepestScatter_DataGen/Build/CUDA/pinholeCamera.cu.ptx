@@ -12,7 +12,7 @@
 
 	// .globl	_Z13pinholeCamerav
 .global .align 8 .b8 launchID[8];
-.global .align 1 .b8 resultBuffer[1];
+.global .align 1 .b8 progressiveBuffer[1];
 .global .align 4 .b8 eye[12];
 .global .align 4 .b8 U[12];
 .global .align 4 .b8 V[12];
@@ -20,8 +20,9 @@
 .global .align 4 .b8 objectRoot[4];
 .global .align 4 .b8 errorColor[12];
 .global .align 4 .b8 missColor[12];
-.global .align 4 .u32 radianceRayType;
 .global .align 4 .f32 sceneEPS;
+.global .align 4 .u32 radianceRayType;
+.global .align 4 .u32 subframeId;
 .global .align 4 .b8 resultRadiance[20];
 .global .align 4 .b8 _ZN21rti_internal_typeinfo8launchIDE[8] = {82, 97, 121, 0, 8, 0, 0, 0};
 .global .align 4 .b8 _ZN21rti_internal_typeinfo3eyeE[8] = {82, 97, 121, 0, 12, 0, 0, 0};
@@ -31,8 +32,9 @@
 .global .align 4 .b8 _ZN21rti_internal_typeinfo10objectRootE[8] = {82, 97, 121, 0, 4, 0, 0, 0};
 .global .align 4 .b8 _ZN21rti_internal_typeinfo10errorColorE[8] = {82, 97, 121, 0, 12, 0, 0, 0};
 .global .align 4 .b8 _ZN21rti_internal_typeinfo9missColorE[8] = {82, 97, 121, 0, 12, 0, 0, 0};
-.global .align 4 .b8 _ZN21rti_internal_typeinfo15radianceRayTypeE[8] = {82, 97, 121, 0, 4, 0, 0, 0};
 .global .align 4 .b8 _ZN21rti_internal_typeinfo8sceneEPSE[8] = {82, 97, 121, 0, 4, 0, 0, 0};
+.global .align 4 .b8 _ZN21rti_internal_typeinfo15radianceRayTypeE[8] = {82, 97, 121, 0, 4, 0, 0, 0};
+.global .align 4 .b8 _ZN21rti_internal_typeinfo10subframeIdE[8] = {82, 97, 121, 0, 4, 0, 0, 0};
 .global .align 4 .b8 _ZN21rti_internal_typeinfo14resultRadianceE[8] = {82, 97, 121, 0, 20, 0, 0, 0};
 .global .align 8 .u64 _ZN21rti_internal_register20reg_bitness_detectorE;
 .global .align 8 .u64 _ZN21rti_internal_register24reg_exception_64_detail0E;
@@ -66,8 +68,9 @@
 .global .align 16 .b8 _ZN21rti_internal_typename10objectRootE[9] = {114, 116, 79, 98, 106, 101, 99, 116, 0};
 .global .align 8 .b8 _ZN21rti_internal_typename10errorColorE[7] = {102, 108, 111, 97, 116, 51, 0};
 .global .align 8 .b8 _ZN21rti_internal_typename9missColorE[7] = {102, 108, 111, 97, 116, 51, 0};
-.global .align 16 .b8 _ZN21rti_internal_typename15radianceRayTypeE[13] = {117, 110, 115, 105, 103, 110, 101, 100, 32, 105, 110, 116, 0};
 .global .align 8 .b8 _ZN21rti_internal_typename8sceneEPSE[6] = {102, 108, 111, 97, 116, 0};
+.global .align 16 .b8 _ZN21rti_internal_typename15radianceRayTypeE[13] = {117, 110, 115, 105, 103, 110, 101, 100, 32, 105, 110, 116, 0};
+.global .align 16 .b8 _ZN21rti_internal_typename10subframeIdE[13] = {117, 110, 115, 105, 103, 110, 101, 100, 32, 105, 110, 116, 0};
 .global .align 16 .b8 _ZN21rti_internal_typename14resultRadianceE[20] = {80, 101, 114, 82, 97, 121, 68, 97, 116, 97, 95, 114, 97, 100, 105, 97, 110, 99, 101, 0};
 .global .align 4 .u32 _ZN21rti_internal_typeenum8launchIDE = 4919;
 .global .align 4 .u32 _ZN21rti_internal_typeenum3eyeE = 4919;
@@ -77,8 +80,9 @@
 .global .align 4 .u32 _ZN21rti_internal_typeenum10objectRootE = 4919;
 .global .align 4 .u32 _ZN21rti_internal_typeenum10errorColorE = 4919;
 .global .align 4 .u32 _ZN21rti_internal_typeenum9missColorE = 4919;
-.global .align 4 .u32 _ZN21rti_internal_typeenum15radianceRayTypeE = 4919;
 .global .align 4 .u32 _ZN21rti_internal_typeenum8sceneEPSE = 4919;
+.global .align 4 .u32 _ZN21rti_internal_typeenum15radianceRayTypeE = 4919;
+.global .align 4 .u32 _ZN21rti_internal_typeenum10subframeIdE = 4919;
 .global .align 4 .u32 _ZN21rti_internal_typeenum14resultRadianceE = 4919;
 .global .align 16 .b8 _ZN21rti_internal_semantic8launchIDE[14] = {114, 116, 76, 97, 117, 110, 99, 104, 73, 110, 100, 101, 120, 0};
 .global .align 1 .b8 _ZN21rti_internal_semantic3eyeE[1];
@@ -88,8 +92,9 @@
 .global .align 1 .b8 _ZN21rti_internal_semantic10objectRootE[1];
 .global .align 1 .b8 _ZN21rti_internal_semantic10errorColorE[1];
 .global .align 1 .b8 _ZN21rti_internal_semantic9missColorE[1];
-.global .align 1 .b8 _ZN21rti_internal_semantic15radianceRayTypeE[1];
 .global .align 1 .b8 _ZN21rti_internal_semantic8sceneEPSE[1];
+.global .align 1 .b8 _ZN21rti_internal_semantic15radianceRayTypeE[1];
+.global .align 1 .b8 _ZN21rti_internal_semantic10subframeIdE[1];
 .global .align 16 .b8 _ZN21rti_internal_semantic14resultRadianceE[10] = {114, 116, 80, 97, 121, 108, 111, 97, 100, 0};
 .global .align 1 .b8 _ZN23rti_internal_annotation8launchIDE[1];
 .global .align 1 .b8 _ZN23rti_internal_annotation3eyeE[1];
@@ -99,8 +104,9 @@
 .global .align 1 .b8 _ZN23rti_internal_annotation10objectRootE[1];
 .global .align 1 .b8 _ZN23rti_internal_annotation10errorColorE[1];
 .global .align 1 .b8 _ZN23rti_internal_annotation9missColorE[1];
-.global .align 1 .b8 _ZN23rti_internal_annotation15radianceRayTypeE[1];
 .global .align 1 .b8 _ZN23rti_internal_annotation8sceneEPSE[1];
+.global .align 1 .b8 _ZN23rti_internal_annotation15radianceRayTypeE[1];
+.global .align 1 .b8 _ZN23rti_internal_annotation10subframeIdE[1];
 .global .align 1 .b8 _ZN23rti_internal_annotation14resultRadianceE[1];
 
 .visible .entry _Z13pinholeCamerav(
@@ -110,23 +116,23 @@
 	.local .align 4 .b8 	__local_depot0[20];
 	.reg .b64 	%SP;
 	.reg .b64 	%SPL;
-	.reg .f32 	%f<54>;
-	.reg .b32 	%r<18>;
-	.reg .b64 	%rd<16>;
+	.reg .f32 	%f<62>;
+	.reg .b32 	%r<25>;
+	.reg .b64 	%rd<22>;
 
 
-	mov.u64 	%rd15, __local_depot0;
-	cvta.local.u64 	%SP, %rd15;
-	mov.u64 	%rd13, resultBuffer;
-	cvta.global.u64 	%rd5, %rd13;
-	mov.u32 	%r6, 2;
-	mov.u32 	%r7, 16;
+	mov.u64 	%rd21, __local_depot0;
+	cvta.local.u64 	%SP, %rd21;
+	mov.u64 	%rd19, progressiveBuffer;
+	cvta.global.u64 	%rd5, %rd19;
+	mov.u32 	%r8, 2;
+	mov.u32 	%r9, 16;
 	// inline asm
-	call (%rd1, %rd2, %rd3, %rd4), _rt_buffer_get_size_64, (%rd5, %r6, %r7);
+	call (%rd1, %rd2, %rd3, %rd4), _rt_buffer_get_size_64, (%rd5, %r8, %r9);
 	// inline asm
-	ld.global.v2.u32 	{%r8, %r9}, [launchID];
-	cvt.rn.f32.u32	%f9, %r8;
-	cvt.rn.f32.u32	%f10, %r9;
+	ld.global.v2.u32 	{%r10, %r11}, [launchID];
+	cvt.rn.f32.u32	%f9, %r10;
+	cvt.rn.f32.u32	%f10, %r11;
 	cvt.rn.f32.u64	%f11, %rd1;
 	cvt.rn.f32.u64	%f12, %rd2;
 	div.rn.f32 	%f13, %f9, %f11;
@@ -165,39 +171,74 @@
 	ld.global.u32 	%r4, [radianceRayType];
 	ld.global.f32 	%f7, [sceneEPS];
 	add.u64 	%rd6, %SP, 0;
-	cvta.to.local.u64 	%rd14, %rd6;
-	mov.u32 	%r12, 1065353216;
-	st.local.u32 	[%rd14+12], %r12;
-	mov.u32 	%r13, 0;
-	st.local.u32 	[%rd14+16], %r13;
+	cvta.to.local.u64 	%rd20, %rd6;
+	mov.u32 	%r14, 1065353216;
+	st.local.u32 	[%rd20+12], %r14;
+	mov.u32 	%r15, 0;
+	st.local.u32 	[%rd20+16], %r15;
 	ld.global.u32 	%r3, [objectRoot];
 	mov.f32 	%f8, 0f6C4ECB8F;
 	mov.u32 	%r5, 20;
 	// inline asm
 	call _rt_trace_64, (%r3, %f1, %f2, %f3, %f4, %f5, %f6, %r4, %f7, %f8, %rd6, %r5);
 	// inline asm
-	ld.global.v2.u32 	{%r14, %r15}, [launchID];
-	cvt.u64.u32	%rd9, %r14;
-	cvt.u64.u32	%rd10, %r15;
-	mov.u64 	%rd12, 0;
+	ld.global.u32 	%r16, [subframeId];
+	cvt.rn.f32.u32	%f40, %r16;
+	rcp.rn.f32 	%f41, %f40;
+	mov.f32 	%f42, 0f3F800000;
+	sub.f32 	%f43, %f42, %f41;
+	ld.local.f32 	%f44, [%rd20];
+	ld.local.f32 	%f45, [%rd20+4];
+	ld.local.f32 	%f46, [%rd20+8];
+	ld.global.v2.u32 	{%r17, %r18}, [launchID];
+	cvt.u64.u32	%rd9, %r17;
+	cvt.u64.u32	%rd10, %r18;
+	mov.u64 	%rd18, 0;
 	// inline asm
-	call (%rd7), _rt_buffer_get_64, (%rd5, %r6, %r7, %rd9, %rd10, %rd12, %rd12);
+	call (%rd7), _rt_buffer_get_64, (%rd5, %r8, %r9, %rd9, %rd10, %rd18, %rd18);
 	// inline asm
-	ld.local.f32 	%f40, [%rd14+12];
-	ld.global.f32 	%f41, [missColor];
-	ld.local.f32 	%f42, [%rd14];
-	sub.f32 	%f43, %f41, %f42;
-	ld.global.f32 	%f44, [missColor+4];
-	ld.local.f32 	%f45, [%rd14+4];
-	sub.f32 	%f46, %f44, %f45;
-	ld.global.f32 	%f47, [missColor+8];
-	ld.local.f32 	%f48, [%rd14+8];
-	sub.f32 	%f49, %f47, %f48;
-	fma.rn.f32 	%f50, %f40, %f49, %f48;
-	fma.rn.f32 	%f51, %f40, %f46, %f45;
-	fma.rn.f32 	%f52, %f40, %f43, %f42;
-	mov.f32 	%f53, 0f3F800000;
-	st.v4.f32 	[%rd7], {%f52, %f51, %f50, %f53};
+	ld.global.v2.u32 	{%r21, %r22}, [launchID];
+	cvt.u64.u32	%rd15, %r21;
+	cvt.u64.u32	%rd16, %r22;
+	// inline asm
+	call (%rd13), _rt_buffer_get_64, (%rd5, %r8, %r9, %rd15, %rd16, %rd18, %rd18);
+	// inline asm
+	ld.v4.f32 	{%f47, %f48, %f49, %f50}, [%rd13];
+	mul.f32 	%f52, %f43, %f47;
+	mul.f32 	%f54, %f43, %f48;
+	mul.f32 	%f56, %f43, %f49;
+	fma.rn.f32 	%f58, %f43, %f50, %f41;
+	fma.rn.f32 	%f59, %f41, %f46, %f56;
+	fma.rn.f32 	%f60, %f41, %f45, %f54;
+	fma.rn.f32 	%f61, %f41, %f44, %f52;
+	st.v4.f32 	[%rd7], {%f61, %f60, %f59, %f58};
+	ret;
+}
+
+	// .globl	_Z11clearScreenv
+.visible .entry _Z11clearScreenv(
+
+)
+{
+	.reg .f32 	%f<3>;
+	.reg .b32 	%r<7>;
+	.reg .b64 	%rd<8>;
+
+
+	ld.global.v2.u32 	{%r3, %r4}, [launchID];
+	cvt.u64.u32	%rd3, %r3;
+	cvt.u64.u32	%rd4, %r4;
+	mov.u64 	%rd7, progressiveBuffer;
+	cvta.global.u64 	%rd2, %rd7;
+	mov.u32 	%r1, 2;
+	mov.u32 	%r2, 16;
+	mov.u64 	%rd6, 0;
+	// inline asm
+	call (%rd1), _rt_buffer_get_64, (%rd2, %r1, %r2, %rd3, %rd4, %rd6, %rd6);
+	// inline asm
+	mov.f32 	%f1, 0f3F800000;
+	mov.f32 	%f2, 0f00000000;
+	st.v4.f32 	[%rd1], {%f2, %f2, %f2, %f1};
 	ret;
 }
 
@@ -214,7 +255,7 @@
 	ld.global.v2.u32 	{%r3, %r4}, [launchID];
 	cvt.u64.u32	%rd3, %r3;
 	cvt.u64.u32	%rd4, %r4;
-	mov.u64 	%rd7, resultBuffer;
+	mov.u64 	%rd7, progressiveBuffer;
 	cvta.global.u64 	%rd2, %rd7;
 	mov.u32 	%r1, 2;
 	mov.u32 	%r2, 16;

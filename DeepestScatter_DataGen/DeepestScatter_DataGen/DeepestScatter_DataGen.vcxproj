@@ -28,6 +28,7 @@
     <CudaCompile Include="src\CUDA\cloud.cu" />
     <CudaCompile Include="src\CUDA\inScatter.cu" />
     <CudaCompile Include="src\CUDA\pinholeCamera.cu" />
+    <CudaCompile Include="src\CUDA\reinhard.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CUDA\random.cuh" />

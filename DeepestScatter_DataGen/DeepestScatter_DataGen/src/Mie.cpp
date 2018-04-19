@@ -1,5 +1,7 @@
 #include "Mie.h"
 
+#include <iostream>
+
 namespace Mie
 {
     float_t mie[] =
@@ -8227,7 +8229,7 @@ namespace Mie
 
         optix::TextureSampler sampler = context->createTextureSampler();
 
-        sampler->setWrapMode(0, RT_WRAP_REPEAT);
+        sampler->setWrapMode(0, RT_WRAP_CLAMP_TO_EDGE);
 
         sampler->setFilteringModes(
             RT_FILTER_LINEAR,
@@ -8263,14 +8265,12 @@ namespace Mie
                 values[i] = integral;
             }
 
-            values[cnt - 1] = 1;
-
             buffer->unmap();
         }
 
         optix::TextureSampler sampler = context->createTextureSampler();
 
-        sampler->setWrapMode(0, RT_WRAP_REPEAT);
+        sampler->setWrapMode(0, RT_WRAP_CLAMP_TO_EDGE);
 
         sampler->setFilteringModes(
             RT_FILTER_LINEAR,

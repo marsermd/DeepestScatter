@@ -34,6 +34,7 @@ void printUsageAndExit(const char* argv0);
 void glutDisplay();
 void glutMousePress(int button, int state, int x, int y);
 void glutMouseMotion(int x, int y);
+void glutKeyboard(unsigned char key, int x, int y);
 
 void glutInitialize(int* argc, char** argv)
 {
@@ -47,7 +48,7 @@ void glutInitialize(int* argc, char** argv)
 
 void glutRun()
 {
-    // Initialize GL state                                                            
+    // Initialize GL state
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0, 1, 0, 1, -1, 1);
@@ -65,6 +66,7 @@ void glutRun()
     glutIdleFunc(glutDisplay);
     glutMouseFunc(glutMousePress);
     glutMotionFunc(glutMouseMotion);
+    glutKeyboardFunc(glutKeyboard);
 
     glutMainLoop();
 }
@@ -98,11 +100,9 @@ int main(int argc, char* argv[])
 
         glutInitialize(&argc, argv);
 
-        scene = std::shared_ptr<Scene>(new Scene(width, height, 1.f/128.f));
+        scene = std::shared_ptr<Scene>(new Scene(width, height, 1.f/256.f));
         scene->init();
         scene->addCloud(inputFile);
-
-        scene->startProgressive();
 
         glutRun();
 
@@ -134,6 +134,23 @@ void glutMousePress(int button, int state, int x, int y)
     else
     {
         // nothing
+    }
+}
+
+void glutKeyboard(unsigned char key, int x, int y)
+{
+    switch (key)
+    {
+    case '=':
+    case '+':
+        scene->increaseExposure();
+        break;
+    case '-':
+    case'_':
+        scene->decreaseExposure();
+        break;
+    default:
+        break;
     }
 }
 

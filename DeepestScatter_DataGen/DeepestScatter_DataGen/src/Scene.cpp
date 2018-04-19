@@ -14,21 +14,25 @@
 #include "../sutil/sutil.h"
 
 Scene::Scene(uint32_t width, uint32_t height, float sampleStep) :
-    width(width), height(height), sampleStep(sampleStep), opticalDensityMultiplier(sampleStep * 400)
+    width(width), height(height), sampleStep(sampleStep), opticalDensityMultiplier(sampleStep * 2048)
 {
     context = optix::Context::create();
 
     context["lightDirection"]->setFloat(0.5f, -0.5f, -0.5f);
-    context["lightIntensity"]->setFloat(0.5f);
+    context["lightColor"]->setFloat(1.2f, 1.0f, 0.7f);
+    context["lightIntensity"]->setFloat(1e9);
+
+
+    //context["skyIntensity"]->setFloat(0, 0, 0);
+    //context["groundIntensity"]->setFloat(0, 0, 0);
+    context["skyIntensity"]->setFloat(900, 1000, 1600);
+    context["groundIntensity"]->setFloat(600, 300, 200);
 
     context->setRayTypeCount(1);
     context->setEntryPointCount(1);
 
-    screenBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);
-    progressiveBuffer = context->createBuffer(RT_BUFFER_PROGRESSIVE_STREAM, RT_FORMAT_UNSIGNED_BYTE4, width, height);
-    progressiveBuffer->bindProgressiveStream(screenBuffer);
-    float gamma = 4.2f;
-    progressiveBuffer->setAttribute(RT_BUFFER_ATTRIBUTE_STREAM_GAMMA, sizeof(float), &gamma);
+    progressiveBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT4, width, height);
+    screenBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_UNSIGNED_BYTE4, width, height);
 }
 
 
@@ -95,9 +99,12 @@ void Scene::addCloud(const std::string &path)
     context["radianceRayType"]->setUint(0u);
 }
 
-void Scene::startProgressive()
+void Scene::restartProgressive()
 {
-    context->launchProgressive(0, width, height, 500000000);
+    std::cout << "restarting progressive" << std::endl;
+    subframeId = 0;
+    context->setRayGenerationProgram(0, clearScreen);
+    context->launch(0, width, height);
 }
 
 void Scene::init()
@@ -109,11 +116,14 @@ void Scene::init()
     context["choppedMie"]->setTextureSampler(Mie::getChoppedMieSampler(context));
     context["choppedMieIntegral"]->setTextureSampler(Mie::getChoppedMieIntegralSampler(context));
 
-    camera = loadProgram("pinholeCamera.cu", "pinholeCamera");
-    context["resultBuffer"]->setBuffer(screenBuffer);
+    context["progressiveBuffer"]->setBuffer(progressiveBuffer);
 
-    cameraEye = optix::make_float3(0, 0, -1);
-    cameraLookat = optix::make_float3(0, -0.2f, 0);
+    camera = loadProgram("pinholeCamera.cu", "pinholeCamera");
+
+    clearScreen = loadProgram("pinholeCamera.cu", "pinholeCamera");
+
+    cameraEye = optix::make_float3(0, 0, -0.7f);
+    cameraLookat = optix::make_float3(0, -0.3f, 0);
     cameraUp = optix::make_float3(0, 1, 0);
 
     cameraRotate = optix::Matrix4x4::identity();
@@ -125,18 +135,28 @@ void Scene::init()
 
     miss = loadProgram("pinholeCamera.cu", "miss");
     context->setMissProgram(0, miss);
-    context["missColor"]->setFloat(0.1f, 0.15f, 0.2f);
+    context["missColor"]->setFloat(900, 1000, 1600);
+
+    reinhardFirstPass = loadProgram("reinhard.cu", "firstPass");
+    reinhardSecondPass = loadProgram("reinhard.cu", "secondPass");
+    reinhardLastPass = loadProgram("reinhard.cu", "applyReinhard");
+
+    context["sumLogColumns"]->setBuffer(context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT, width));
+    context["lAverage"]->setBuffer(context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT, 1));
+    context["totalPixels"]->setUint(width * height);
+    context["screenBuffer"]->setBuffer(screenBuffer);
 }
 
 void Scene::rotateCamera(optix::float2 from, optix::float2 to)
 {
     cameraRotate = arcball.rotate(from, to);
     updateCamera();
+    restartProgressive();
 }
 
 void Scene::updateCamera()
 {
-    const float vfov = 70.0f;
+    const float vfov = 90.0f;
     const float aspectRatio = static_cast<float>(width) /
         static_cast<float>(height);
 
@@ -169,28 +189,42 @@ void Scene::updateCamera()
 
 void Scene::display()
 {
-    //context->validate();
-    //context->launch(0, width, height);
+    context->validate();
 
-    bool ready = progressiveBuffer->getProgressiveUpdateReady();
-    while (!ready)
-    {
-        Sleep(1);
-        ready = progressiveBuffer->getProgressiveUpdateReady();
-    }
-    if (ready)
-    {
-        GLenum glDataType = GL_UNSIGNED_BYTE;
-        GLenum glFormat = GL_RGBA;
+    subframeId++;
+    context["subframeId"]->setUint(subframeId);
+    context->setRayGenerationProgram(0, camera);
+    context->launch(0, width, height);
 
-        glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    context->setRayGenerationProgram(0, reinhardFirstPass);
+    context->launch(0, width);
 
-        GLvoid* imageData = progressiveBuffer->map();
-        glDrawPixels(width, height, glFormat, glDataType, imageData);
-        progressiveBuffer->unmap();
-    }
+    context->setRayGenerationProgram(0, reinhardSecondPass);
+    context->launch(0, 1);
 
-    startProgressive();
+    reinhardLastPass["midGrey"]->setFloat(midGrey);
+    context->setRayGenerationProgram(0, reinhardLastPass);
+    context->launch(0, width, height);
+
+    GLenum glDataType = GL_UNSIGNED_BYTE;
+    GLenum glFormat = GL_RGBA;
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
+    
+    GLvoid* imageData = screenBuffer->map();
+    glDrawPixels(width, height, glFormat, glDataType, imageData);
+    screenBuffer->unmap();
+    
+    //sutil::displayBufferGL(progressiveBuffer);
+}
+
+void Scene::increaseExposure()
+{
+    midGrey *= 1.2f;
+}
+
+void Scene::decreaseExposure()
+{
+    midGrey /= 1.2f;
 }
 
 optix::Buffer Scene::loadVolumetricData(const std::string &path, bool border)
@@ -262,6 +296,8 @@ optix::Buffer Scene::loadVolumetricData(const std::string &path, bool border)
 
                         Q.E.D.
                         */
+                        
+                        // Additionaly scale the source density to range from 0 to 1,
                         density[targetPos] = -logf(1 - sourceDensity[sourcePos] / 30.0f);
                     }
                 }
