@@ -13,20 +13,27 @@
 #include "Mie.h"
 #include "../sutil/sutil.h"
 
+#include <openvdb/openvdb.h>
+#include <openvdb/io/Stream.h>
+
+#include <openvdb/Types.h>
+#include <openvdb/tools/Statistics.h>
+#include <openvdb/math/Stats.h>
+
 Scene::Scene(uint32_t width, uint32_t height, float sampleStep) :
-    width(width), height(height), sampleStep(sampleStep), opticalDensityMultiplier(sampleStep * 2048)
+    width(width), height(height), sampleStep(sampleStep)
 {
     context = optix::Context::create();
 
-    context["lightDirection"]->setFloat(0.5f, -0.5f, -0.5f);
+    context["lightDirection"]->setFloat(-0.5f, -0.75f, -0.5f);
     context["lightColor"]->setFloat(1.2f, 1.0f, 0.7f);
     context["lightIntensity"]->setFloat(1e9);
 
-
     //context["skyIntensity"]->setFloat(0, 0, 0);
     //context["groundIntensity"]->setFloat(0, 0, 0);
-    context["skyIntensity"]->setFloat(900, 1000, 1600);
-    context["groundIntensity"]->setFloat(600, 300, 200);
+
+    context["skyIntensity"]->setFloat(0, 400, 3550);
+    context["groundIntensity"]->setFloat(300, 600, 900);
 
     context->setRayTypeCount(1);
     context->setEntryPointCount(1);
@@ -78,7 +85,6 @@ void Scene::addCloud(const std::string &path)
     inScatterSampler = createSamplerForBuffer3D(inScatterIn);
     context["inScatter"]->setTextureSampler(inScatterSampler);
 
-
     cloudGeometry = context->createGeometry();
     cloudGeometry->setBoundingBoxProgram(loadProgram("cloud.cu", "bounds"));
     cloudGeometry->setIntersectionProgram(loadProgram("cloud.cu", "intersect"));
@@ -110,7 +116,6 @@ void Scene::restartProgressive()
 void Scene::init()
 {
     context["sampleStep"]->setFloat(sampleStep);
-    context["opticalDensityMultiplier"]->setFloat(opticalDensityMultiplier);
 
     context["mie"]->setTextureSampler(Mie::getMieSampler(context));
     context["choppedMie"]->setTextureSampler(Mie::getChoppedMieSampler(context));
@@ -122,8 +127,8 @@ void Scene::init()
 
     clearScreen = loadProgram("pinholeCamera.cu", "pinholeCamera");
 
-    cameraEye = optix::make_float3(0, 0, -0.7f);
-    cameraLookat = optix::make_float3(0, -0.3f, 0);
+    cameraEye = optix::make_float3(2, -0.4f, 0);
+    cameraLookat = optix::make_float3(0, 0, 0);
     cameraUp = optix::make_float3(0, 1, 0);
 
     cameraRotate = optix::Matrix4x4::identity();
@@ -156,7 +161,7 @@ void Scene::rotateCamera(optix::float2 from, optix::float2 to)
 
 void Scene::updateCamera()
 {
-    const float vfov = 90.0f;
+    const float vfov = 30.0f;
     const float aspectRatio = static_cast<float>(width) /
         static_cast<float>(height);
 
@@ -191,20 +196,23 @@ void Scene::display()
 {
     context->validate();
 
-    subframeId++;
-    context["subframeId"]->setUint(subframeId);
-    context->setRayGenerationProgram(0, camera);
-    context->launch(0, width, height);
+    for (int i = 0; i < 10; i++)
+    {
+        subframeId++;
+        context["subframeId"]->setUint(subframeId);
+        context->setRayGenerationProgram(0, camera);
+        context->launch(0, width, height);
 
-    context->setRayGenerationProgram(0, reinhardFirstPass);
-    context->launch(0, width);
+        context->setRayGenerationProgram(0, reinhardFirstPass);
+        context->launch(0, width, 1);
 
-    context->setRayGenerationProgram(0, reinhardSecondPass);
-    context->launch(0, 1);
+        context->setRayGenerationProgram(0, reinhardSecondPass);
+        context->launch(0, 1, 1);
 
-    reinhardLastPass["midGrey"]->setFloat(midGrey);
-    context->setRayGenerationProgram(0, reinhardLastPass);
-    context->launch(0, width, height);
+        reinhardLastPass["midGrey"]->setFloat(midGrey);
+        context->setRayGenerationProgram(0, reinhardLastPass);
+        context->launch(0, width, height);
+    }
 
     GLenum glDataType = GL_UNSIGNED_BYTE;
     GLenum glFormat = GL_RGBA;
@@ -227,83 +235,62 @@ void Scene::decreaseExposure()
     midGrey /= 1.2f;
 }
 
-optix::Buffer Scene::loadVolumetricData(const std::string &path, bool border)
+optix::Buffer Scene::loadVolumetricData(const std::string &path)
 {
-    std::ifstream fin(path, std::ios::binary);
-    uint32_t sizeX, sizeY, sizeZ;
-    fin.read(reinterpret_cast<char*>(&sizeX), sizeof(uint32_t));
-    fin.read(reinterpret_cast<char*>(&sizeY), sizeof(uint32_t));
-    fin.read(reinterpret_cast<char*>(&sizeZ), sizeof(uint32_t));
+    openvdb::initialize();
 
-    uint32_t maxSize = std::max({ sizeX, sizeY, sizeZ });
-    uint32_t sourceSize = sizeX * sizeY * sizeZ;
-    uint32_t targetSize = maxSize * maxSize * maxSize;
+    using GridType = openvdb::FloatGrid;
+    std::ifstream ifile(path, std::ios_base::binary);
+    auto grids = openvdb::io::Stream(ifile).getGrids();
+    auto grid = openvdb::gridPtrCast<GridType>((*grids)[0]);
+    auto gridAccessor = grid->getConstAccessor();
+
+    using LeafIterType = GridType::ValueOnCIter;
+    const auto addOp = [](const LeafIterType& iter, openvdb::math::Extrema& ex) { ex.add(*iter); };
+    openvdb::math::Extrema ex = openvdb::tools::extrema(grid->tree().cbeginValueOn(), addOp, /*threaded=*/true);
+
+    float densityMultiplier = cloudLengthMeters / meanFreePathMeters / ex.max();
+    std::cout << densityMultiplier << std::endl;
+
+    openvdb::CoordBBox boundingBox = grid->evalActiveVoxelBoundingBox();
+    boundingBox.expandBy(1);
+    openvdb::Coord min = boundingBox.min();
+    openvdb::Coord max = boundingBox.max() + openvdb::Coord(1, 1, 1);
+    openvdb::Coord boundingSize = max - min;
+
+    uint32_t sizeX = boundingSize.x();
+    uint32_t sizeY = boundingSize.y();
+    uint32_t sizeZ = boundingSize.z();
+
+    float maxSize = std::max({ sizeX, sizeY, sizeZ });
+    context["boxSize"]->setFloat(sizeX / maxSize, sizeY / maxSize, sizeZ / maxSize);
+
+    std::cout << "Cloud's size is: " << sizeX << "x" << sizeY << "x" << sizeZ << std::endl;
 
     std::cout << "Creating buffer" << std::endl;
 
     optix::Buffer buffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT);
-    buffer->setSize(maxSize, maxSize, maxSize);
+    buffer->setSize(sizeX, sizeY, sizeZ);
 
     {
-        std::unique_ptr<float_t[]> sourceDensity(new float_t[sourceSize]);
-        std::cout << "Trying to read volumetric data of " << sizeX << "x" << sizeY << "x" << sizeZ << std::endl;
-        fin.read(reinterpret_cast<char*>(&sourceDensity[0]), sizeof(float_t) * sourceSize);
-        std::cout << "Read has completed successfuly" << std::endl;
-
         float_t* density = (float_t*)buffer->map();
 
-        std::memset(density, 0, sizeof(float_t) * maxSize);
+        std::memset(density, 0, sizeof(float_t) * sizeX * sizeY * sizeZ);
 
-        for (uint32_t z = 0; z < sizeZ; z++)
+        uint32_t targetPos = 0;
+        for (int32_t z = min.z(); z < max.z(); z++)
         {
-            for (uint32_t y = 0; y < sizeY; y++)
+            for (int32_t y = min.y(); y < max.y(); y++)
             {
-                for (uint32_t x = 0; x < sizeX; x++)
+                for (int32_t x = min.x(); x < max.x(); x++)
                 {
-                    uint32_t targetPos = x + maxSize * y + maxSize * maxSize * z;
-                    uint32_t sourcePos = sizeX * sizeY * z + sizeX * y + x;
-
-                    bool isFace = false;
-                    isFace |= x == 0 || x == maxSize - 1;
-                    isFace |= y == 0 || y == maxSize - 1;
-                    isFace |= z == 0 || z == maxSize - 1;
-
-                    if (!isFace)
-                    {
-                        /*
-                        Converting physical density to optical density. This allows to make calculations independent from step size.
-                        An optical density can be derived from a real density in the following way:
-                        opticalDensity = -log(1 - density)
-
-                        Let's prove it.
-
-                        assert(transmittance == 1 - absorbed)
-
-                        After one sample of a volume absorbance is changed as follows:
-                        absorbed' = absorbed + density * (1 - absorbed) 
-                                  = absorbed * (1 - density) + density
-
-                        And transmittance:
-                        transmittance' = transmittance * e^-opticalDensity
-
-                        Now Let's derive equation for absorbance from transmittance.
-                        1 - absorbed' = (1 - absorbed) * e^-opticalDensity 
-                                      = e^-opticalDensity - absorbed * e^-opticalDensity
-
-                        And therefore
-                        absorbed' = absorbed * e^-opticalDensity - e^-opticalDensity + 1 
-                                  = absorbed * (1 - density) + density
-
-                        Q.E.D.
-                        */
-                        
-                        // Additionaly scale the source density to range from 0 to 1,
-                        density[targetPos] = -logf(1 - sourceDensity[sourcePos] / 30.0f);
-                    }
+                    density[targetPos] = gridAccessor.getValue(openvdb::Coord(x, y, z)) * densityMultiplier;
+                    targetPos++;
                 }
             }
         }
 
+        std::cout << targetPos / 1024 / 1024 / 1024 << std::endl;
         buffer->unmap();
     }
 
@@ -338,7 +325,7 @@ optix::Program Scene::loadProgram(const std::string &fileName, const std::string
     
     std::string path = ptxPath + fileName + ptxExtension;
 
-    std::cout << "loading program " << path;
+    std::cout << "loading program " << path << std::endl;
 
     return context->createProgramFromPTXFile(path, programName);
 }

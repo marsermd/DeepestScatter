@@ -13,7 +13,8 @@ rtBuffer<float , 1>   sumLogColumns;
 rtBuffer<float , 1>   lAverage;
 
 rtDeclareVariable(unsigned int, totalPixels, , );
-rtDeclareVariable(uint1, launchID1, rtLaunchIndex, );
+//rtDeclareVariable(uint1, launchID1, rtLaunchIndex, );
+rtDeclareVariable(uint2, launchID2, rtLaunchIndex, );
 
 
 rtBuffer<uchar4, 2> screenBuffer;
@@ -21,15 +22,15 @@ rtBuffer<uchar4, 2> screenBuffer;
 RT_PROGRAM void firstPass()
 {
     size_t2 screenSize = progressiveBuffer.size();
-    sumLogColumns[launchID1.x] = 0;
+    sumLogColumns[launchID2.x] = 0;
 
     for (int y = 0; y < screenSize.y; y++)
     {
-        float4 current = progressiveBuffer[make_uint2(launchID1.x, y)];
+        float4 current = progressiveBuffer[make_uint2(launchID2.x, y)];
 
         float luminance = dot(current, make_float4(0.2126f, 0.7152f, 0.0722f, 0));
 
-        sumLogColumns[launchID1.x] += log(luminance + DELTA);
+        sumLogColumns[launchID2.x] += logf(luminance + DELTA);
     }
 }
 
@@ -50,12 +51,11 @@ RT_PROGRAM void secondPass()
 rtDeclareVariable(float, midGrey, , );
 
 
-rtDeclareVariable(uint2, launchID2, rtLaunchIndex, );
 
 // First call first and second pass.
 RT_PROGRAM void applyReinhard()
 {
-    float4 scaled = midGrey * progressiveBuffer[launchID2] / lAverage[0];
+    float4 scaled = midGrey * progressiveBuffer[launchID2];// / lAverage[0];
     scaled = scaled / (1 + scaled);
 
     // and gamma correction
@@ -65,5 +65,7 @@ RT_PROGRAM void applyReinhard()
 
     scaled = scaled * 255;
 
+    //TODO:
+    //scaled = progressiveBuffer[launchID2];
     screenBuffer[launchID2] = make_uchar4(scaled.x, scaled.y, scaled.z, 255);
 }

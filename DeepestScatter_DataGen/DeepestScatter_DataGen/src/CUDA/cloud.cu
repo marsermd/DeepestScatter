@@ -1,20 +1,22 @@
 #include <optix_world.h>
+#include <optix.h>
 #include <optixu/optixu_math_namespace.h>
 #include <optixu/optixu_vector_types.h>
 #include "random.cuh"
 #include "rayData.cuh"
+#include <ctime>
 
 using namespace optix;
 
 rtDeclareVariable(Ray, ray, rtCurrentRay, );
 rtDeclareVariable(float, minimalRayDistance, , );
 
+rtDeclareVariable(float3, boxSize, , );
 
 // --------------- BOX SHAPE ------------------
 
 static __device__ void makeBox(float3 & boxmin, float3  & boxmax) {
-    float halfWidth = 0.5f;
-    boxmin = make_float3(-halfWidth); boxmax = make_float3(halfWidth);
+    boxmin = -boxSize / 2; boxmax = boxSize / 2;
 }
 
 RT_PROGRAM void intersect(int primIdx)
@@ -64,8 +66,7 @@ rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
 rtDeclareVariable(float, tHit, rtIntersectionDistance, );
 rtDeclareVariable(PerRayData_radiance, resultRadiance, rtPayload, );
 
-rtDeclareVariable(float1, sampleStep, , );
-rtDeclareVariable(float1, opticalDensityMultiplier, , );
+rtDeclareVariable(float, sampleStep, , );
 rtDeclareVariable(float3, lightDirection, , );
 rtDeclareVariable(float , lightIntensity, , );
 rtDeclareVariable(float3, lightColor, , );
@@ -82,8 +83,8 @@ rtDeclareVariable(unsigned int, subframeId, , );
 
 static __host__ __device__ __inline__ bool isInBox(float3 pos)
 {
-    return pos.x >= 0.0f && pos.y >= 0.0f && pos.z >= 0.0f
-        && pos.x <= 1.0f && pos.y <= 1.0f && pos.z <= 1.0f;
+    return pos.x >= -0.01f && pos.y >= -0.01f && pos.z >= -0.01f
+        && pos.x <= boxSize.x + 0.01f && pos.y <= boxSize.y + 0.01f && pos.z <= boxSize.z + 0.01f;
 }
 
 static __host__ __device__ __inline__ float getMiePhase(float cosTheta)
@@ -98,10 +99,22 @@ static __host__ __device__ __inline__ float getChoppedMiePhase(float cosTheta)
 
 rtDeclareVariable(float3, missColor, , );
 
+static __host__ __device__ __inline__ float sampleCloud(float3 pos)
+{
+    pos = pos / boxSize;
+    return tex3D(cloud, pos.x, pos.y, pos.z).x;
+}
+
+static __host__ __device__ __inline__ float sampleInScatter(float3 pos)
+{
+    pos = pos / boxSize;
+    return tex3D(inScatter, pos.x, pos.y, pos.z).x;
+}
+
 RT_PROGRAM void closestHitRadiance()
 {
     float3 hitPoint = ray.origin + tHit * ray.direction;
-    hitPoint += make_float3(0.5f);
+    hitPoint += 0.5f * boxSize;
 
     float3 radiance = make_float3(0);
     float3 pos = hitPoint;
@@ -113,64 +126,81 @@ RT_PROGRAM void closestHitRadiance()
     unsigned int seed = tea<4>(launchID.x * 800 + launchID.y, subframeId);
     float3 normalizedLightDirection = normalize(lightDirection);
 
-    float russianRouletteCoefficient = 1;
+    
+    int time1 = 0;
+    int time2 = 0;
+    int time3 = 0;
 
     int depth = 0;
+    clock_t start_time;
     while (isInBox(pos))
     {
-        float3 stepAlongRay = direction * sampleStep.x;
+        depth++;
+
+        float3 stepAlongRay = direction * sampleStep;
         float transmitance = 1;
         float opticalDistance = rnd(seed);
 
         bool hasScattered = false;
         float3 scatterPos;
         float currentTransmit;
+
+        float skySampleProbability = 0.1f;
+        bool sampleSky = subframeId % 10 == 0;
+
+        start_time = clock();
         while (isInBox(pos))
         {
-            float extinction = tex3D(cloud, pos.x, pos.y, pos.z).x * opticalDensityMultiplier.x;
-
-            currentTransmit = expf(-extinction);
-
-            transmitance *= currentTransmit;
-
             pos += stepAlongRay;
+
+            float extinction = sampleCloud(pos) * sampleStep;
+            currentTransmit = expf(-extinction);
+            transmitance *= currentTransmit;
 
             if (!hasScattered && opticalDistance > transmitance)
             {
                 hasScattered = true;
-                scatterPos = pos;
+                scatterPos = pos - direction * log(opticalDistance / transmitance) / sampleCloud(pos);
+                
+                if (!sampleSky)
+                {
+                    break;
+                }
             }
         }
+        time1 += (int)(clock() - start_time);
 
-        float cosLightAngle = dot(-normalizedLightDirection, direction);
-        float3 currentLight = make_float3(0);
-        if (cosLightAngle > 0.9998918876f) // cos(9.35*1e-3 * pi / 2)
-        {
-            currentLight = lightColor * lightIntensity;
-        }
-        else
+        if (sampleSky)
         {
             float t = clamp((direction.y + 0.5f) / 1.5f, 0.f, 1.f);
-            currentLight = lerp(groundIntensity, skyIntensity, t);
+            float3 currentLight = lerp(groundIntensity, skyIntensity, t);
+            radiance += currentLight * transmitance / skySampleProbability;
         }
-        radiance += currentLight * transmitance * russianRouletteCoefficient;
 
+        start_time = clock();
         if (hasScattered && isInBox(scatterPos))
         {
+            {
+                const float sunAngularRadiusDeg = 0.53f / 2;
+                const float sphereArea = 4 * CUDART_PI_F;
+                const float sunArea = 2 * CUDART_PI_F *(1 - cos(sunAngularRadiusDeg * CUDART_PI_F / 180));
+                const float sunToSphereAreaRatio = sunArea / sphereArea;
+                float cosLightAngle = dot(-normalizedLightDirection, direction);
+
+                float phase = depth == 1 ? getMiePhase(cosLightAngle) : getChoppedMiePhase(cosLightAngle);
+
+                float3 inScatteredLight = lightColor * sampleInScatter(scatterPos) * phase * sunToSphereAreaRatio;
+                radiance += inScatteredLight;
+            }
             pos = scatterPos;
-            float rrThreshold = 0.8f;
+            float rrThreshold = 1;
             float rr = rnd(seed);
             if (rr > rrThreshold)
             {
-                // bidirectional path tracing
-                float3 inScatteredLight = lightColor * tex3D(inScatter, pos.x, pos.y, pos.z).x * getMiePhase(cosLightAngle) * 0.000272f;
-                radiance += inScatteredLight * russianRouletteCoefficient;
                 break;
             }
             else
             {
-                russianRouletteCoefficient /= rrThreshold;
-
                 float l = 0.f;
                 float r = 1.f;
                 float m = 0.5f;
@@ -195,26 +225,13 @@ RT_PROGRAM void closestHitRadiance()
                 Onb onb(direction);
                 onb.inverse_transform(newDirection);
 
-                direction = newDirection;
+                direction = normalize(newDirection);
             }
         }
-        depth++;
+        time3 += (int)(clock() - start_time);
     }
 
     resultRadiance.result = radiance;
-
-    {
-        float3 stepAlongRay = ray.direction * sampleStep.x;
-        float transmitance = 1;
-        pos = hitPoint;
-        while (isInBox(pos))
-        {
-            float extinction = tex3D(cloud, pos.x, pos.y, pos.z).x * opticalDensityMultiplier.x;
-            float currentTransmit = expf(-extinction);
-            transmitance *= currentTransmit;
-
-            pos += stepAlongRay;
-        }
-        resultRadiance.importance = transmitance;
-    }
+    //resultRadiance.result = make_float3(depth, depth, depth);
+    resultRadiance.importance = 0;
 }

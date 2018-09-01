@@ -35,7 +35,7 @@ RT_PROGRAM void pinholeCamera()
     prd.importance = 1.0f;
     prd.depth = 0;
 
-    rtTrace(objectRoot, ray, prd);
+    rtTrace(objectRoot, ray, prd); 
 
     float newWeight = 1.0f / (float)subframeId;
     float oldWeight = 1.0f - newWeight;
@@ -55,10 +55,31 @@ RT_PROGRAM void exception()
     progressiveBuffer[launchID] = make_float4(errorColor, 1);
 }
 
+rtDeclareVariable(Ray, ray, rtCurrentRay, );
 rtDeclareVariable(PerRayData_radiance, resultRadiance, rtPayload, );
+rtDeclareVariable(float3, skyIntensity, , );
+rtDeclareVariable(float3, groundIntensity, , );
+rtDeclareVariable(float, lightIntensity, , );
+rtDeclareVariable(float3, lightColor, , );
+rtDeclareVariable(float3, lightDirection, , );
 
 RT_PROGRAM void miss()
 {
-    resultRadiance.result = missColor;
+    float3 direction = normalize(ray.direction);
+    float3 normalizedLightDirection = normalize(lightDirection);
+
+    float cosLightAngle = dot(-normalizedLightDirection, direction);
+    float3 currentLight = make_float3(0);
+    if (cosLightAngle > 0.9998918876f) // cos(9.35*1e-3 * pi / 2)
+    {
+        currentLight = lightColor * lightIntensity;
+    }
+    else
+    {
+        float t = clamp((direction.y + 0.5f) / 1.5f, 0.f, 1.f);
+        currentLight = lerp(groundIntensity, skyIntensity, t);
+    }
+
+    resultRadiance.result = currentLight;
     resultRadiance.importance = 0;
 }

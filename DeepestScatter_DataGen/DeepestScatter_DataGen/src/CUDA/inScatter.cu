@@ -7,10 +7,11 @@ rtDeclareVariable(uint3, launchID, rtLaunchIndex, );
 rtBuffer<float1, 3>   resultBuffer;
 
 rtDeclareVariable(float3, lightDirection, , );
-rtDeclareVariable(float1, lightIntensity, , );
+rtDeclareVariable(float, lightIntensity, , );
 
-rtDeclareVariable(float1, sampleStep, , );
-rtDeclareVariable(float1, opticalDensityMultiplier, , );
+rtDeclareVariable(float, sampleStep, , );
+
+rtDeclareVariable(float3, boxSize, , );
 
 rtTextureSampler<uchar1, 3, cudaReadModeNormalizedFloat> cloud;
 
@@ -23,23 +24,30 @@ inline RT_HOSTDEVICE float3 make_float3(size_t3 st)
     return ret;
 }
 
+static __host__ __device__ __inline__ float sampleCloud(float3 pos)
+{
+    pos = pos / boxSize;
+    return tex3D(cloud, pos.x, pos.y, pos.z).x;
+}
+
 RT_PROGRAM void inScatter()
 {
     size_t3 size = resultBuffer.size();
+    size_t maxSize = max(max(size.x, size.y), size.z);
 
-    float3 samplePos = make_float3(launchID) / make_float3(size);
+    float3 samplePos = make_float3(launchID) / make_float3(maxSize);
 
-    float3 stepToLight = (-normalize(lightDirection)) * sampleStep.x;
+    float3 stepToLight = (-normalize(lightDirection)) * sampleStep;
 
-    int stepCount = 1 / sampleStep.x;
+    int stepCount = 1 / sampleStep;
 
     float transmitance = 1;
     for (int i = 0; i < stepCount; i++)
     {
-        float density = tex3D(cloud, samplePos.x, samplePos.y, samplePos.z).x * opticalDensityMultiplier.x;
+        float density = sampleCloud(samplePos) * sampleStep;
 
         transmitance *= expf(-density);
         samplePos += stepToLight;
     }
-    resultBuffer[launchID] = make_float1(lightIntensity.x * transmitance);
+    resultBuffer[launchID] = make_float1(lightIntensity * transmitance);
 }

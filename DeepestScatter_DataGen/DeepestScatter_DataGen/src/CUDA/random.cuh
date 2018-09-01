@@ -122,13 +122,13 @@ static __host__ __device__ __inline__ unsigned int rot_seed(unsigned int seed, u
     return seed ^ frame;
 }
 
-static __host__ __device__ optix::float3 uniformOnSphereCircle(unsigned int& prev, float cosTheta)
+static __host__ __device__ __inline__ optix::float3 uniformOnSphereCircle(unsigned int& prev, float cosTheta)
 {
     float phi = rnd(prev) * M_PIf * 2;
 
-    float theta = acos(cosTheta);
-    float x = sin(theta) * cos(phi);
-    float y = sin(theta) * sin(phi);
+    float sinTheta = sqrt(1 - cosTheta * cosTheta);
+    float x = sinTheta * cos(phi);
+    float y = sinTheta * sin(phi);
     float z = cosTheta;
     return make_float3(x, y, z);
 }

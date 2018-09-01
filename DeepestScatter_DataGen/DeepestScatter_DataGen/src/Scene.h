@@ -32,7 +32,10 @@ public:
 
 private:
     float sampleStep;
-    float opticalDensityMultiplier;
+
+    float cloudLengthMeters = 3000;
+    float meanFreePathMeters = 10;
+
     uint32_t subframeId = 0;
 
     uint32_t width, height;
@@ -64,18 +67,15 @@ private:
     optix::Program reinhardSecondPass;
     optix::Program reinhardLastPass;
 
-    float_t midGrey = 0.18f;
+    float_t midGrey = 0.0003f;
 
     /**
     * Read from binary file that consists of
     * sizeX:uint32, sizeY:uint32, sizeZ:uint32, density:float32[sizeX * sizeY * sizeZ]
     */
-    optix::Buffer loadVolumetricData(
-        const std::string &path,
-        bool border = true);
+    optix::Buffer loadVolumetricData(const std::string &path);
 
-    optix::TextureSampler createSamplerForBuffer3D(
-        optix::Buffer buffer);
+    optix::TextureSampler createSamplerForBuffer3D(optix::Buffer buffer);
 
     optix::Program loadProgram(
         const std::string &fileName,

@@ -89,7 +89,7 @@ int main(int argc, char* argv[])
             }
             else if (strcmp(argv[i], "--show") == 0)
             {
-                // nothing special yet
+                // Nothing special yet.
             }
             else
             {
@@ -100,7 +100,7 @@ int main(int argc, char* argv[])
 
         glutInitialize(&argc, argv);
 
-        scene = std::shared_ptr<Scene>(new Scene(width, height, 1.f/256.f));
+        scene = std::shared_ptr<Scene>(new Scene(width, height, 1.f/407.f));
         scene->init();
         scene->addCloud(inputFile);
 

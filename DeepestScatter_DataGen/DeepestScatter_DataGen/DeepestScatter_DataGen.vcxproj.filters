@@ -59,7 +59,9 @@
     <CudaCompile Include="src\CUDA\cloud.cu">
       <Filter>CUDA</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\CUDA\reinhard.cu" />
+    <CudaCompile Include="src\CUDA\reinhard.cu">
+      <Filter>CUDA</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="sutil\HDRLoader.h">
