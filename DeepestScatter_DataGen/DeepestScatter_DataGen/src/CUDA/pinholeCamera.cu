@@ -70,7 +70,8 @@ RT_PROGRAM void miss()
 
     float cosLightAngle = dot(-normalizedLightDirection, direction);
     float3 currentLight = make_float3(0);
-    if (cosLightAngle > 0.9998918876f) // cos(9.35*1e-3 * pi / 2)
+
+    if (cosLightAngle > 0.99998930414f) // cos(0.53 / 180 * pi / 2)
     {
         currentLight = lightColor * lightIntensity;
     }

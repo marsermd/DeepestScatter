@@ -15,9 +15,9 @@ public:
     ~Scene();
 
     void init();
+
     /**
-    * Load cloud from binary file that consists of
-    * sizeX:uint32, sizeY:uint32, sizeZ:uint32, density:float32[sizeX * sizeY * sizeZ]
+    * Load cloud from .vdb file with a density grid of type float.
     */
     void addCloud(const std::string &path);
 
@@ -67,11 +67,10 @@ private:
     optix::Program reinhardSecondPass;
     optix::Program reinhardLastPass;
 
-    float_t midGrey = 0.0003f;
+    float_t exposure = 0.0001f;
 
     /**
-    * Read from binary file that consists of
-    * sizeX:uint32, sizeY:uint32, sizeZ:uint32, density:float32[sizeX * sizeY * sizeZ]
+    * Load cloud from .vdb file with a density grid of type float.
     */
     optix::Buffer loadVolumetricData(const std::string &path);
 

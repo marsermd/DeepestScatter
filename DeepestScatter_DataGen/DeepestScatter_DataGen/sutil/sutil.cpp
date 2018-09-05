@@ -26,7 +26,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
+#pragma warning(push, 0)   
 // Note: wglew.h has to be included before sutil.h on Windows
 #if defined(__APPLE__)
 #  include <GLUT/glut.h>
@@ -39,8 +39,6 @@
 #endif
 
 #include "sutil.h"
-#include "HDRLoader.h"
-#include "PPMLoader.h"
 
 #include <optixu/optixu_math_namespace.h>
 
@@ -221,47 +219,6 @@ void sutil::handleError( RTcontext context, RTresult code, const char* file,
     reportErrorMessage( s );
 }
 
-
-const char* sutil::samplesDir()
-{
-    static char s[512];
-
-    // Allow for overrides.
-    const char* dir = getenv( "OPTIX_SAMPLES_SDK_DIR" );
-    if (dir) {
-        strcpy(s, dir);
-        return s;
-    }
-
-    // Return hardcoded path if it exists.
-//    if( dirExists( SAMPLES_DIR ) )
-  //      return SAMPLES_DIR;
-
-    // Last resort.
-    return ".";
-}
-
-
-const char* sutil::samplesPTXDir()
-{
-    static char s[512];
-
-    // Allow for overrides.
-    const char* dir = getenv( "OPTIX_SAMPLES_SDK_PTX_DIR" );
-    if (dir) {
-        strcpy(s, dir);
-        return s;
-    }
-
-    // Return hardcoded path if it exists.
-    //if( dirExists(SAMPLES_PTX_DIR) )
-      //  return SAMPLES_PTX_DIR;
-
-    // Last resort.
-    return ".";
-}
-
-
 optix::Buffer sutil::createOutputBuffer(
         optix::Context context,
         RTformat format,
@@ -361,108 +318,6 @@ void sutil::displayBufferGlut( const char* window_title, RTbuffer buffer )
 
     glutMainLoop();
 }
-
-
-void sutil::displayBufferPPM( const char* filename, Buffer buffer)
-{
-    displayBufferPPM( filename, buffer->get() );
-}
-
-
-void sutil::displayBufferPPM( const char* filename, RTbuffer buffer)
-{
-    GLsizei width, height;
-    RTsize buffer_width, buffer_height;
-
-    GLvoid* imageData;
-    RT_CHECK_ERROR( rtBufferMap( buffer, &imageData) );
-
-    RT_CHECK_ERROR( rtBufferGetSize2D(buffer, &buffer_width, &buffer_height) );
-    width  = static_cast<GLsizei>(buffer_width);
-    height = static_cast<GLsizei>(buffer_height);
-
-    std::vector<unsigned char> pix(width * height * 3);
-
-    RTformat buffer_format;
-    RT_CHECK_ERROR( rtBufferGetFormat(buffer, &buffer_format) );
-
-    switch(buffer_format) {
-        case RT_FORMAT_UNSIGNED_BYTE4:
-            // Data is BGRA and upside down, so we need to swizzle to RGB
-            for(int j = height-1; j >= 0; --j) {
-                unsigned char *dst = &pix[0] + (3*width*(height-1-j));
-                unsigned char *src = ((unsigned char*)imageData) + (4*width*j);
-                for(int i = 0; i < width; i++) {
-                    *dst++ = *(src + 2);
-                    *dst++ = *(src + 1);
-                    *dst++ = *(src + 0);
-                    src += 4;
-                }
-            }
-            break;
-
-        case RT_FORMAT_FLOAT:
-            // This buffer is upside down
-            for(int j = height-1; j >= 0; --j) {
-                unsigned char *dst = &pix[0] + width*(height-1-j);
-                float* src = ((float*)imageData) + (3*width*j);
-                for(int i = 0; i < width; i++) {
-                    int P = static_cast<int>((*src++) * 255.0f);
-                    unsigned int Clamped = P < 0 ? 0 : P > 0xff ? 0xff : P;
-
-                    // write the pixel to all 3 channels
-                    *dst++ = static_cast<unsigned char>(Clamped);
-                    *dst++ = static_cast<unsigned char>(Clamped);
-                    *dst++ = static_cast<unsigned char>(Clamped);
-                }
-            }
-            break;
-
-        case RT_FORMAT_FLOAT3:
-            // This buffer is upside down
-            for(int j = height-1; j >= 0; --j) {
-                unsigned char *dst = &pix[0] + (3*width*(height-1-j));
-                float* src = ((float*)imageData) + (3*width*j);
-                for(int i = 0; i < width; i++) {
-                    for(int elem = 0; elem < 3; ++elem) {
-                        int P = static_cast<int>((*src++) * 255.0f);
-                        unsigned int Clamped = P < 0 ? 0 : P > 0xff ? 0xff : P;
-                        *dst++ = static_cast<unsigned char>(Clamped);
-                    }
-                }
-            }
-            break;
-
-        case RT_FORMAT_FLOAT4:
-            // This buffer is upside down
-            for(int j = height-1; j >= 0; --j) {
-                unsigned char *dst = &pix[0] + (3*width*(height-1-j));
-                float* src = ((float*)imageData) + (4*width*j);
-                for(int i = 0; i < width; i++) {
-                    for(int elem = 0; elem < 3; ++elem) {
-                        int P = static_cast<int>((*src++) * 255.0f);
-                        unsigned int Clamped = P < 0 ? 0 : P > 0xff ? 0xff : P;
-                        *dst++ = static_cast<unsigned char>(Clamped);
-                    }
-
-                    // skip alpha
-                    src++;
-                }
-            }
-            break;
-
-        default:
-            fprintf(stderr, "Unrecognized buffer data type or format.\n");
-            exit(2);
-            break;
-    }
-
-    SavePPM(&pix[0], filename, width, height, 3);
-
-    // Now unmap the buffer
-    RT_CHECK_ERROR( rtBufferUnmap(buffer) );
-}
-
 
 void sutil::displayBufferGL( optix::Buffer buffer )
 {
@@ -636,50 +491,12 @@ static const float FPS_UPDATE_INTERVAL = 0.5;  //seconds
 } // namespace
 
 
-void sutil::displayFps( unsigned int frame_count )
+void sutil::displayMillisecondsPerFrame(double milliseconds)
 {
-    static double fps = -1.0;
-    static unsigned last_frame_count = 0;
-    static double last_update_time = sutil::currentTime();
-    static double current_time = 0.0;
-    current_time = sutil::currentTime();
-    if ( current_time - last_update_time > FPS_UPDATE_INTERVAL ) {
-        fps = ( frame_count - last_frame_count ) / ( current_time - last_update_time );
-        last_frame_count = frame_count;
-        last_update_time = current_time;
-    }
-    if ( frame_count > 0 && fps >= 0.0 ) {
-        static char fps_text[32];
-        sprintf( fps_text, "fps: %7.2f", fps );
-        drawText( fps_text, 10.0f, 10.0f, GLUT_BITMAP_8_BY_13 );
-    }
+    static char fps_text[128];
+    sprintf(fps_text, "MS: %7.2f", milliseconds);
+    drawText(fps_text, 10.0f, 10.0f, GLUT_BITMAP_8_BY_13);
 }
-
-
-optix::TextureSampler sutil::loadTexture( optix::Context context,
-        const std::string& filename, optix::float3 default_color )
-{
-    bool isHDR = false;
-    size_t len = filename.length();
-    if(len >= 3) {
-      isHDR = (filename[len-3] == 'H' || filename[len-3] == 'h') &&
-              (filename[len-2] == 'D' || filename[len-2] == 'd') &&
-              (filename[len-1] == 'R' || filename[len-1] == 'r');
-    }
-    if ( isHDR ) {
-        return loadHDRTexture(context, filename, default_color);
-    } else {
-        return loadPPMTexture(context, filename, default_color);
-    }
-}
-
-
-optix::Buffer sutil::loadCubeBuffer( optix::Context context,
-        const std::vector<std::string>& filenames )
-{
-    return loadPPMCubeBuffer( context, filenames );
-}
-
 
 void sutil::calculateCameraVariables( float3 eye, float3 lookat, float3 up,
         float  fov, float  aspect_ratio,
@@ -788,3 +605,4 @@ void sutil::sleep( int seconds )
 #endif
 }
 
+#pragma warning(pop)   

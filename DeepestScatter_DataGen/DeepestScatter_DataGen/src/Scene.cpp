@@ -6,11 +6,13 @@
 #include <memory>
 #include <iostream>
 #include <fstream>
-#include <optix.h>
 
+#include <gsl/gsl_util>
+
+#include <optix.h>
 #include "GL/freeglut.h"
 
-#include "Mie.h"
+#pragma warning(push, 0)   
 #include "../sutil/sutil.h"
 
 #include <openvdb/openvdb.h>
@@ -19,21 +21,22 @@
 #include <openvdb/Types.h>
 #include <openvdb/tools/Statistics.h>
 #include <openvdb/math/Stats.h>
+#pragma warning(pop)
+
+#include "Mie.h"
+
 
 Scene::Scene(uint32_t width, uint32_t height, float sampleStep) :
     width(width), height(height), sampleStep(sampleStep)
 {
     context = optix::Context::create();
 
-    context["lightDirection"]->setFloat(-0.5f, -0.75f, -0.5f);
-    context["lightColor"]->setFloat(1.2f, 1.0f, 0.7f);
-    context["lightIntensity"]->setFloat(1e9);
+    context["lightDirection"]->setFloat(-0.586f, -0.766f, -0.2717f);
+    context["lightColor"]->setFloat(1.3f, 1.25f, 1.15f);
+    context["lightIntensity"]->setFloat(0.6e9f);
 
-    //context["skyIntensity"]->setFloat(0, 0, 0);
-    //context["groundIntensity"]->setFloat(0, 0, 0);
-
-    context["skyIntensity"]->setFloat(0, 400, 3550);
-    context["groundIntensity"]->setFloat(300, 600, 900);
+    context["skyIntensity"]->setFloat(0, 0, 2000);
+    context["groundIntensity"]->setFloat(600, 800, 1000);
 
     context->setRayTypeCount(1);
     context->setEntryPointCount(1);
@@ -51,14 +54,13 @@ Scene::~Scene()
 void Scene::addCloud(const std::string &path)
 {
     cloudBuffer = loadVolumetricData(path);
-
     cloudSampler = createSamplerForBuffer3D(cloudBuffer);
     context["cloud"]->setTextureSampler(cloudSampler);
 
     RTsize cloudX, cloudY, cloudZ;
     cloudBuffer->getSize(cloudX, cloudY, cloudZ);
 
-    optix::Buffer inScatterOut = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT, cloudX, cloudY, cloudZ);
+    optix::Buffer inScatterOut = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_UNSIGNED_BYTE, cloudX, cloudY, cloudZ);
 
     optix::Program inScatter = loadProgram("inScatter.cu", "inScatter");
     inScatter["resultBuffer"]->setBuffer(inScatterOut);
@@ -70,14 +72,15 @@ void Scene::addCloud(const std::string &path)
     cloudSampler->destroy();
     cloudBuffer->destroy();
 
-    inScatterIn = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT, cloudX, cloudY, cloudZ);
-    float_t* to = (float_t*)inScatterIn->map();
-    float_t* from = (float_t*)inScatterOut->map();
-    std::memcpy(to, from, sizeof(float_t) * cloudX * cloudY * cloudZ);
+    inScatterIn = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_BYTE, cloudX, cloudY, cloudZ);
+    uint8_t* to = (uint8_t*)inScatterIn->map();
+    uint8_t* from = (uint8_t*)inScatterOut->map();
+    std::memcpy(to, from, sizeof(uint8_t) * cloudX * cloudY * cloudZ);
     inScatterIn->unmap();
     inScatterOut->unmap();
 
     inScatterOut->destroy();
+
     cloudBuffer = loadVolumetricData(path);
     cloudSampler = createSamplerForBuffer3D(cloudBuffer);
     context["cloud"]->setTextureSampler(cloudSampler);
@@ -116,6 +119,7 @@ void Scene::restartProgressive()
 void Scene::init()
 {
     context["sampleStep"]->setFloat(sampleStep);
+    context["densityMultiplier"]->setFloat(cloudLengthMeters / meanFreePathMeters);
 
     context["mie"]->setTextureSampler(Mie::getMieSampler(context));
     context["choppedMie"]->setTextureSampler(Mie::getChoppedMieSampler(context));
@@ -209,7 +213,7 @@ void Scene::display()
         context->setRayGenerationProgram(0, reinhardSecondPass);
         context->launch(0, 1, 1);
 
-        reinhardLastPass["midGrey"]->setFloat(midGrey);
+        reinhardLastPass["exposure"]->setFloat(exposure);
         context->setRayGenerationProgram(0, reinhardLastPass);
         context->launch(0, width, height);
     }
@@ -221,18 +225,16 @@ void Scene::display()
     GLvoid* imageData = screenBuffer->map();
     glDrawPixels(width, height, glFormat, glDataType, imageData);
     screenBuffer->unmap();
-    
-    //sutil::displayBufferGL(progressiveBuffer);
 }
 
 void Scene::increaseExposure()
 {
-    midGrey *= 1.2f;
+    exposure *= 1.2f;
 }
 
 void Scene::decreaseExposure()
 {
-    midGrey /= 1.2f;
+    exposure /= 1.2f;
 }
 
 optix::Buffer Scene::loadVolumetricData(const std::string &path)
@@ -241,6 +243,9 @@ optix::Buffer Scene::loadVolumetricData(const std::string &path)
 
     using GridType = openvdb::FloatGrid;
     std::ifstream ifile(path, std::ios_base::binary);
+
+    assert(ifile.good());
+
     auto grids = openvdb::io::Stream(ifile).getGrids();
     auto grid = openvdb::gridPtrCast<GridType>((*grids)[0]);
     auto gridAccessor = grid->getConstAccessor();
@@ -249,8 +254,7 @@ optix::Buffer Scene::loadVolumetricData(const std::string &path)
     const auto addOp = [](const LeafIterType& iter, openvdb::math::Extrema& ex) { ex.add(*iter); };
     openvdb::math::Extrema ex = openvdb::tools::extrema(grid->tree().cbeginValueOn(), addOp, /*threaded=*/true);
 
-    float densityMultiplier = cloudLengthMeters / meanFreePathMeters / ex.max();
-    std::cout << densityMultiplier << std::endl;
+    double maxDensity = ex.max();
 
     openvdb::CoordBBox boundingBox = grid->evalActiveVoxelBoundingBox();
     boundingBox.expandBy(1);
@@ -258,24 +262,24 @@ optix::Buffer Scene::loadVolumetricData(const std::string &path)
     openvdb::Coord max = boundingBox.max() + openvdb::Coord(1, 1, 1);
     openvdb::Coord boundingSize = max - min;
 
-    uint32_t sizeX = boundingSize.x();
-    uint32_t sizeY = boundingSize.y();
-    uint32_t sizeZ = boundingSize.z();
+    size_t sizeX = boundingSize.x();
+    size_t sizeY = boundingSize.y();
+    size_t sizeZ = boundingSize.z();
 
-    float maxSize = std::max({ sizeX, sizeY, sizeZ });
+    float maxSize = gsl::narrow<float>(std::max({ sizeX, sizeY, sizeZ }));
     context["boxSize"]->setFloat(sizeX / maxSize, sizeY / maxSize, sizeZ / maxSize);
 
     std::cout << "Cloud's size is: " << sizeX << "x" << sizeY << "x" << sizeZ << std::endl;
 
     std::cout << "Creating buffer" << std::endl;
 
-    optix::Buffer buffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT);
+    optix::Buffer buffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_BYTE);
     buffer->setSize(sizeX, sizeY, sizeZ);
 
     {
-        float_t* density = (float_t*)buffer->map();
+        uint8_t* density = (uint8_t*)buffer->map();
 
-        std::memset(density, 0, sizeof(float_t) * sizeX * sizeY * sizeZ);
+        std::memset(density, 0, sizeof(uint8_t) * sizeX * sizeY * sizeZ);
 
         uint32_t targetPos = 0;
         for (int32_t z = min.z(); z < max.z(); z++)
@@ -284,13 +288,12 @@ optix::Buffer Scene::loadVolumetricData(const std::string &path)
             {
                 for (int32_t x = min.x(); x < max.x(); x++)
                 {
-                    density[targetPos] = gridAccessor.getValue(openvdb::Coord(x, y, z)) * densityMultiplier;
+                    density[targetPos] = (uint8_t)(gridAccessor.getValue(openvdb::Coord(x, y, z)) / maxDensity * 255);
                     targetPos++;
                 }
             }
         }
 
-        std::cout << targetPos / 1024 / 1024 / 1024 << std::endl;
         buffer->unmap();
     }
 

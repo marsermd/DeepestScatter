@@ -1,16 +1,8 @@
 #include <optix.h>
 
-#ifdef __APPLE__
-#  include <GLUT/glut.h>
-#else
-#  include "../sutil/GL/glew.h"
-#  if defined( _WIN32 )
-#    include "../sutil/GL/wglew.h"
-#    include <GL/freeglut.h>
-#  else
-#    include <GL/glut.h>
-#  endif
-#endif
+#include <GL/glew.h>
+#include <GL/wglew.h>
+#include <GL/freeglut.h>
 
 #include <stdlib.h>
 #include <string>
@@ -93,16 +85,24 @@ int main(int argc, char* argv[])
             }
             else
             {
-                fprintf(stderr, "Unknown option '%s'\n", argv[i]);
+                std::cerr << "Unknown option " << argv[i] << std::endl;
                 printUsageAndExit(argv[0]);
             }
         }
 
         glutInitialize(&argc, argv);
+        glewInit();
 
-        scene = std::shared_ptr<Scene>(new Scene(width, height, 1.f/407.f));
-        scene->init();
-        scene->addCloud(inputFile);
+        try {
+            scene = std::shared_ptr<Scene>(new Scene(width, height, 1.f / 1000.f));
+            scene->init();
+            scene->addCloud(inputFile);
+        }
+        catch (const std::exception& e)
+        {
+            std::cerr << e.what() << std::endl;
+            throw;
+        }
 
         glutRun();
 
@@ -119,6 +119,9 @@ void glutDisplay()
     double t1 = sutil::currentTime();
     scene->display();
     double t2 = sutil::currentTime();
+
+    sutil::displayMillisecondsPerFrame((t2 - t1) * 1000);
+
     std::cout << "MS/FAME: " << (t2 - t1) * 1000 << std::endl;
 
     glutSwapBuffers();

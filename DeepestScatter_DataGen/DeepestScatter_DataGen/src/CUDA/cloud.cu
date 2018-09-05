@@ -67,6 +67,7 @@ rtDeclareVariable(float, tHit, rtIntersectionDistance, );
 rtDeclareVariable(PerRayData_radiance, resultRadiance, rtPayload, );
 
 rtDeclareVariable(float, sampleStep, , );
+rtDeclareVariable(float, densityMultiplier, , );
 rtDeclareVariable(float3, lightDirection, , );
 rtDeclareVariable(float , lightIntensity, , );
 rtDeclareVariable(float3, lightColor, , );
@@ -126,16 +127,12 @@ RT_PROGRAM void closestHitRadiance()
     unsigned int seed = tea<4>(launchID.x * 800 + launchID.y, subframeId);
     float3 normalizedLightDirection = normalize(lightDirection);
 
-    
-    int time1 = 0;
-    int time2 = 0;
-    int time3 = 0;
-
     int depth = 0;
-    clock_t start_time;
     while (isInBox(pos))
     {
         depth++;
+
+        float cosLightAngle = dot(-normalizedLightDirection, direction);
 
         float3 stepAlongRay = direction * sampleStep;
         float transmitance = 1;
@@ -148,19 +145,19 @@ RT_PROGRAM void closestHitRadiance()
         float skySampleProbability = 0.1f;
         bool sampleSky = subframeId % 10 == 0;
 
-        start_time = clock();
         while (isInBox(pos))
         {
             pos += stepAlongRay;
 
-            float extinction = sampleCloud(pos) * sampleStep;
+            float density = sampleCloud(pos) * densityMultiplier;
+            float extinction = density * sampleStep;
             currentTransmit = expf(-extinction);
             transmitance *= currentTransmit;
 
             if (!hasScattered && opticalDistance > transmitance)
             {
                 hasScattered = true;
-                scatterPos = pos - direction * log(opticalDistance / transmitance) / sampleCloud(pos);
+                scatterPos = pos - direction * log(opticalDistance / transmitance) / density;
                 
                 if (!sampleSky)
                 {
@@ -168,34 +165,43 @@ RT_PROGRAM void closestHitRadiance()
                 }
             }
         }
-        time1 += (int)(clock() - start_time);
 
         if (sampleSky)
         {
-            float t = clamp((direction.y + 0.5f) / 1.5f, 0.f, 1.f);
-            float3 currentLight = lerp(groundIntensity, skyIntensity, t);
+            float3 currentLight;
+
+            // We check that depth equals zero because for all other depths, 
+            // the light from the sun is already taken into account by next event estimation 
+            if (cosLightAngle > 0.99998930414f && depth == 1) // cos(0.53 / 180 * pi / 2)
+            {
+                currentLight = lightColor * lightIntensity;
+            }
+            else
+            {
+                float t = clamp((direction.y + 0.5f) / 1.5f, 0.f, 1.f);
+                currentLight = lerp(groundIntensity, skyIntensity, t);
+            }
             radiance += currentLight * transmitance / skySampleProbability;
         }
 
-        start_time = clock();
         if (hasScattered && isInBox(scatterPos))
         {
             {
+                // next event estimation
                 const float sunAngularRadiusDeg = 0.53f / 2;
                 const float sphereArea = 4 * CUDART_PI_F;
-                const float sunArea = 2 * CUDART_PI_F *(1 - cos(sunAngularRadiusDeg * CUDART_PI_F / 180));
+                const float sunArea = 2 * CUDART_PI_F *(1 - cos(sunAngularRadiusDeg * CUDART_PI_F / 180.0f));
                 const float sunToSphereAreaRatio = sunArea / sphereArea;
-                float cosLightAngle = dot(-normalizedLightDirection, direction);
 
                 float phase = depth == 1 ? getMiePhase(cosLightAngle) : getChoppedMiePhase(cosLightAngle);
 
-                float3 inScatteredLight = lightColor * sampleInScatter(scatterPos) * phase * sunToSphereAreaRatio;
+                float3 inScatteredLight = lightColor * lightIntensity * sampleInScatter(scatterPos) * phase * sunToSphereAreaRatio;
                 radiance += inScatteredLight;
             }
             pos = scatterPos;
             float rrThreshold = 1;
             float rr = rnd(seed);
-            if (rr > rrThreshold)
+            if (rr > rrThreshold || depth > 1000)
             {
                 break;
             }
@@ -228,10 +234,8 @@ RT_PROGRAM void closestHitRadiance()
                 direction = normalize(newDirection);
             }
         }
-        time3 += (int)(clock() - start_time);
     }
 
     resultRadiance.result = radiance;
-    //resultRadiance.result = make_float3(depth, depth, depth);
     resultRadiance.importance = 0;
 }

@@ -4,12 +4,12 @@
 using namespace optix;
 
 rtDeclareVariable(uint3, launchID, rtLaunchIndex, );
-rtBuffer<float1, 3>   resultBuffer;
+rtBuffer<uchar1, 3>   resultBuffer;
 
 rtDeclareVariable(float3, lightDirection, , );
-rtDeclareVariable(float, lightIntensity, , );
 
 rtDeclareVariable(float, sampleStep, , );
+rtDeclareVariable(float, densityMultiplier, , );
 
 rtDeclareVariable(float3, boxSize, , );
 
@@ -44,10 +44,11 @@ RT_PROGRAM void inScatter()
     float transmitance = 1;
     for (int i = 0; i < stepCount; i++)
     {
-        float density = sampleCloud(samplePos) * sampleStep;
+        float density = sampleCloud(samplePos) * densityMultiplier;
+        float extinction = density * sampleStep;
 
-        transmitance *= expf(-density);
+        transmitance *= expf(-extinction);
         samplePos += stepToLight;
     }
-    resultBuffer[launchID] = make_float1(lightIntensity * transmitance);
+    resultBuffer[launchID] = make_uchar1(transmitance * 255);
 }

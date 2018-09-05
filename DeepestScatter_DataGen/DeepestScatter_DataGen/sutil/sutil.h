@@ -76,14 +76,6 @@ void  handleError(
         const char* file,                   // Filename for error reporting
         int line);                          // File lineno for error reporting
 
-// Query top level samples directory.
-// The pointer returned may point to a static array.
- const char* samplesDir();
-
-// Query directory containing PTX files for compiled sample CUDA files.
-// The pointer returned may point to a static array.
- const char* samplesPTXDir();
-
 // Create an output buffer with given specifications
 optix::Buffer  createOutputBuffer(
         optix::Context context,             // optix context
@@ -113,38 +105,13 @@ void  displayBufferGlut(
         const char* window_title,           // Window title
         RTbuffer buffer);                   // Buffer to be displayed
 
-// Write the contents of the Buffer to a PPM image file
-void  displayBufferPPM(
-        const char* filename,               // Image file to be created
-        optix::Buffer buffer);              // Buffer to be displayed
-
-// Write the contents of the Buffer to a PPM image file (C API version).
-void  displayBufferPPM(
-        const char* filename,               // Image file to be created
-        RTbuffer buffer);                   // Buffer to be displayed
-
-
 // Display contents of buffer, where the OpenGL/GLUT context is managed by caller.
 void  displayBufferGL(
         optix::Buffer buffer ); // Buffer to be displayed
         
 // Display frames per second, where the OpenGL/GLUT context
 // is managed by the caller.
-void  displayFps( unsigned total_frame_count );
-
-// Create on OptiX TextureSampler for the given image file.  If the filename is
-// empty or if loading the file fails, return 1x1 texture with default color.
-optix::TextureSampler  loadTexture(
-        optix::Context context,             // Context used for object creation 
-        const std::string& filename,        // File to load
-        optix::float3 default_color);       // Default color in case of file failure
-
-
-// Creates a Buffer object for the given cubemap files.
-optix::Buffer  loadCubeBuffer(
-        optix::Context context,             // Context used for object creation
-        const std::vector<std::string>& filenames ); // Files to be loaded 
-
+void  displayMillisecondsPerFrame( double milliseconds );
 
 // Calculate appropriate U,V,W for pinhole_camera shader.
 void  calculateCameraVariables(

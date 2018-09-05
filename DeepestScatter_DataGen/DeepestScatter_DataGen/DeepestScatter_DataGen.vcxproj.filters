@@ -7,44 +7,14 @@
     <Filter Include="sutil">
       <UniqueIdentifier>{b9156297-6646-441d-ac0b-d45f87c49132}</UniqueIdentifier>
     </Filter>
-    <Filter Include="sutil\GL">
-      <UniqueIdentifier>{4ffbacfe-fb0c-49dd-9033-c9c76ac74ed9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="sutil\rply-1.01">
-      <UniqueIdentifier>{66374df1-afb3-4da9-ad26-8eecf268bbce}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="sutil\tinyobjloader">
-      <UniqueIdentifier>{97a76fce-486f-4010-a792-9f2310418035}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="sutil\Mesh.cpp">
-      <Filter>sutil</Filter>
-    </ClCompile>
-    <ClCompile Include="sutil\OptiXMesh.cpp">
-      <Filter>sutil</Filter>
-    </ClCompile>
-    <ClCompile Include="sutil\PPMLoader.cpp">
-      <Filter>sutil</Filter>
-    </ClCompile>
     <ClCompile Include="sutil\sutil.cpp">
       <Filter>sutil</Filter>
     </ClCompile>
     <ClCompile Include="sutil\Arcball.cpp">
       <Filter>sutil</Filter>
-    </ClCompile>
-    <ClCompile Include="sutil\glew.c">
-      <Filter>sutil</Filter>
-    </ClCompile>
-    <ClCompile Include="sutil\HDRLoader.cpp">
-      <Filter>sutil</Filter>
-    </ClCompile>
-    <ClCompile Include="sutil\rply-1.01\rply.c">
-      <Filter>sutil\rply-1.01</Filter>
-    </ClCompile>
-    <ClCompile Include="sutil\tinyobjloader\tiny_obj_loader.cc">
-      <Filter>sutil\tinyobjloader</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Mie.cpp" />
@@ -64,18 +34,6 @@
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sutil\HDRLoader.h">
-      <Filter>sutil</Filter>
-    </ClInclude>
-    <ClInclude Include="sutil\Mesh.h">
-      <Filter>sutil</Filter>
-    </ClInclude>
-    <ClInclude Include="sutil\OptiXMesh.h">
-      <Filter>sutil</Filter>
-    </ClInclude>
-    <ClInclude Include="sutil\PPMLoader.h">
-      <Filter>sutil</Filter>
-    </ClInclude>
     <ClInclude Include="sutil\sutil.h">
       <Filter>sutil</Filter>
     </ClInclude>
@@ -85,24 +43,6 @@
     <ClInclude Include="sutil\Arcball.h">
       <Filter>sutil</Filter>
     </ClInclude>
-    <ClInclude Include="sutil\glext.h">
-      <Filter>sutil</Filter>
-    </ClInclude>
-    <ClInclude Include="sutil\GL\glxew.h">
-      <Filter>sutil\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="sutil\GL\wglew.h">
-      <Filter>sutil\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="sutil\GL\glew.h">
-      <Filter>sutil\GL</Filter>
-    </ClInclude>
-    <ClInclude Include="sutil\rply-1.01\rply.h">
-      <Filter>sutil\rply-1.01</Filter>
-    </ClInclude>
-    <ClInclude Include="sutil\tinyobjloader\tiny_obj_loader.h">
-      <Filter>sutil\tinyobjloader</Filter>
-    </ClInclude>
     <ClInclude Include="src\CUDA\rayData.cuh">
       <Filter>CUDA</Filter>
     </ClInclude>
@@ -111,10 +51,5 @@
     <ClInclude Include="src\CUDA\random.cuh">
       <Filter>CUDA</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="sutil\rply-1.01\LICENSE">
-      <Filter>sutil\rply-1.01</Filter>
-    </None>
   </ItemGroup>
 </Project>
