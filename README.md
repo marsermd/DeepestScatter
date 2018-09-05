@@ -16,12 +16,14 @@ This is an enchancement on paper by Disney Research [Deep Scattering](http://drz
 - [x] Naive implementation that also takes into account [Lorenz-Mie](https://en.wikipedia.org/wiki/Mie_scattering) phase function.
 - [x] Implement multiple scattering using Monte-Carlo method
 - [x] Implement progressive path tracing   
-  <img src="https://github.com/marsermd/DeepestScatter/raw/master/images/multiple_scattering_0.png" width="200"/>   
-- [x] Implement custom progressive path tracing with auto exposure
-- [ ] Implement Metropolis Light Transport to optimize convergence  
+- [x] Implement custom progressive path
+- [x] Implement Reinhard tone mapping
+- [x] Implement next event estimation
+  <img src="https://github.com/marsermd/DeepestScatter/raw/master/images/multiple_scattering_1.png" width="200"/>   
+
 
 *Dataset*
-- [ ] Generate more clouds
+- [x] Generate more clouds
 - [ ] Gather dataset of (cloud_id, point_in_cloud, sun_direction, view_direction, radiance)
 - [ ] Gather dataset of samples around the point according to the original paper
 - [ ] Separate the dataset for training, test, validation with total size of 15\`000\`000; leave a few clouds out of those sets for visual evaluation
