@@ -22,7 +22,7 @@ __device__ __inline__ float getLuminance(float4 color)
     return dot(color, make_float4(0.265068f, 0.67023428f, 0.06409157f, 0));
 }
 
-/// For each column.
+/// Call for each column.
 RT_PROGRAM void firstPass()
 {
     size_t2 screenSize = progressiveBuffer.size();
@@ -34,11 +34,13 @@ RT_PROGRAM void firstPass()
 
         float luminance = getLuminance(current);
 
-        sumLogColumns[launchID.x] += logf(luminance + DELTA);
+        // Normally we would calculate a log-average, but here we are trying to display the brightest part in it's best (the cloud)
+        // And therefore we will use a simple average.
+        sumLogColumns[launchID.x] += luminance + DELTA;
     }
 }
 
-/// Only one call.
+/// Call only once for the whole image
 RT_PROGRAM void secondPass()
 {
     size_t horizontalSize = sumLogColumns.size();
@@ -47,7 +49,7 @@ RT_PROGRAM void secondPass()
     {
         result += sumLogColumns[i];
     }
-    result = expf(result / (float)totalPixels);
+    result = result / (float)totalPixels;
 
     lAverage[0] = result;
 }
@@ -56,7 +58,7 @@ rtDeclareVariable(float, exposure, , );
 
 
 
-// First call first and second pass.
+// Call for each pixel of the image after previous two passes
 RT_PROGRAM void applyReinhard()
 {
     float4 color = progressiveBuffer[launchID];

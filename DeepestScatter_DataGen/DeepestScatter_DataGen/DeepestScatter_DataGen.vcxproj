@@ -103,6 +103,8 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>OPENVDB_ABI_VERSION_NUMBER=5;OPENEXR_DLL;NOMINMAX;WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <OmitFramePointers>true</OmitFramePointers>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

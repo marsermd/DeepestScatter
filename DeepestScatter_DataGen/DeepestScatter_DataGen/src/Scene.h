@@ -67,7 +67,7 @@ private:
     optix::Program reinhardSecondPass;
     optix::Program reinhardLastPass;
 
-    float_t exposure = 0.0001f;
+    float_t exposure = 1.0f;
 
     /**
     * Load cloud from .vdb file with a density grid of type float.

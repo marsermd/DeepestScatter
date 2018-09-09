@@ -13,8 +13,8 @@
 
 #include "Scene.h"
 
-int width  = 512u;
-int height = 512u;
+int width  = 640u;
+int height = 480u;
 std::shared_ptr<Scene> scene = nullptr;
 
 // Mouse state

@@ -31,11 +31,12 @@ Scene::Scene(uint32_t width, uint32_t height, float sampleStep) :
 {
     context = optix::Context::create();
 
-    context["lightDirection"]->setFloat(-0.586f, -0.766f, -0.2717f);
+    auto lightDirection = optix::normalize(optix::make_float3(-0.586f, -0.766f, -0.2717f));
+    context["lightDirection"]->setFloat(lightDirection);
     context["lightColor"]->setFloat(1.3f, 1.25f, 1.15f);
     context["lightIntensity"]->setFloat(0.6e9f);
 
-    context["skyIntensity"]->setFloat(0, 0, 2000);
+    context["skyIntensity"]->setFloat(600, 600, 2000);
     context["groundIntensity"]->setFloat(600, 800, 1000);
 
     context->setRayTypeCount(1);
@@ -165,14 +166,14 @@ void Scene::rotateCamera(optix::float2 from, optix::float2 to)
 
 void Scene::updateCamera()
 {
-    const float vfov = 30.0f;
+    const float hfov = 30.0f;
     const float aspectRatio = static_cast<float>(width) /
         static_cast<float>(height);
 
     optix::float3 u, v, w;
     sutil::calculateCameraVariables(
-        cameraEye, cameraLookat, cameraUp, vfov, aspectRatio,
-        u, v, w);
+        cameraEye, cameraLookat, cameraUp, hfov, aspectRatio,
+        u, v, w, false);
 
     const optix::Matrix4x4 frame = optix::Matrix4x4::fromBasis(
         normalize(u),
@@ -184,8 +185,8 @@ void Scene::updateCamera()
     cameraEye = make_float3(transform * make_float4(cameraEye, 1.0f));
 
     sutil::calculateCameraVariables(
-        cameraEye, cameraLookat, cameraUp, vfov, aspectRatio,
-        u, v, w, true);
+        cameraEye, cameraLookat, cameraUp, hfov, aspectRatio,
+        u, v, w, false);
 
     cameraRotate = optix::Matrix4x4::identity();
 
