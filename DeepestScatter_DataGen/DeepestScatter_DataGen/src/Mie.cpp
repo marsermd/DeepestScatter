@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+namespace DeepestScatter
+{
 namespace Mie
 {
     float_t mie[] =
@@ -8298,4 +8300,5 @@ namespace Mie
     {
         return getIntegralSampler(context, choppedMie, sizeof(choppedMie) / sizeof(float_t));
     }
+}
 }

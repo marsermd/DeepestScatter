@@ -1,4 +1,5 @@
 #include <optix.h>
+#include "Boost/di.hpp"
 
 #include <GL/glew.h>
 #include <GL/wglew.h>
@@ -9,17 +10,23 @@
 #include <iostream>
 #include <memory>
 
-#include "../sutil/sutil.h"
+#include "Util/sutil.h"
 
-#include "Scene.h"
+#include "Scene/Scene.h"
+#include "Scene/SceneItem.h"
+#include "Scene/VDBCloud.h"
+#include "Scene/CloudPTRenderer.h"
 
-int width  = 640u;
-int height = 480u;
-std::shared_ptr<Scene> scene = nullptr;
+namespace di = boost::di;
+
+uint32_t width  = 640u;
+uint32_t height = 480u;
 
 // Mouse state
 optix::int2    mousePrevPos;
 int            mouseButton;
+
+std::shared_ptr<DeepestScatter::Scene> scene;
 
 void printUsageAndExit(const char* argv0);
 
@@ -65,8 +72,8 @@ void glutRun()
 
 int main(int argc, char* argv[])
 {
-    try {
-
+    try 
+    {
         if (argc < 2)
         {
             printUsageAndExit(argv[0]);
@@ -94,9 +101,19 @@ int main(int argc, char* argv[])
         glewInit();
 
         try {
-            scene = std::shared_ptr<Scene>(new Scene(width, height, 1.f / 1000.f));
+            auto injector = di::make_injector(
+                di::bind<optix::Context>.to(optix::Context::create()),
+                di::bind<DeepestScatter::Scene::Settings>.to(DeepestScatter::Scene::Settings{width, height, 1/512.f}),
+                di::bind<DeepestScatter::Scene>.to<DeepestScatter::Scene>(),
+                di::bind<DeepestScatter::SceneItem* []>.to
+                <
+                    DeepestScatter::VDBCloud, 
+                    DeepestScatter::CloudPTRenderer
+                >()
+            );
+            scene = injector.create<std::shared_ptr<DeepestScatter::Scene>>();
+            injector.create<std::shared_ptr<DeepestScatter::VDBCloud>>()->setCloudPath(inputFile);
             scene->init();
-            scene->addCloud(inputFile);
         }
         catch (const std::exception& e)
         {
@@ -117,7 +134,14 @@ int main(int argc, char* argv[])
 void glutDisplay()
 {
     double t1 = sutil::currentTime();
-    scene->display();
+    try {
+        scene->display();
+    }
+    catch (const std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+        throw;
+    }
     double t2 = sutil::currentTime();
 
     sutil::displayMillisecondsPerFrame((t2 - t1) * 1000);

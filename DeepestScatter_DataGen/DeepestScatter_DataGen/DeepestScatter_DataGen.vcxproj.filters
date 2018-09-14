@@ -4,20 +4,37 @@
     <Filter Include="CUDA">
       <UniqueIdentifier>{9121c0ad-7920-4b11-93a0-83ab46a7dcca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="sutil">
-      <UniqueIdentifier>{b9156297-6646-441d-ac0b-d45f87c49132}</UniqueIdentifier>
+    <Filter Include="Scene">
+      <UniqueIdentifier>{df5d7327-ee4f-4d4c-904c-260a6100c570}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Uitl">
+      <UniqueIdentifier>{fef6713a-5bbb-40d0-9f72-6b0d88a9c669}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Boost">
+      <UniqueIdentifier>{4a7c91da-dce9-4a42-9ecf-7aff273063bd}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="sutil\sutil.cpp">
-      <Filter>sutil</Filter>
-    </ClCompile>
-    <ClCompile Include="sutil\Arcball.cpp">
-      <Filter>sutil</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Mie.cpp" />
+    <ClCompile Include="src\Scene\VDBCloud.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\Resources.cpp">
+      <Filter>Uitl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Scene.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\Arcball.cpp">
+      <Filter>Uitl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\sutil.cpp">
+      <Filter>Uitl</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\CloudPTRenderer.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\CUDA\inScatter.cu">
@@ -34,22 +51,42 @@
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="sutil\sutil.h">
-      <Filter>sutil</Filter>
-    </ClInclude>
-    <ClInclude Include="sutil\sutilapi.h">
-      <Filter>sutil</Filter>
-    </ClInclude>
-    <ClInclude Include="sutil\Arcball.h">
-      <Filter>sutil</Filter>
-    </ClInclude>
     <ClInclude Include="src\CUDA\rayData.cuh">
       <Filter>CUDA</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Mie.h" />
     <ClInclude Include="src\CUDA\random.cuh">
       <Filter>CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\SceneItem.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\VDBCloud.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CUDA\optixExtraMath.cuh">
+      <Filter>CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util\Resources.h">
+      <Filter>Uitl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Boost\di.hpp">
+      <Filter>Boost</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Scene.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util\Arcball.h">
+      <Filter>Uitl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util\sutil.h">
+      <Filter>Uitl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util\sutilapi.h">
+      <Filter>Uitl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\CloudPTRenderer.h">
+      <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

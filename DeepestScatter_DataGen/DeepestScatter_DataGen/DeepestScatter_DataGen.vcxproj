@@ -12,10 +12,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Mie.cpp" />
-    <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="sutil\Arcball.cpp" />
-    <ClCompile Include="sutil\sutil.cpp" />
+    <ClCompile Include="src\Scene\CloudPTRenderer.cpp" />
+    <ClCompile Include="src\Scene\Scene.cpp" />
+    <ClCompile Include="src\Scene\VDBCloud.cpp" />
+    <ClCompile Include="src\Util\Arcball.cpp" />
+    <ClCompile Include="src\Util\Resources.cpp" />
+    <ClCompile Include="src\Util\sutil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\CUDA\cloud.cu" />
@@ -24,13 +27,19 @@
     <CudaCompile Include="src\CUDA\reinhard.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Boost\di.hpp" />
+    <ClInclude Include="src\CUDA\optixExtraMath.cuh" />
     <ClInclude Include="src\CUDA\random.cuh" />
     <ClInclude Include="src\Mie.h" />
-    <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\CUDA\rayData.cuh" />
-    <ClInclude Include="sutil\Arcball.h" />
-    <ClInclude Include="sutil\sutil.h" />
-    <ClInclude Include="sutil\sutilapi.h" />
+    <ClInclude Include="src\Scene\CloudPTRenderer.h" />
+    <ClInclude Include="src\Scene\Scene.h" />
+    <ClInclude Include="src\Scene\SceneItem.h" />
+    <ClInclude Include="src\Scene\VDBCloud.h" />
+    <ClInclude Include="src\Util\Arcball.h" />
+    <ClInclude Include="src\Util\Resources.h" />
+    <ClInclude Include="src\Util\sutil.h" />
+    <ClInclude Include="src\Util\sutilapi.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{70F7B276-C163-4F2F-9E8C-1DC3A00CF8DB}</ProjectGuid>
@@ -74,13 +83,15 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>OPENVDB_ABI_VERSION_NUMBER=5;OPENEXR_DLL;NOMINMAX;WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
       <AdditionalDependencies>Half.lib;tbb_debug.lib;openvdb.lib;$(OPTIX_SDK_PATH)\lib64\optix.51.lib;$(OPTIX_SDK_PATH)\lib64\optixu.1.lib;$(CUDA_PATH)\lib\x64\nvrtc.lib;winmm.lib;cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
@@ -90,10 +101,16 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <TargetMachinePlatform>64</TargetMachinePlatform>
       <CompileOut>$(OutDir)\CUDA\%(Filename)%(Extension).ptx</CompileOut>
       <NvccCompilation>ptx</NvccCompilation>
-      <Include>$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;</Include>
+      <Include>$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include</Include>
       <GPUDebugInfo>false</GPUDebugInfo>
       <AdditionalCompilerOptions>--disable-warnings</AdditionalCompilerOptions>
+      <CodeGeneration>compute_61,sm_61</CodeGeneration>
+      <Defines>
+      </Defines>
     </CudaCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -102,9 +119,10 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>OPENVDB_ABI_VERSION_NUMBER=5;OPENEXR_DLL;NOMINMAX;WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
+      <LanguageStandard>stdcpp14</LanguageStandard>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -126,7 +144,14 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <GenerateLineInfo>false</GenerateLineInfo>
       <AdditionalCompilerOptions>--disable-warnings</AdditionalCompilerOptions>
       <FastMath>true</FastMath>
+      <Keep>false</Keep>
+      <CodeGeneration>compute_61,sm_61</CodeGeneration>
+      <Defines>
+      </Defines>
     </CudaCompile>
+    <ProjectReference>
+      <LinkLibraryDependencies>false</LinkLibraryDependencies>
+    </ProjectReference>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

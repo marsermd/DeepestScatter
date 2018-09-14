@@ -7,5 +7,4 @@ struct PerRayData_radiance
 {
     optix::float3 result;
     float importance;
-    int depth;
 };

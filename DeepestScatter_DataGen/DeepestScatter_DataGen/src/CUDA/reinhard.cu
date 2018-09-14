@@ -9,11 +9,13 @@ using namespace optix;
 __device__ const float DELTA = 0.00001f;
 
 rtBuffer<float4, 2>   progressiveBuffer;
+rtBuffer<float4, 2>   varianceBuffer;
 rtBuffer<float , 1>   sumLogColumns;
 rtBuffer<float , 1>   lAverage;
 
 rtDeclareVariable(unsigned int, totalPixels, , );
 rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
+rtDeclareVariable(unsigned int, subframeId, , );
 
 rtBuffer<uchar4, 2> screenBuffer;
 
@@ -75,7 +77,10 @@ RT_PROGRAM void applyReinhard()
     rgb.y = powf(rgb.y, 1.f / 2.2f);
     rgb.z = powf(rgb.z, 1.f / 2.2f);
 
-    rgb = rgb *255;
+
+    //float N = subframeId;
+    //rgb = make_float4(clamp(sqrt(varianceBuffer[launchID].z / N) / progressiveBuffer[launchID].z / sqrtf(N), 0.f, 1.f));
+    rgb = rgb * 255;
 
     screenBuffer[launchID] = make_uchar4(rgb.x, rgb.y, rgb.z, 255);
 }

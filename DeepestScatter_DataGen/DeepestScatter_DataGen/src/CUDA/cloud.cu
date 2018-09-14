@@ -74,6 +74,7 @@ rtDeclareVariable(float3, lightColor, , );
 rtDeclareVariable(float3, skyIntensity, , );
 rtDeclareVariable(float3, groundIntensity, , );
 
+
 rtTextureSampler<uchar1, 3, cudaReadModeNormalizedFloat> cloud;
 rtTextureSampler<uchar1, 3, cudaReadModeNormalizedFloat> inScatter;
 rtTextureSampler<uchar1, 1, cudaReadModeNormalizedFloat> mie;
@@ -119,7 +120,7 @@ struct ScatteringEvent
     float transmittance;
 };
 
-static __device__ __inline__ const ScatteringEvent& getNextScatteringEvent(
+static __device__ __inline__ ScatteringEvent getNextScatteringEvent(
     unsigned int& seed,
     float3 pos, const float3& direction, bool stopAtScatterPos = true)
 {
@@ -237,7 +238,7 @@ RT_PROGRAM void closestHitRadiance()
 
     resultRadiance.result = make_float3(0);
 
-    unsigned int seed = tea<4>(launchID.x * 800 + launchID.y, subframeId);
+    unsigned int seed = tea<4>(launchID.x * 4096 + launchID.y, subframeId);
     
     float skySampleProbability = 0.1f;
     bool shouldSampleSky = subframeId % 10 == 0;

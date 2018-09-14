@@ -99,11 +99,7 @@ static __host__ __inline__ unsigned int mwc()
 
 static __host__ __inline__ unsigned int random1u()
 {
-#if 0
-    return rand();
-#else
     return mwc();
-#endif
 }
 
 static __host__ __inline__ optix::uint2 random2u()

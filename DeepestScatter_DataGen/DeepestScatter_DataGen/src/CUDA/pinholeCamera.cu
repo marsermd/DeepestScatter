@@ -6,6 +6,7 @@ using namespace optix;
 
 rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
 rtBuffer<float4, 2>   progressiveBuffer;
+rtBuffer<float4, 2>   varianceBuffer;
 
 rtDeclareVariable(float3, eye, , );
 rtDeclareVariable(float3, U, , );
@@ -22,6 +23,11 @@ rtDeclareVariable(unsigned int, subframeId, , );
 
 RT_PROGRAM void pinholeCamera()
 {
+    //float N = subframeId;
+    //if (subframeId > 100 && 1.69f * sqrt(varianceBuffer[launchID].z / N) / progressiveBuffer[launchID].z / sqrtf(N) < 0.02f)
+    //{
+    //    return;
+    //}
     size_t2 screen = progressiveBuffer.size();
 
     float2 d = make_float2(launchID) / make_float2(screen) * 2.f - 1.f;
@@ -33,21 +39,23 @@ RT_PROGRAM void pinholeCamera()
 
     PerRayData_radiance prd;
     prd.importance = 1.0f;
-    prd.depth = 0;
 
     rtTrace(objectRoot, ray, prd); 
 
-    float newWeight = 1.0f / (float)subframeId;
-    float oldWeight = 1.0f - newWeight;
-
     float4 newResult = make_float4(prd.result, 1);
+    float newWeight = 1.0f / (float)subframeId;
 
-    progressiveBuffer[launchID] = oldWeight * progressiveBuffer[launchID] + newWeight * newResult;
+    float4 previousMean = progressiveBuffer[launchID];
+    float4 newMean = progressiveBuffer[launchID] + (newResult - previousMean) * newWeight;
+    progressiveBuffer[launchID] = newMean;
+
+    varianceBuffer[launchID] = varianceBuffer[launchID] + (newResult - previousMean) * (newResult - newMean);
 }
 
 RT_PROGRAM void clearScreen()
 {
-    progressiveBuffer[launchID] = make_float4(0, 0, 0, 1);
+    progressiveBuffer[launchID] = make_float4(0, 0, 0, 0);
+    varianceBuffer[launchID] = make_float4(0, 0, 0, 0);
 }
 
 RT_PROGRAM void exception()

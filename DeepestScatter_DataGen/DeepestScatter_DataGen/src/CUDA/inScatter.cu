@@ -7,6 +7,7 @@ rtDeclareVariable(uint3, launchID, rtLaunchIndex, );
 rtBuffer<uchar1, 3>   resultBuffer;
 
 rtDeclareVariable(float3, lightDirection, , );
+rtDeclareVariable(float, lightIntensity, , );
 
 rtDeclareVariable(float, sampleStep, , );
 rtDeclareVariable(float, densityMultiplier, , );
@@ -41,14 +42,18 @@ RT_PROGRAM void inScatter()
 
     int stepCount = 1 / sampleStep;
 
-    float transmitance = 1;
+    float transmittance = 1;
     for (int i = 0; i < stepCount; i++)
     {
         float density = sampleCloud(samplePos) * densityMultiplier;
         float extinction = density * sampleStep;
 
-        transmitance *= expf(-extinction);
+        transmittance *= expf(-extinction);
         samplePos += stepToLight;
+        if (transmittance * 255.f < 1.f)
+        {
+            break;
+        }
     }
-    resultBuffer[launchID] = make_uchar1(transmitance * 255);
+    resultBuffer[launchID] = make_uchar1(transmittance * 255.f);
 }
