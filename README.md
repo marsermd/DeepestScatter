@@ -18,8 +18,8 @@ This is an enchancement on paper by Disney Research [Deep Scattering](http://drz
 - [x] Implement progressive path tracing   
 - [x] Implement custom progressive path
 - [x] Implement Reinhard tone mapping
-- [x] Implement next event estimation
-  <img src="https://github.com/marsermd/DeepestScatter/raw/master/images/multiple_scattering_1.png" width="200"/>   
+- [x] Implement next event estimation   
+  <img src="https://github.com/marsermd/DeepestScatter/raw/master/images/multiple_scattering_1.png" width="500"/>   
 
 
 *Dataset*
