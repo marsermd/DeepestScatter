@@ -14,6 +14,7 @@
 
 #include "Scene/Scene.h"
 #include "Scene/SceneItem.h"
+#include "Scene/Camera.h"
 #include "Scene/VDBCloud.h"
 #include "Scene/CloudPTRenderer.h"
 
@@ -27,6 +28,7 @@ optix::int2    mousePrevPos;
 int            mouseButton;
 
 std::shared_ptr<DeepestScatter::Scene> scene;
+std::shared_ptr<DeepestScatter::Camera> camera;
 
 void printUsageAndExit(const char* argv0);
 
@@ -103,17 +105,21 @@ int main(int argc, char* argv[])
         try {
             auto injector = di::make_injector(
                 di::bind<optix::Context>.to(optix::Context::create()),
-                di::bind<DeepestScatter::Scene::Settings>.to(DeepestScatter::Scene::Settings{width, height, 1/512.f}),
+                di::bind<DeepestScatter::Scene::SampleStep>.to(DeepestScatter::Scene::SampleStep{1.0f/512.f}),
+                di::bind<DeepestScatter::Camera::Settings>.to(DeepestScatter::Camera::Settings{width, height}),
+                di::bind<DeepestScatter::CloudPTRenderer::RenderMode>.to(DeepestScatter::CloudPTRenderer::RenderMode::Full),
                 di::bind<DeepestScatter::Scene>.to<DeepestScatter::Scene>(),
                 di::bind<DeepestScatter::SceneItem* []>.to
                 <
                     DeepestScatter::VDBCloud, 
-                    DeepestScatter::CloudPTRenderer
+                    DeepestScatter::CloudPTRenderer,
+                    DeepestScatter::Camera
                 >()
             );
             scene = injector.create<std::shared_ptr<DeepestScatter::Scene>>();
+            camera = injector.create<std::shared_ptr<DeepestScatter::Camera>>();
             injector.create<std::shared_ptr<DeepestScatter::VDBCloud>>()->setCloudPath(inputFile);
-            scene->init();
+            scene->Init();
         }
         catch (const std::exception& e)
         {
@@ -135,7 +141,7 @@ void glutDisplay()
 {
     double t1 = sutil::currentTime();
     try {
-        scene->display();
+        scene->Display();
     }
     catch (const std::exception& e)
     {
@@ -170,11 +176,11 @@ void glutKeyboard(unsigned char key, int x, int y)
     {
     case '=':
     case '+':
-        scene->increaseExposure();
+        camera->increaseExposure();
         break;
     case '-':
     case'_':
-        scene->decreaseExposure();
+        camera->decreaseExposure();
         break;
     default:
         break;
@@ -199,7 +205,7 @@ void glutMouseMotion(int x, int y)
         const optix::float2 fromScaled = { from.x / width, from.y / height };
         const optix::float2 toScaled = { to.x / width, to.y / height };
 
-        scene->rotateCamera(fromScaled, toScaled);
+        camera->Rotate(fromScaled, toScaled);
     }
 
     mousePrevPos = optix::make_int2(x, y);

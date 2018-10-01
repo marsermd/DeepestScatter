@@ -128,3 +128,46 @@ static __host__ __device__ __inline__ optix::float3 uniformOnSphereCircle(unsign
     float z = cosTheta;
     return make_float3(x, y, z);
 }
+
+static __host__ __device__ __inline__ optix::float3 uniformOnSphere(unsigned int& prev)
+{
+    float u = rnd(prev);
+    float v = rnd(prev);
+
+    float phi = u * M_PIf * 2;
+    // This works because the surface of a sphere strip between two parralel planes 
+    // only depends on the distance between the planes.
+    float cosTheta = 2 * v - 1;
+    float sinTheta = sqrt(1 - cosTheta * cosTheta);
+
+    float x = cos(phi) * sinTheta;
+    float y = sin(phi) * sinTheta;
+    float z = cosTheta;
+
+    return make_float3(x, y, z);
+}
+
+static __host__ __device__ __inline__ optix::float2 uniformOnDisc(unsigned int& prev)
+{
+    float theta = rnd(prev);
+    float sqrtR = sqrt(rnd(prev));
+
+    float x = sqrtR * cos(theta);
+    float y = sqrtR * sin(theta);
+
+    return make_float2(x, y);
+}
+
+static __host__ __device__ __inline__ optix::float3 uniformOnDisc(unsigned int& prev, optix::float3 normal)
+{
+    float theta = rnd(prev);
+    float sqrtR = sqrt(rnd(prev));
+
+    float x = sqrtR * cos(theta);
+    float y = sqrtR * sin(theta);
+
+    optix::Onb onb(normal);
+    float3 result = make_float3(x, y, 0);
+    onb.inverse_transform(result);
+    return result;
+}

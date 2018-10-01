@@ -19,7 +19,10 @@ namespace DeepestScatter
 
     void VDBCloud::InitVolume()
     {
-        densityBuffer = resources->loadVolumeBuffer(resourcePath);
+        auto cloud = resources->loadVolumeBuffer(resourcePath, false);
+        densityBuffer = std::get<optix::Buffer>(cloud);
+        bboxSize = std::get<optix::float3>(cloud);
+
         densitySampler = createSamplerForBuffer3D(densityBuffer);
     }
 
@@ -28,8 +31,8 @@ namespace DeepestScatter
         RTsize sizeX, sizeY, sizeZ;
         densityBuffer->getSize(sizeX, sizeY, sizeZ);
 
-        // Here RT_BUFFER_INPUT only means that it resides on GPU.
-        // Don't be fooled by that. We are going to write in the inScatterBuffer during inScatter program.
+        // RT_BUFFER_INPUT only means that it resides on GPU.
+        // Don't be fooled by it's name. We are going to write in the inScatterBuffer during inScatter program.
         inScatterBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_BYTE, sizeX, sizeY, sizeZ);
 
         optix::Program inScatter = resources->loadProgram("inScatter.cu", "inScatter");
@@ -41,8 +44,8 @@ namespace DeepestScatter
         context->validate();
         context->launch(0, sizeX, sizeY, sizeZ);
 
-        // We have to call destriy explicitly, because inScatter program holds inScatterBuffer as a buffer.
-        // Using a buffer as a sampler and a buffer simultaniously is invalid.
+        // We have to call destroy explicitly, because inScatter program holds inScatterBuffer as a buffer.
+        // And using a buffer as a sampler and a buffer simultaniously is invalid.
         inScatter->destroy();
 
         inScatterSampler = createSamplerForBuffer3D(inScatterBuffer);
@@ -58,12 +61,15 @@ namespace DeepestScatter
     template<class T>
     void VDBCloud::SetupVolumeVariables(optix::Handle<T>& scope) const
     {
-        RTsize sizeX, sizeY, sizeZ;
-        densityBuffer->getSize(sizeX, sizeY, sizeZ);
-        float maxSize = gsl::narrow<float>(std::max({ sizeX, sizeY, sizeZ }));
+        float maxSize = std::max({ bboxSize.x, bboxSize.y, bboxSize .z });
+        RTsize textureX, textureY, textureZ;
+        densityBuffer->getSize(textureX, textureY, textureZ);
+        float maxTextureSize = std::max({ textureX, textureY, textureZ});
 
-        scope["boxSize"]->setFloat(sizeX / maxSize, sizeY / maxSize, sizeZ / maxSize);
+        scope["bboxSize"]->setFloat(bboxSize.x / maxSize, bboxSize.y / maxSize, bboxSize.z / maxSize);
+        scope["textureScale"]->setFloat(maxSize / textureX, maxSize / textureY, maxSize / textureZ);
         scope["cloud"]->setTextureSampler(densitySampler);
+        scope["cloudTextureId"]->setInt(densitySampler->getId());
     }
 
     template<class T>

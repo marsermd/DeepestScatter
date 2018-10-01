@@ -13,7 +13,9 @@
   <ItemGroup>
     <ClCompile Include="src\Mie.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Scene\Camera.cpp" />
     <ClCompile Include="src\Scene\CloudPTRenderer.cpp" />
+    <ClCompile Include="src\Scene\RadianceCollector.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\Scene\VDBCloud.cpp" />
     <ClCompile Include="src\Util\Arcball.cpp" />
@@ -21,18 +23,24 @@
     <ClCompile Include="src\Util\sutil.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <CudaCompile Include="src\CUDA\cloud.cu" />
+    <CudaCompile Include="src\CUDA\cloudBBox.cu" />
+    <CudaCompile Include="src\CUDA\cloudFirstScatterMaterial.cu" />
+    <CudaCompile Include="src\CUDA\cloudRadianceMaterials.cu" />
+    <CudaCompile Include="src\CUDA\dataGenCamera.cu" />
     <CudaCompile Include="src\CUDA\inScatter.cu" />
     <CudaCompile Include="src\CUDA\pinholeCamera.cu" />
     <CudaCompile Include="src\CUDA\reinhard.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Boost\di.hpp" />
+    <ClInclude Include="src\CUDA\cloud.cuh" />
     <ClInclude Include="src\CUDA\optixExtraMath.cuh" />
     <ClInclude Include="src\CUDA\random.cuh" />
     <ClInclude Include="src\Mie.h" />
     <ClInclude Include="src\CUDA\rayData.cuh" />
+    <ClInclude Include="src\Scene\Camera.h" />
     <ClInclude Include="src\Scene\CloudPTRenderer.h" />
+    <ClInclude Include="src\Scene\RadianceCollector.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\SceneItem.h" />
     <ClInclude Include="src\Scene\VDBCloud.h" />

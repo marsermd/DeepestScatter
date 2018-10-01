@@ -35,6 +35,12 @@
     <ClCompile Include="src\Scene\CloudPTRenderer.cpp">
       <Filter>Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\Camera.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\RadianceCollector.cpp">
+      <Filter>Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\CUDA\inScatter.cu">
@@ -43,10 +49,19 @@
     <CudaCompile Include="src\CUDA\pinholeCamera.cu">
       <Filter>CUDA</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\CUDA\cloud.cu">
+    <CudaCompile Include="src\CUDA\reinhard.cu">
       <Filter>CUDA</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\CUDA\reinhard.cu">
+    <CudaCompile Include="src\CUDA\dataGenCamera.cu">
+      <Filter>CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CUDA\cloudBBox.cu">
+      <Filter>CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CUDA\cloudRadianceMaterials.cu">
+      <Filter>CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CUDA\cloudFirstScatterMaterial.cu">
       <Filter>CUDA</Filter>
     </CudaCompile>
   </ItemGroup>
@@ -86,6 +101,15 @@
       <Filter>Uitl</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\CloudPTRenderer.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CUDA\cloud.cuh">
+      <Filter>CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Camera.h">
+      <Filter>Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\RadianceCollector.h">
       <Filter>Scene</Filter>
     </ClInclude>
   </ItemGroup>

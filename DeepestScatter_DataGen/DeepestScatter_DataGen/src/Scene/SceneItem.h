@@ -8,6 +8,7 @@ namespace DeepestScatter
         virtual ~SceneItem() noexcept = default;
 
         virtual void Init() = 0;
+        virtual void Reset() = 0;
         virtual void Update() = 0;
     };
 } 

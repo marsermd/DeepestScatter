@@ -1,4 +1,5 @@
 #include <optix.h>
+#include <optix_device.h>
 #include <optixu/optixu_math_namespace.h>
 #include "rayData.cuh"
 
@@ -15,19 +16,12 @@ rtDeclareVariable(float3, W, , );
 
 rtDeclareVariable(rtObject, objectRoot, , );
 rtDeclareVariable(float3, errorColor, , );
-rtDeclareVariable(float3, missColor, , );
 
 rtDeclareVariable(float, sceneEPS, , );
-rtDeclareVariable(unsigned int, radianceRayType, , );
 rtDeclareVariable(unsigned int, subframeId, , );
 
 RT_PROGRAM void pinholeCamera()
 {
-    //float N = subframeId;
-    //if (subframeId > 100 && 1.69f * sqrt(varianceBuffer[launchID].z / N) / progressiveBuffer[launchID].z / sqrtf(N) < 0.02f)
-    //{
-    //    return;
-    //}
     size_t2 screen = progressiveBuffer.size();
 
     float2 d = make_float2(launchID) / make_float2(screen) * 2.f - 1.f;
@@ -35,10 +29,10 @@ RT_PROGRAM void pinholeCamera()
     float3 origin = eye;
     float3 direction = normalize(d.x*U + d.y * V + W);
 
-    optix::Ray ray(origin, direction, radianceRayType, sceneEPS);
-
-    PerRayData_radiance prd;
-    prd.importance = 1.0f;
+    RadianceRayData prd;
+    prd.result = make_float3(0);
+    prd.importance = 1;
+    optix::Ray ray(origin, direction, prd.rayId, sceneEPS);
 
     rtTrace(objectRoot, ray, prd); 
 
@@ -64,7 +58,7 @@ RT_PROGRAM void exception()
 }
 
 rtDeclareVariable(Ray, ray, rtCurrentRay, );
-rtDeclareVariable(PerRayData_radiance, resultRadiance, rtPayload, );
+rtDeclareVariable(RadianceRayData, resultRadiance, rtPayload, );
 rtDeclareVariable(float3, skyIntensity, , );
 rtDeclareVariable(float3, groundIntensity, , );
 rtDeclareVariable(float, lightIntensity, , );

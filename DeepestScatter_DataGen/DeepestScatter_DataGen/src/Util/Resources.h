@@ -13,10 +13,10 @@ namespace DeepestScatter
 
         /**
         * Load a volume from .vdb file with a density grid of type uint_8.
-        * If there is a value that exceeds 1, we take 
-        * The values are scaled to be from 0 to 1
+        * The values are scaled to be from 0 to 1.
+        * Returns buffer and the bounding box of the cloud, in pixels.
         */
-        optix::Buffer loadVolumeBuffer(const std::string &path);
+        std::tuple<optix::Buffer, optix::float3> loadVolumeBuffer(const std::string &path, bool createMipmaps = false);
         optix::Program loadProgram(const std::string &fileName, const std::string programName);
 
     private:

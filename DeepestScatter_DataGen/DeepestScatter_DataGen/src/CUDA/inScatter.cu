@@ -1,4 +1,5 @@
 #include <optix.h>
+#include <optix_device.h>
 #include <optixu/optixu_math_namespace.h>
 
 using namespace optix;
@@ -12,7 +13,8 @@ rtDeclareVariable(float, lightIntensity, , );
 rtDeclareVariable(float, sampleStep, , );
 rtDeclareVariable(float, densityMultiplier, , );
 
-rtDeclareVariable(float3, boxSize, , );
+rtDeclareVariable(float3, bboxSize, , );
+rtDeclareVariable(float3, textureScale, , );
 
 rtTextureSampler<uchar1, 3, cudaReadModeNormalizedFloat> cloud;
 
@@ -27,7 +29,7 @@ inline RT_HOSTDEVICE float3 make_float3(size_t3 st)
 
 static __host__ __device__ __inline__ float sampleCloud(float3 pos)
 {
-    pos = pos / boxSize;
+    pos = pos * textureScale;
     return tex3D(cloud, pos.x, pos.y, pos.z).x;
 }
 
@@ -35,8 +37,9 @@ RT_PROGRAM void inScatter()
 {
     size_t3 size = resultBuffer.size();
     size_t maxSize = max(max(size.x, size.y), size.z);
+    float minScale = fminf(fminf(textureScale.x, textureScale.y), textureScale.z);
 
-    float3 samplePos = make_float3(launchID) / make_float3(maxSize);
+    float3 samplePos = (make_float3(launchID) / make_float3(maxSize)) / minScale;
 
     float3 stepToLight = (-normalize(lightDirection)) * sampleStep;
 

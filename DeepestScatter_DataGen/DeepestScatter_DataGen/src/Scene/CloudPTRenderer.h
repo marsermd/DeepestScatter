@@ -11,16 +11,27 @@ namespace DeepestScatter
     class CloudPTRenderer: public SceneItem
     {
     public:
-        CloudPTRenderer(optix::Context context, std::shared_ptr<Resources>& resources) :
+        enum class RenderMode;
+
+        CloudPTRenderer(RenderMode renderMode, optix::Context context, std::shared_ptr<Resources> resources):
+            renderMode(renderMode),
             context(context),
             resources(resources) {}
 
         virtual ~CloudPTRenderer() override = default;
 
         void Init() override;
-        void Update() override {} // Does nothing.
+        void Reset() override {}
+        void Update() override {}
+
+        enum class RenderMode
+        {
+            Full,
+            SunMultipleScatter
+        };
 
     private:
+        RenderMode renderMode;
         optix::Context context;
         std::shared_ptr<Resources> resources;
 
@@ -30,5 +41,7 @@ namespace DeepestScatter
         optix::GeometryInstance geometryInstance;
         optix::GeometryGroup    geometryGroup;
         optix::Material         material;
+
+        std::string getRenderProgramName();
     };
 }

@@ -20,6 +20,7 @@ namespace DeepestScatter
         void setCloudPath(const std::string& path);
 
         void Init() override;
+        void Reset() override {}
         void Update() override {} // Does nothing.
 
         template <class T>
@@ -33,7 +34,8 @@ namespace DeepestScatter
         std::string resourcePath;
 
         optix::Buffer           densityBuffer;
-
+        optix::float3           bboxSize;
+        float                   textureScale;
         optix::Buffer           inScatterBuffer;
         optix::TextureSampler   inScatterSampler;
 
