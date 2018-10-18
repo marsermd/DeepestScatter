@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Result.pb.cc" />
+    <ClCompile Include="SceneSetup.pb.cc" />
+    <ClCompile Include="Vector.pb.cc" />
+    <ClCompile Include="ScatterSample.pb.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Result.pb.h" />
+    <ClInclude Include="SceneSetup.pb.h" />
+    <ClInclude Include="Vector.pb.h" />
+    <ClInclude Include="ScatterSample.pb.h" />
+  </ItemGroup>
+</Project>

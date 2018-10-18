@@ -14,6 +14,7 @@
 #include <openvdb/Types.h>
 #include <openvdb/tools/Statistics.h>
 #include <openvdb/math/Stats.h>
+#include "BufferBind.h"
 #pragma warning(pop)
 
 namespace DeepestScatter
@@ -62,7 +63,7 @@ namespace DeepestScatter
         {
             size_t maxSize = std::max({ sizeX, sizeY, sizeZ });
             levelCount = 1;
-            while (maxSize >>= 1)
+            while (maxSize /= 2)
             {
                 levelCount++;
             }
@@ -72,7 +73,7 @@ namespace DeepestScatter
         buffer->setSize(sizeX, sizeY, sizeZ);
 
         {
-            uint8_t* density = (uint8_t*)buffer->map(0);
+            BufferBind<uint8_t> density(buffer, 0);
 
             uint32_t targetPos = 0;
             for (int32_t z = 0; z < sizeZ; z++)
@@ -90,22 +91,19 @@ namespace DeepestScatter
                     }
                 }
             }
+            std::cout << "finish" << std::endl;
             assert(targetPos == sizeX * sizeY * sizeZ);
-
-            buffer->unmap(0);
         }
 
         if (createMipmaps)
         {
-            size_t maxSize = std::max({ sizeX, sizeY, sizeZ });
-
             size_t size = sizeX;
             for (int level = 1; level < levelCount; level++)
             {
-                size >>= 1;
+                size /= 2;
 
-                uint8_t* prevLevel = (uint8_t*)buffer->map(level - 1);
-                uint8_t* curLevel = (uint8_t*)buffer->map(level);
+                BufferBind<uint8_t> prevLevel(buffer, level - 1);
+                BufferBind<uint8_t> curLevel(buffer, level);
 
                 for (uint32_t z = 0; z < size; z++)
                 {
@@ -114,22 +112,19 @@ namespace DeepestScatter
                         for (uint32_t x = 0; x < size; x++)
                         {
                             uint16_t curValue =
-                                (uint16_t)prevLevel[getId(x * 2    , y * 2    , z * 2    , size * 2)] +
-                                (uint16_t)prevLevel[getId(x * 2    , y * 2    , z * 2 + 1, size * 2)] +
-                                (uint16_t)prevLevel[getId(x * 2    , y * 2 + 1, z * 2    , size * 2)] +
-                                (uint16_t)prevLevel[getId(x * 2    , y * 2 + 1, z * 2 + 1, size * 2)] +
-                                (uint16_t)prevLevel[getId(x * 2 + 1, y * 2    , z * 2    , size * 2)] +
-                                (uint16_t)prevLevel[getId(x * 2 + 1, y * 2    , z * 2 + 1, size * 2)] +
-                                (uint16_t)prevLevel[getId(x * 2 + 1, y * 2 + 1, z * 2    , size * 2)] +
-                                (uint16_t)prevLevel[getId(x * 2 + 1, y * 2 + 1, z * 2 + 1, size * 2)];
+                                static_cast<uint16_t>(prevLevel[getId(x * 2, y * 2, z * 2, size * 2)]) +
+                                static_cast<uint16_t>(prevLevel[getId(x * 2, y * 2, z * 2 + 1, size * 2)]) +
+                                static_cast<uint16_t>(prevLevel[getId(x * 2, y * 2 + 1, z * 2, size * 2)]) +
+                                static_cast<uint16_t>(prevLevel[getId(x * 2, y * 2 + 1, z * 2 + 1, size * 2)]) +
+                                static_cast<uint16_t>(prevLevel[getId(x * 2 + 1, y * 2, z * 2, size * 2)]) +
+                                static_cast<uint16_t>(prevLevel[getId(x * 2 + 1, y * 2, z * 2 + 1, size * 2)]) +
+                                static_cast<uint16_t>(prevLevel[getId(x * 2 + 1, y * 2 + 1, z * 2, size * 2)]) +
+                                static_cast<uint16_t>(prevLevel[getId(x * 2 + 1, y * 2 + 1, z * 2 + 1, size * 2)]);
                             curValue /= 8;
                             curLevel[getId(x, y, z, size)] = gsl::narrow<uint8_t>(curValue);
                         }
                     }
                 }
-
-                buffer->unmap(level);
-                buffer->unmap(level - 1);
             }
             assert(size == 1);
         }

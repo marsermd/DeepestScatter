@@ -1,116 +1,188 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="CUDA">
-      <UniqueIdentifier>{9121c0ad-7920-4b11-93a0-83ab46a7dcca}</UniqueIdentifier>
+    <Filter Include="src">
+      <UniqueIdentifier>{15dfad64-58a0-415a-b95a-65aa8181f89d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Scene">
+    <Filter Include="src\Scene">
       <UniqueIdentifier>{df5d7327-ee4f-4d4c-904c-260a6100c570}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Uitl">
+    <Filter Include="src\Uitl">
       <UniqueIdentifier>{fef6713a-5bbb-40d0-9f72-6b0d88a9c669}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Boost">
+    <Filter Include="src\CUDA">
+      <UniqueIdentifier>{9121c0ad-7920-4b11-93a0-83ab46a7dcca}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Boost">
       <UniqueIdentifier>{4a7c91da-dce9-4a42-9ecf-7aff273063bd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Uitl\Dataset">
+      <UniqueIdentifier>{04e5528e-8012-401a-aae0-f9a5ae867314}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\ExecutionLoop">
+      <UniqueIdentifier>{be5f9d91-cee8-4de9-828d-e6d999f088b6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Mie.cpp" />
     <ClCompile Include="src\Scene\VDBCloud.cpp">
-      <Filter>Scene</Filter>
+      <Filter>src\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Util\Resources.cpp">
-      <Filter>Uitl</Filter>
+      <Filter>src\Uitl</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\Scene.cpp">
-      <Filter>Scene</Filter>
+      <Filter>src\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Util\Arcball.cpp">
-      <Filter>Uitl</Filter>
+      <Filter>src\Uitl</Filter>
     </ClCompile>
     <ClCompile Include="src\Util\sutil.cpp">
-      <Filter>Uitl</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\CloudPTRenderer.cpp">
-      <Filter>Scene</Filter>
+      <Filter>src\Uitl</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\Camera.cpp">
-      <Filter>Scene</Filter>
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\CloudPTRenderer.cpp">
+      <Filter>src\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\RadianceCollector.cpp">
-      <Filter>Scene</Filter>
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\SceneSetupCollector.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Mie.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Sun.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\Dataset\Dataset.cpp">
+      <Filter>src\Uitl\Dataset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\Dataset\Transaction.cpp">
+      <Filter>src\Uitl\Dataset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Util\Dataset\LmdbExceptions.cpp">
+      <Filter>src\Uitl\Dataset</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ExecutionLoop\GuiExecutionLoop.cpp">
+      <Filter>src\ExecutionLoop</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\CUDA\inScatter.cu">
-      <Filter>CUDA</Filter>
+      <Filter>src\CUDA</Filter>
     </CudaCompile>
     <CudaCompile Include="src\CUDA\pinholeCamera.cu">
-      <Filter>CUDA</Filter>
+      <Filter>src\CUDA</Filter>
     </CudaCompile>
     <CudaCompile Include="src\CUDA\reinhard.cu">
-      <Filter>CUDA</Filter>
-    </CudaCompile>
-    <CudaCompile Include="src\CUDA\dataGenCamera.cu">
-      <Filter>CUDA</Filter>
+      <Filter>src\CUDA</Filter>
     </CudaCompile>
     <CudaCompile Include="src\CUDA\cloudBBox.cu">
-      <Filter>CUDA</Filter>
+      <Filter>src\CUDA</Filter>
     </CudaCompile>
     <CudaCompile Include="src\CUDA\cloudRadianceMaterials.cu">
-      <Filter>CUDA</Filter>
+      <Filter>src\CUDA</Filter>
     </CudaCompile>
     <CudaCompile Include="src\CUDA\cloudFirstScatterMaterial.cu">
-      <Filter>CUDA</Filter>
+      <Filter>src\CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CUDA\pointGeneratorCamera.cu">
+      <Filter>src\CUDA</Filter>
     </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CUDA\rayData.cuh">
-      <Filter>CUDA</Filter>
+      <Filter>src\CUDA</Filter>
     </ClInclude>
-    <ClInclude Include="src\Mie.h" />
     <ClInclude Include="src\CUDA\random.cuh">
-      <Filter>CUDA</Filter>
+      <Filter>src\CUDA</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\SceneItem.h">
-      <Filter>Scene</Filter>
+      <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\VDBCloud.h">
-      <Filter>Scene</Filter>
+      <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\CUDA\optixExtraMath.cuh">
-      <Filter>CUDA</Filter>
+      <Filter>src\CUDA</Filter>
     </ClInclude>
     <ClInclude Include="src\Util\Resources.h">
-      <Filter>Uitl</Filter>
+      <Filter>src\Uitl</Filter>
     </ClInclude>
     <ClInclude Include="src\Boost\di.hpp">
-      <Filter>Boost</Filter>
+      <Filter>src\Boost</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Scene.h">
-      <Filter>Scene</Filter>
+      <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Util\Arcball.h">
-      <Filter>Uitl</Filter>
+      <Filter>src\Uitl</Filter>
     </ClInclude>
     <ClInclude Include="src\Util\sutil.h">
-      <Filter>Uitl</Filter>
+      <Filter>src\Uitl</Filter>
     </ClInclude>
     <ClInclude Include="src\Util\sutilapi.h">
-      <Filter>Uitl</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\CloudPTRenderer.h">
-      <Filter>Scene</Filter>
+      <Filter>src\Uitl</Filter>
     </ClInclude>
     <ClInclude Include="src\CUDA\cloud.cuh">
-      <Filter>CUDA</Filter>
+      <Filter>src\CUDA</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Camera.h">
-      <Filter>Scene</Filter>
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util\BufferBind.h">
+      <Filter>src\Uitl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\CloudPTRenderer.h">
+      <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\RadianceCollector.h">
-      <Filter>Scene</Filter>
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\SceneSetupCollector.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\SceneDescription.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Mie.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Installers.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Sun.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Boost\DIConfig.h">
+      <Filter>src\Boost</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Boost\uml_dumper.hpp">
+      <Filter>src\Boost</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CUDA\pointEmissionCamera.h">
+      <Filter>src\CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util\Dataset\Dataset.h">
+      <Filter>src\Uitl\Dataset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util\Dataset\Transaction.h">
+      <Filter>src\Uitl\Dataset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util\Dataset\LmdbExceptions.h">
+      <Filter>src\Uitl\Dataset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ExecutionLoop\ExecutionLoop.h">
+      <Filter>src\ExecutionLoop</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ExecutionLoop\GuiExecutionLoop.h">
+      <Filter>src\ExecutionLoop</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

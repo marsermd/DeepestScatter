@@ -126,7 +126,7 @@ static __host__ __device__ __inline__ optix::float3 uniformOnSphereCircle(unsign
     float x = sinTheta * cos(phi);
     float y = sinTheta * sin(phi);
     float z = cosTheta;
-    return make_float3(x, y, z);
+    return optix::make_float3(x, y, z);
 }
 
 static __host__ __device__ __inline__ optix::float3 uniformOnSphere(unsigned int& prev)
@@ -144,30 +144,30 @@ static __host__ __device__ __inline__ optix::float3 uniformOnSphere(unsigned int
     float y = sin(phi) * sinTheta;
     float z = cosTheta;
 
-    return make_float3(x, y, z);
+    return optix::make_float3(x, y, z);
 }
 
 static __host__ __device__ __inline__ optix::float2 uniformOnDisc(unsigned int& prev)
 {
-    float theta = rnd(prev);
+    float theta = rnd(prev) * M_PIf * 2;
     float sqrtR = sqrt(rnd(prev));
 
     float x = sqrtR * cos(theta);
     float y = sqrtR * sin(theta);
 
-    return make_float2(x, y);
+    return optix::make_float2(x, y);
 }
 
 static __host__ __device__ __inline__ optix::float3 uniformOnDisc(unsigned int& prev, optix::float3 normal)
 {
-    float theta = rnd(prev);
+    float theta = rnd(prev) * M_PIf * 2;
     float sqrtR = sqrt(rnd(prev));
 
     float x = sqrtR * cos(theta);
     float y = sqrtR * sin(theta);
 
     optix::Onb onb(normal);
-    float3 result = make_float3(x, y, 0);
+    optix::float3 result = optix::make_float3(x, 0, y);
     onb.inverse_transform(result);
     return result;
 }

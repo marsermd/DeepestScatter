@@ -1,6 +1,9 @@
 #include "cloud.cuh"
 
+#include "rayData.cuh"
+
 rtDeclareVariable(RadianceRayData, resultRadiance, rtPayload, );
+rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
 
 RT_PROGRAM void totalRadiance()
 {

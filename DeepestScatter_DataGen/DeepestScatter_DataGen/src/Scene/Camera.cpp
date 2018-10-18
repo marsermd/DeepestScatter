@@ -7,12 +7,12 @@
 #pragma warning(pop)
 
 #include "Util/Resources.h"
-
 #include "GL/freeglut.h"
+#include "Util/BufferBind.h"
 
 namespace DeepestScatter
 {
-    void Camera::Init()
+    void Camera::init()
     {
         camera = resources->loadProgram("pinholeCamera.cu", "pinholeCamera");
         context->setRayGenerationProgram(0, camera);
@@ -24,7 +24,7 @@ namespace DeepestScatter
         cameraUp = optix::make_float3(0, 1, 0);
 
         cameraRotate = optix::Matrix4x4::identity();
-        UpdatePosition();
+        updatePosition();
 
         exception = resources->loadProgram("pinholeCamera.cu", "exception");
         context->setExceptionProgram(0, exception);
@@ -37,27 +37,29 @@ namespace DeepestScatter
         varianceBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_FLOAT4, width, height);
         screenBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_UNSIGNED_BYTE4, width, height);
 
+        reinhardFirstPass = resources->loadProgram("reinhard.cu", "firstPass");
+        reinhardSecondPass = resources->loadProgram("reinhard.cu", "secondPass");
+        reinhardLastPass = resources->loadProgram("reinhard.cu", "applyReinhard");
+
         context["progressiveBuffer"]->setBuffer(progressiveBuffer);
         context["varianceBuffer"]->setBuffer(varianceBuffer);
 
         context["totalPixels"]->setUint(width * height);
         context["screenBuffer"]->setBuffer(screenBuffer);
 
-        reinhardFirstPass = resources->loadProgram("reinhard.cu", "firstPass");
-        reinhardSecondPass = resources->loadProgram("reinhard.cu", "secondPass");
-        reinhardLastPass = resources->loadProgram("reinhard.cu", "applyReinhard");
-
         context["sumLogColumns"]->setBuffer(context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT, width));
         context["lAverage"]->setBuffer(context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT, 1));
+
+        reset();
     }
 
-    void Camera::Update()
+    void Camera::update()
     {
-        UpdatePosition();
-        Render();
+        updatePosition();
+        render();
     }
 
-    void Camera::Reset()
+    void Camera::reset()
     {
         auto tmp = context->getRayGenerationProgram(0);
 
@@ -68,14 +70,19 @@ namespace DeepestScatter
         context->setRayGenerationProgram(0, tmp);
     }
 
-    void Camera::Rotate(optix::float2 from, optix::float2 to)
+    bool Camera::isCompleted()
     {
-        cameraRotate = arcball.rotate(from, to);
-        UpdatePosition();
-        Reset();
+        return completed;
     }
 
-    void Camera::UpdatePosition()
+    void Camera::rotate(optix::float2 from, optix::float2 to)
+    {
+        cameraRotate = arcball.rotate(from, to);
+        updatePosition();
+        reset();
+    }
+
+    void Camera::updatePosition()
     {
         const float hfov = 30.0f;
         const float aspectRatio = static_cast<float>(width) /
@@ -107,15 +114,15 @@ namespace DeepestScatter
         camera["W"]->setFloat(w);
     }
 
-    void Camera::Render()
+    void Camera::render()
     {
-        context->validate();
 
         for (int i = 0; i < 10; i++)
         {
             subframeId++;
             context["subframeId"]->setUint(subframeId);
             context->setRayGenerationProgram(0, camera);
+            context->validate();
             context->launch(0, width, height);
 
             context->setRayGenerationProgram(0, reinhardFirstPass);
@@ -133,9 +140,10 @@ namespace DeepestScatter
         GLenum glFormat = GL_RGBA;
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
-        GLvoid* imageData = screenBuffer->map();
-        glDrawPixels(width, height, glFormat, glDataType, imageData);
-        screenBuffer->unmap();
+        {
+            BufferBind<optix::uint4> screen(screenBuffer);
+            glDrawPixels(width, height, glFormat, glDataType, static_cast<GLvoid*>(&screen[0]));
+        }
     }
 
     void Camera::increaseExposure()

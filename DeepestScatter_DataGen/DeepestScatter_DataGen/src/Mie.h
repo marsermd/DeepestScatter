@@ -1,6 +1,5 @@
 #pragma once
 
-#include <optix.h>
 #include <optixu/optixpp_namespace.h>
 
 namespace DeepestScatter

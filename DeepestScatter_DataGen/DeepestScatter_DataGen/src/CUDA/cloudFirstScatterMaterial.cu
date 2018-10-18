@@ -1,13 +1,15 @@
 #include "cloud.cuh"
 
+#include "rayData.cuh"
+
 rtDeclareVariable(ScatteringRayData, firstScatter, rtPayload, );
+rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
 
 RT_PROGRAM void firstScatterPosition()
 {
     float3 hitPoint = ray.origin + tHit * ray.direction;
     hitPoint += 0.5f * bboxSize;
 
-    float3 radiance = make_float3(0);
     float3 pos = hitPoint;
 
     float3 direction = normalize(ray.direction);

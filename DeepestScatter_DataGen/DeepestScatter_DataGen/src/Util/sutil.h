@@ -65,7 +65,7 @@ struct APIError
     int          line;
 };
 
-// Display error message
+// Update error message
 void  reportErrorMessage(
         const char* message);               // Error mssg to be displayed
 
@@ -105,11 +105,11 @@ void  displayBufferGlut(
         const char* window_title,           // Window title
         RTbuffer buffer);                   // Buffer to be displayed
 
-// Display contents of buffer, where the OpenGL/GLUT context is managed by caller.
+// Update contents of buffer, where the OpenGL/GLUT context is managed by caller.
 void  displayBufferGL(
         optix::Buffer buffer ); // Buffer to be displayed
         
-// Display frames per second, where the OpenGL/GLUT context
+// Update frames per second, where the OpenGL/GLUT context
 // is managed by the caller.
 void  displayMillisecondsPerFrame( double milliseconds );
 

@@ -1,8 +1,9 @@
 #pragma once
 
 #include <optixu/optixpp_namespace.h>
+#include <utility>
 
-#include "SceneItem.h"
+#include "Scene/SceneItem.h"
 
 namespace DeepestScatter
 {
@@ -13,13 +14,13 @@ namespace DeepestScatter
     public:
         RadianceCollector(optix::Context context, std::shared_ptr<Resources> resources):
             context(context),
-            resources(resources) {}
+            resources(std::move(resources)) {}
 
         virtual ~RadianceCollector() override = default;
 
-        void Init() override;
-        void Reset() override {}
-        void Update() override {} // Does nothing.
+        void init() override;
+        void reset() override {}
+        void update() override {} // Does nothing.
 
     private:
         optix::Context context;

@@ -7,8 +7,13 @@ namespace DeepestScatter
     public:
         virtual ~SceneItem() noexcept = default;
 
-        virtual void Init() = 0;
-        virtual void Reset() = 0;
-        virtual void Update() = 0;
+        virtual void init() = 0;
+        virtual void reset() = 0;
+        virtual void update() = 0;
+
+        virtual bool isCompleted()
+        {
+            return true;
+        }
     };
 } 

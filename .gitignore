@@ -8,9 +8,14 @@
 *.user
 *.userosscache
 *.sln.docstates
+*.lmdb
+*.lmdb-lock
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
+
+# Virtualenv
+venv
 
 # Build results
 [Dd]ebug/

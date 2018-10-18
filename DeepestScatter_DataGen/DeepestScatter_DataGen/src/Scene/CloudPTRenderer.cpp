@@ -5,7 +5,15 @@
 
 namespace DeepestScatter
 {
-    void CloudPTRenderer::Init()
+    CloudPTRenderer::CloudPTRenderer(Settings settings, optix::Context context, std::shared_ptr<Resources> resources)
+        : context(context),
+          resources(std::move(resources)),
+          renderSettings(settings)
+    {
+        context["sampleStep"]->setFloat(settings.sampleStep);
+    }
+
+    void CloudPTRenderer::init()
     {
         geometry = context->createGeometry();
         geometry->setBoundingBoxProgram(resources->loadProgram("cloudBBox.cu", "bounds"));
@@ -27,15 +35,16 @@ namespace DeepestScatter
         geometryGroup->setAcceleration(context->createAcceleration("MedianBvh", "Bvh"));
 
         context["objectRoot"]->set(geometryGroup);
+        std::cout << "groundIntensity" << context["groundIntensity"];
     }
 
-    std::string CloudPTRenderer::getRenderProgramName()
+    std::string CloudPTRenderer::getRenderProgramName() const
     {
-        switch (renderMode)
+        switch (renderSettings.mode)
         {
-        case RenderMode::Full:
+        case Cloud::Rendering::Mode::Full:
             return "totalRadiance";
-        case RenderMode::SunMultipleScatter:
+        case Cloud::Rendering::Mode::SunMultipleScatter:
             return "multipleScatterSunRadiance";
         default:
             throw std::invalid_argument("Invalid Render Mode");

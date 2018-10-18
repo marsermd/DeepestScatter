@@ -1,11 +1,10 @@
 #include <optix_world.h>
-#include <optix.h>
 #include <optix_device.h>
 #include <optixu/optixu_math_namespace.h>
 #include <optixu/optixu_vector_types.h>
 
 #include "random.cuh"
-#include "rayData.cuh"
+#include "optixExtraMath.cuh"
 
 using namespace optix;
 
@@ -14,10 +13,6 @@ rtDeclareVariable(float, minimalRayDistance, , );
 
 rtDeclareVariable(float3, bboxSize, , );
 rtDeclareVariable(float3, textureScale, , );
-
-// --------------- Path Tracing ------------------
-
-rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
 
 rtDeclareVariable(float, tHit, rtIntersectionDistance, );
 
@@ -29,12 +24,11 @@ rtDeclareVariable(float3, lightColor, , );
 rtDeclareVariable(float3, skyIntensity, , );
 rtDeclareVariable(float3, groundIntensity, , );
 
-rtDeclareVariable(int, cloudTextureId, , );
-rtTextureSampler<float4, 3> cloud;
-rtTextureSampler<uchar1, 3, cudaReadModeNormalizedFloat> inScatter;
-rtTextureSampler<uchar1, 1, cudaReadModeNormalizedFloat> mie;
-rtTextureSampler<uchar1, 1, cudaReadModeNormalizedFloat> choppedMie;
-rtTextureSampler<uchar1, 1, cudaReadModeNormalizedFloat> choppedMieIntegral;
+rtTextureSampler<uchar, 3, cudaReadModeNormalizedFloat> density;
+rtTextureSampler<uchar, 3, cudaReadModeNormalizedFloat> inScatter;
+rtTextureSampler<uchar, 1, cudaReadModeNormalizedFloat> mie;
+rtTextureSampler<uchar, 1, cudaReadModeNormalizedFloat> choppedMie;
+rtTextureSampler<uchar, 1, cudaReadModeNormalizedFloat> choppedMieIntegral;
 
 rtDeclareVariable(unsigned int, subframeId, , );
 
@@ -46,12 +40,12 @@ static __host__ __device__ __inline__ bool isInBox(float3 pos)
 
 static __host__ __device__ __inline__ float getMiePhase(float cosTheta)
 {
-    return tex1D(mie, (cosTheta + 1) / 2).x;
+    return tex1D(mie, (cosTheta + 1) / 2);
 }
 
 static __host__ __device__ __inline__ float getChoppedMiePhase(float cosTheta)
 {
-    return tex1D(choppedMie, (cosTheta + 1) / 2).x;
+    return tex1D(choppedMie, (cosTheta + 1) / 2);
 }
 
 rtDeclareVariable(float3, missColor, , );
@@ -59,13 +53,13 @@ rtDeclareVariable(float3, missColor, , );
 static __host__ __device__ __inline__ float sampleCloud(float3 pos)
 {
     pos = pos * textureScale;
-    return rtTex3DLod<float>(cloudTextureId, pos.x, pos.y, pos.z, 0.0f);
+    return tex3D(density, pos.x, pos.y, pos.z);
 }
 
 static __host__ __device__ __inline__ float sampleInScatter(float3 pos)
 {
     pos = pos * textureScale;
-    return tex3D(inScatter, pos.x, pos.y, pos.z).x;
+    return tex3D(inScatter, pos.x, pos.y, pos.z);
 }
 
 struct ScatteringEvent
@@ -161,7 +155,7 @@ static __device__ __inline__ const float3& getNewDirection(unsigned int& seed, c
     for (int i = 0; i < 16; i++)
     {
         m = (l + r) / 2.f;
-        if (val > tex1D(choppedMieIntegral, m).x)
+        if (val > tex1D(choppedMieIntegral, m))
         {
             l = m;
         }

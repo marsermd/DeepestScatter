@@ -5,12 +5,7 @@
 
 namespace DeepestScatter
 {
-    void VDBCloud::setCloudPath(const std::string & path)
-    {
-        resourcePath = path;
-    }
-
-    void VDBCloud::Init()
+    void VDBCloud::init()
     {
         InitVolume();
         InitInScatter();
@@ -19,7 +14,7 @@ namespace DeepestScatter
 
     void VDBCloud::InitVolume()
     {
-        auto cloud = resources->loadVolumeBuffer(resourcePath, false);
+        auto cloud = resources->loadVolumeBuffer(settings.vdbPath, (bool)settings.mipmapsOn);
         densityBuffer = std::get<optix::Buffer>(cloud);
         bboxSize = std::get<optix::float3>(cloud);
 
@@ -45,7 +40,7 @@ namespace DeepestScatter
         context->launch(0, sizeX, sizeY, sizeZ);
 
         // We have to call destroy explicitly, because inScatter program holds inScatterBuffer as a buffer.
-        // And using a buffer as a sampler and a buffer simultaniously is invalid.
+        // And using a buffer as a sampler and a buffer simultaneously is invalid.
         inScatter->destroy();
 
         inScatterSampler = createSamplerForBuffer3D(inScatterBuffer);
@@ -64,12 +59,11 @@ namespace DeepestScatter
         float maxSize = std::max({ bboxSize.x, bboxSize.y, bboxSize .z });
         RTsize textureX, textureY, textureZ;
         densityBuffer->getSize(textureX, textureY, textureZ);
-        float maxTextureSize = std::max({ textureX, textureY, textureZ});
 
         scope["bboxSize"]->setFloat(bboxSize.x / maxSize, bboxSize.y / maxSize, bboxSize.z / maxSize);
         scope["textureScale"]->setFloat(maxSize / textureX, maxSize / textureY, maxSize / textureZ);
-        scope["cloud"]->setTextureSampler(densitySampler);
-        scope["cloudTextureId"]->setInt(densitySampler->getId());
+        scope["density"]->setTextureSampler(densitySampler);
+        scope["densityMultiplier"]->setFloat(settings.size / settings.meanFreePath);
     }
 
     template<class T>

@@ -1,8 +1,10 @@
 #pragma once
 
 #include <optixu/optixpp_namespace.h>
+#include <memory>
 
-#include "SceneItem.h"
+#include "Scene/SceneItem.h"
+#include "Scene/SceneDescription.h"
 
 namespace DeepestScatter
 {
@@ -11,29 +13,18 @@ namespace DeepestScatter
     class CloudPTRenderer: public SceneItem
     {
     public:
-        enum class RenderMode;
+        typedef Cloud::Rendering Settings;
 
-        CloudPTRenderer(RenderMode renderMode, optix::Context context, std::shared_ptr<Resources> resources):
-            renderMode(renderMode),
-            context(context),
-            resources(resources) {}
+        CloudPTRenderer(Settings settings, optix::Context context, std::shared_ptr<Resources> resources);
 
-        virtual ~CloudPTRenderer() override = default;
-
-        void Init() override;
-        void Reset() override {}
-        void Update() override {}
-
-        enum class RenderMode
-        {
-            Full,
-            SunMultipleScatter
-        };
+        void init() override;
+        void reset() override {}
+        void update() override {}
 
     private:
-        RenderMode renderMode;
         optix::Context context;
         std::shared_ptr<Resources> resources;
+        Settings renderSettings;
 
         optix::Material         cloudMaterial;
 
@@ -42,6 +33,6 @@ namespace DeepestScatter
         optix::GeometryGroup    geometryGroup;
         optix::Material         material;
 
-        std::string getRenderProgramName();
+        std::string getRenderProgramName() const;
     };
 }

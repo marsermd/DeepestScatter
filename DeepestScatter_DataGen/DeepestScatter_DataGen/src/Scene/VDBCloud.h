@@ -4,6 +4,7 @@
 
 #include "Scene.h"
 #include "SceneItem.h"
+#include "SceneDescription.h"
 #include "Util/Resources.h"
 
 namespace DeepestScatter
@@ -11,17 +12,18 @@ namespace DeepestScatter
     class VDBCloud: public SceneItem
     {
     public:
-        VDBCloud(optix::Context context, std::shared_ptr<Resources>& resources):
+        typedef Cloud::Model Settings;
+
+        VDBCloud(Settings settings, const optix::Context& context, std::shared_ptr<Resources>& resources):
+            settings(settings),
             context(context),
-            resources(resources) {}
+            resources(resources)
+        {
+        }
 
-        virtual ~VDBCloud() override = default;
-
-        void setCloudPath(const std::string& path);
-
-        void Init() override;
-        void Reset() override {}
-        void Update() override {} // Does nothing.
+        void init() override;
+        void reset() override {}
+        void update() override {} // Does nothing.
 
         template <class T>
         void SetupVariables(optix::Handle<T>& scope) const;
@@ -30,8 +32,7 @@ namespace DeepestScatter
     private:
         optix::Context context;
         std::shared_ptr<Resources> resources;
-
-        std::string resourcePath;
+        Settings settings;
 
         optix::Buffer           densityBuffer;
         optix::float3           bboxSize;

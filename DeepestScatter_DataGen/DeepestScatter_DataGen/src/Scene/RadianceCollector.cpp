@@ -1,5 +1,5 @@
 #include "RadianceCollector.h"
 
-void DeepestScatter::RadianceCollector::Init()
+void DeepestScatter::RadianceCollector::init()
 {
 }

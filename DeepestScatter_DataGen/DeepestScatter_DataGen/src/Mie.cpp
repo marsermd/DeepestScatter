@@ -1,6 +1,5 @@
 #include "Mie.h"
-
-#include <iostream>
+#include "Util/BufferBind.h"
 
 namespace DeepestScatter
 {
@@ -8210,8 +8209,8 @@ namespace Mie
         buffer->setSize(cnt);
 
         {
-            float_t* values = (float_t*)buffer->map();
-            memcpy(values, phase, cnt * sizeof(float));
+            BufferBind<float> values(buffer);
+            memcpy(&values[0], phase, cnt * sizeof(float));
 
             float average = 0;
             for (size_t i = 0; i < cnt; i++)
@@ -8225,8 +8224,6 @@ namespace Mie
             {
                 values[i] /= average;
             }
-
-            buffer->unmap();
         }
 
         optix::TextureSampler sampler = context->createTextureSampler();
@@ -8251,8 +8248,8 @@ namespace Mie
         buffer->setSize(cnt);
 
         {
-            float_t* values = (float_t*)buffer->map();
-            memcpy(values, phase, cnt * sizeof(float));
+            BufferBind<float> values(buffer);
+            memcpy(&values[0], phase, cnt * sizeof(float));
 
             float sum = 0;
             for (size_t i = 0; i < cnt; i++)
@@ -8266,8 +8263,6 @@ namespace Mie
                 integral += values[i] / sum;
                 values[i] = integral;
             }
-
-            buffer->unmap();
         }
 
         optix::TextureSampler sampler = context->createTextureSampler();

@@ -18,15 +18,19 @@ namespace DeepestScatter
         Camera(const Settings& settings, optix::Context context, std::shared_ptr<Resources> resources):
             width(settings.width), height(settings.height),
             context(context),
-            resources(resources) {}
+            resources(resources) 
+        {
+        }
 
         virtual ~Camera() override = default;
 
-        void Init() override;
-        void Update() override;
-        void Reset() override;
+        void init() override;
+        void update() override;
+        void reset() override;
 
-        void Rotate(optix::float2 from, optix::float2 to);
+        bool isCompleted() override;
+
+        void rotate(optix::float2 from, optix::float2 to);
 
         void increaseExposure();
         void decreaseExposure();
@@ -40,9 +44,11 @@ namespace DeepestScatter
             uint32_t height;
         };
 
+        bool completed = true;
+
     private:
-        void Render();
-        void UpdatePosition();
+        void render();
+        void updatePosition();
 
         optix::Context context;
         std::shared_ptr<Resources> resources;

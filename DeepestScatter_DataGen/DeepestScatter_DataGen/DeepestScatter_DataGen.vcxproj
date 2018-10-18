@@ -11,14 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\ExecutionLoop\GuiExecutionLoop.cpp" />
     <ClCompile Include="src\Mie.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Scene\Camera.cpp" />
     <ClCompile Include="src\Scene\CloudPTRenderer.cpp" />
     <ClCompile Include="src\Scene\RadianceCollector.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
+    <ClCompile Include="src\Scene\SceneSetupCollector.cpp" />
+    <ClCompile Include="src\Scene\Sun.cpp" />
     <ClCompile Include="src\Scene\VDBCloud.cpp" />
     <ClCompile Include="src\Util\Arcball.cpp" />
+    <ClCompile Include="src\Util\Dataset\Dataset.cpp" />
+    <ClCompile Include="src\Util\Dataset\LmdbExceptions.cpp" />
+    <ClCompile Include="src\Util\Dataset\Transaction.cpp" />
     <ClCompile Include="src\Util\Resources.cpp" />
     <ClCompile Include="src\Util\sutil.cpp" />
   </ItemGroup>
@@ -26,25 +32,38 @@
     <CudaCompile Include="src\CUDA\cloudBBox.cu" />
     <CudaCompile Include="src\CUDA\cloudFirstScatterMaterial.cu" />
     <CudaCompile Include="src\CUDA\cloudRadianceMaterials.cu" />
-    <CudaCompile Include="src\CUDA\dataGenCamera.cu" />
+    <CudaCompile Include="src\CUDA\pointGeneratorCamera.cu" />
     <CudaCompile Include="src\CUDA\inScatter.cu" />
     <CudaCompile Include="src\CUDA\pinholeCamera.cu" />
     <CudaCompile Include="src\CUDA\reinhard.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Boost\di.hpp" />
+    <ClInclude Include="src\Boost\DIConfig.h" />
+    <ClInclude Include="src\Boost\uml_dumper.hpp" />
     <ClInclude Include="src\CUDA\cloud.cuh" />
     <ClInclude Include="src\CUDA\optixExtraMath.cuh" />
+    <ClInclude Include="src\CUDA\pointEmissionCamera.h" />
     <ClInclude Include="src\CUDA\random.cuh" />
+    <ClInclude Include="src\ExecutionLoop\ExecutionLoop.h" />
+    <ClInclude Include="src\ExecutionLoop\GuiExecutionLoop.h" />
+    <ClInclude Include="src\Installers.h" />
     <ClInclude Include="src\Mie.h" />
     <ClInclude Include="src\CUDA\rayData.cuh" />
     <ClInclude Include="src\Scene\Camera.h" />
     <ClInclude Include="src\Scene\CloudPTRenderer.h" />
     <ClInclude Include="src\Scene\RadianceCollector.h" />
     <ClInclude Include="src\Scene\Scene.h" />
+    <ClInclude Include="src\Scene\SceneDescription.h" />
     <ClInclude Include="src\Scene\SceneItem.h" />
+    <ClInclude Include="src\Scene\SceneSetupCollector.h" />
+    <ClInclude Include="src\Scene\Sun.h" />
     <ClInclude Include="src\Scene\VDBCloud.h" />
     <ClInclude Include="src\Util\Arcball.h" />
+    <ClInclude Include="src\Util\BufferBind.h" />
+    <ClInclude Include="src\Util\Dataset\Dataset.h" />
+    <ClInclude Include="src\Util\Dataset\LmdbExceptions.h" />
+    <ClInclude Include="src\Util\Dataset\Transaction.h" />
     <ClInclude Include="src\Util\Resources.h" />
     <ClInclude Include="src\Util\sutil.h" />
     <ClInclude Include="src\Util\sutilapi.h" />
@@ -91,15 +110,17 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>OPENVDB_ABI_VERSION_NUMBER=5;OPENEXR_DLL;NOMINMAX;WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../DeepestScatter_Train/CppProtocols;src;$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>Half.lib;tbb_debug.lib;openvdb.lib;$(OPTIX_SDK_PATH)\lib64\optix.51.lib;$(OPTIX_SDK_PATH)\lib64\optixu.1.lib;$(CUDA_PATH)\lib\x64\nvrtc.lib;winmm.lib;cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CppProtocols.lib;Half.lib;lmdbd.lib;tbb_debug.lib;openvdb.lib;$(OPTIX_SDK_PATH)\lib64\optix.51.lib;$(OPTIX_SDK_PATH)\lib64\optixu.1.lib;$(CUDA_PATH)\lib\x64\nvrtc.lib;winmm.lib;cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories);$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
@@ -115,6 +136,8 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <CodeGeneration>compute_61,sm_61</CodeGeneration>
       <Defines>
       </Defines>
+      <AdditionalDeps>
+      </AdditionalDeps>
     </CudaCompile>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>
@@ -127,18 +150,20 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>OPENVDB_ABI_VERSION_NUMBER=5;OPENEXR_DLL;NOMINMAX;WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>src;$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../DeepestScatter_Train/CppProtocols;src;$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <LanguageStandard>stdcpp14</LanguageStandard>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <ForcedIncludeFiles>
+      </ForcedIncludeFiles>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>Half.lib;tbb.lib;openvdb.lib;$(OPTIX_SDK_PATH)\lib64\optix.51.lib;$(OPTIX_SDK_PATH)\lib64\optixu.1.lib;$(CUDA_PATH)\lib\x64\nvrtc.lib;winmm.lib;cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories);$(TBB_ROOT)\lib\intel64\vc14;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>CppProtocols.lib;Half.lib;lmdb.lib;tbb.lib;openvdb.lib;$(OPTIX_SDK_PATH)\lib64\optix.51.lib;$(OPTIX_SDK_PATH)\lib64\optixu.1.lib;$(CUDA_PATH)\lib\x64\nvrtc.lib;winmm.lib;cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories);$(TBB_ROOT)\lib\intel64\vc14;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
@@ -156,6 +181,8 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <CodeGeneration>compute_61,sm_61</CodeGeneration>
       <Defines>
       </Defines>
+      <AdditionalDeps>
+      </AdditionalDeps>
     </CudaCompile>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>

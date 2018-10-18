@@ -28,54 +28,51 @@
 
 namespace DeepestScatter
 {
-    Scene::Scene(SampleStep sampleStep, const std::vector<std::shared_ptr<SceneItem>>& sceneItems, optix::Context context):
-        sampleStep(sampleStep), 
+    Scene::Scene(const std::vector<std::shared_ptr<SceneItem>>& sceneItems, optix::Context context):
         sceneItems(sceneItems),
         context(context)
     {
-        auto lightDirection = optix::normalize(optix::make_float3(-0.586f, -0.766f, -0.2717f));
-        context["lightDirection"]->setFloat(lightDirection);
-        context["lightColor"]->setFloat(1.3f, 1.25f, 1.15f);
-        context["lightIntensity"]->setFloat(6e5f);
-
         context["skyIntensity"]->setFloat(.6f, .6f, 2);
-        context["groundIntensity"]->setFloat(.6f, .8f, 1);
-        //context["skyIntensity"]->setFloat(0, 0, 0);
-        //context["groundIntensity"]->setFloat(0, 0, 0);
+        context["groundIntensity"]->setFloat(.6f, .8f, 1.1f);
 
         context->setRayTypeCount(2);
         context->setEntryPointCount(1);
     }
 
-    void Scene::RestartProgressive()
+    void Scene::restartProgressive()
     {
         std::cout << "restarting progressive" << std::endl;
-        for each (auto item in sceneItems)
+        for (const auto& item : sceneItems)
         {
-            item->Reset();
+            item->reset();
         }
     }
 
-    void Scene::Init()
+    void Scene::init()
     {
-        context["sampleStep"]->setFloat(sampleStep);
-        context["densityMultiplier"]->setFloat(cloudLengthMeters / meanFreePathMeters);
-
         context["mie"]->setTextureSampler(Mie::getMieSampler(context));
         context["choppedMie"]->setTextureSampler(Mie::getChoppedMieSampler(context));
         context["choppedMieIntegral"]->setTextureSampler(Mie::getChoppedMieIntegralSampler(context));
 
-        for each (auto item in sceneItems)
+        for (const auto& item : sceneItems)
         {
-            item->Init();
+            item->init();
         }
     }
 
-    void Scene::Display()
+    void Scene::update()
     {
-        for each (auto item in sceneItems)
+        for (const auto& item: sceneItems)
         {
-            item->Update();
+            item->update();
         }
+    }
+
+    bool Scene::isCompleted()
+    {
+        return std::all_of(sceneItems.begin(), sceneItems.end(), [](auto x)
+        {
+            return x->isCompleted();
+        });
     }
 }
