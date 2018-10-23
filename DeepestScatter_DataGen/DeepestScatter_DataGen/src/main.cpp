@@ -56,6 +56,10 @@ int main(int argc, char* argv[])
 
         try 
         {
+            di::ContainerBuilder datasetBuilder;
+            datasetBuilder.addRegistrations(installDataset(databasePath));
+            auto dataset = datasetBuilder.build();
+
             std::queue<GuiExecutionLoop::LazyTask> tasks;
 
             std::filesystem::path p("../Clouds/10_FREEBIE_CLOUDS");
@@ -70,10 +74,10 @@ int main(int argc, char* argv[])
                     {
                         di::ContainerBuilder builder;
 
-                        builder.addRegistrations(installFramework(cloudPath, databasePath, width, height));
+                        builder.addRegistrations(installFramework(cloudPath, width, height));
                         builder.addRegistrations(installSetupCollectorApp());
 
-                        auto container = builder.build();
+                        auto container = builder.buildNestedContainerFrom(*dataset.get());
 
                         auto camera = container->resolve<Camera>();
                         camera->completed = false;

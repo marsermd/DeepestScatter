@@ -14,15 +14,16 @@
 
 namespace DeepestScatter
 {
+    namespace di = Hypodermic;
+
     template<class T>
-    void addSceneItem(Hypodermic::ContainerBuilder& builder)
+    void addSceneItem(di::ContainerBuilder& builder)
     {
-        builder.registerType<T>().as<SceneItem>().asSelf().singleInstance();
+        builder.registerType<T>().template as<SceneItem>().asSelf().singleInstance();
     }
 
-    Hypodermic::ContainerBuilder installPathTracingApp()
+    di::ContainerBuilder installPathTracingApp()
     {
-        namespace di = Hypodermic;
         di::ContainerBuilder builder;
 
         addSceneItem<Sun>(builder);
@@ -33,9 +34,8 @@ namespace DeepestScatter
         return builder;
     }
 
-    Hypodermic::ContainerBuilder installSetupCollectorApp()
+    di::ContainerBuilder installSetupCollectorApp()
     {
-        namespace di = Hypodermic;
         di::ContainerBuilder builder;
 
         addSceneItem<Sun>(builder);
@@ -47,13 +47,21 @@ namespace DeepestScatter
         return builder;
     }
 
-    Hypodermic::ContainerBuilder installFramework(
+    di::ContainerBuilder installDataset(const std::string& databasePath)
+    {
+        di::ContainerBuilder builder;
+
+        builder.registerInstance(std::make_shared<Dataset::Settings>(databasePath));
+        builder.registerInstance(std::make_shared<BatchSettings>(2048));
+        builder.registerType<Dataset>().singleInstance();
+
+        return builder;
+    }
+
+    di::ContainerBuilder installFramework(
         const std::string& cloudPath,
-        const std::string& databasePath,
         uint32_t width, uint32_t height)
     {
-        namespace di = Hypodermic;
-
         auto scene = SceneDescription
         {
             Cloud
@@ -82,14 +90,11 @@ namespace DeepestScatter
         di::ContainerBuilder builder;
 
         builder.addRegistrations(BindSceneDescription(scene));
-        builder.registerInstance(std::make_shared<Dataset::Settings>(databasePath));
         builder.registerInstance(std::make_shared<Camera::Settings>(width, height));
-        builder.registerInstance(std::make_shared<BatchSettings>(2048));
 
         builder.registerInstance(std::make_shared<optix::Context>(optix::Context::create()));
 
         builder.registerType<Resources>().singleInstance();
-        builder.registerType<Dataset>().singleInstance();
         builder.registerType<Scene>().singleInstance();
 
         return builder;

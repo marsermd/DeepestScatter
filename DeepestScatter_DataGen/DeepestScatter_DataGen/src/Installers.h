@@ -8,8 +8,9 @@ namespace DeepestScatter
 
     Hypodermic::ContainerBuilder installSetupCollectorApp();
 
+    Hypodermic::ContainerBuilder installDataset(const std::string& databasePath);
+
     Hypodermic::ContainerBuilder installFramework(
         const std::string& cloudPath,
-        const std::string& databasePath,
         uint32_t width, uint32_t height);
 }
