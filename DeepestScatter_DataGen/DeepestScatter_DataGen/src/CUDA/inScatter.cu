@@ -8,7 +8,7 @@
 using namespace optix;
 
 rtDeclareVariable(uint3, launchID, rtLaunchIndex, );
-rtBuffer<uchar1, 3>   resultBuffer;
+rtBuffer<uchar1, 3>   inScatterBuffer;
 
 rtDeclareVariable(float3, lightDirection, , );
 rtDeclareVariable(float, lightIntensity, , );
@@ -34,12 +34,12 @@ inline RT_HOSTDEVICE float3 make_float3(size_t3 st)
 static __host__ __device__ __inline__ float sampleCloud(float3 pos)
 {
     pos = pos * textureScale;
-    return tex3D(density, pos.x, pos.y, pos.z);
+    return tex3D(density, pos.x, pos.y, pos.z) * 2;
 }
 
 RT_PROGRAM void inScatter()
 {
-    const size_t3 size = resultBuffer.size();
+    const size_t3 size = inScatterBuffer.size();
     const size_t maxSize = max(max(size.x, size.y), size.z);
     const float minScale = fminf(fminf(textureScale.x, textureScale.y), textureScale.z);
 
@@ -62,5 +62,5 @@ RT_PROGRAM void inScatter()
             break;
         }
     }
-    resultBuffer[launchID] = make_uchar1(transmittance * 255.f);
+    inScatterBuffer[launchID] = make_uchar1(transmittance * 255.f);
 }

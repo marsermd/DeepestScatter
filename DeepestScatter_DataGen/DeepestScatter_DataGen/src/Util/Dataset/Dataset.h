@@ -4,10 +4,10 @@
 #include <utility>
 #include <vector>
 #include <unordered_map>
+#include <gsl/span>
 
 #include <lmdb.h>
 #include <functional>
-#include <gsl/span>
 #include "Transaction.h"
 #include "LmdbExceptions.h"
 
@@ -19,7 +19,7 @@ namespace DeepestScatter
         struct Settings;
         class Example;
 
-        explicit Dataset(const Settings& settings);
+        explicit Dataset(std::shared_ptr<Settings> settings);
         ~Dataset();
 
         template<class T>
@@ -44,7 +44,7 @@ namespace DeepestScatter
         void tryAppend(const T& example, int entryId);
 
         template<class T>
-        void tryBatchAppend(gsl::span<T> examples, int startId);
+        void tryBatchAppend(gsl::span<T> examples, int nextExampleId);
 
         void increaseSizeIfNeededWhile(const std::function<void(void)>& action);
         void increaseSize();

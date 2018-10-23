@@ -1,7 +1,10 @@
 ﻿#include "SceneSetupCollector.h"
 #include "Util/BufferBind.h"
+
+#pragma warning(push, 0)
 #include "SceneSetup.pb.h"
 #include "ScatterSample.pb.h"
+#pragma warning(pop)
 
 namespace DeepestScatter 
 {
@@ -17,7 +20,7 @@ namespace DeepestScatter
         SetupVariables(generateProgram);
 
         reset();
-        Collect();
+        collect();
     }
 
     void SceneSetupCollector::reset()
@@ -26,7 +29,7 @@ namespace DeepestScatter
         context->launch(0, settings.size);
     }
 
-    void SceneSetupCollector::Collect()
+    void SceneSetupCollector::collect()
     {
         std::cout << "Generating samples..." << std::endl;
         context->setRayGenerationProgram(0, generateProgram);

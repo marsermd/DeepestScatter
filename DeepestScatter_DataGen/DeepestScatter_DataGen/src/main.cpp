@@ -1,8 +1,4 @@
-#include "Boost/di.hpp"
-
-#include <GL/glew.h>
-#include <GL/wglew.h>
-#include <GL/freeglut.h>
+#include "Hypodermic/Hypodermic.h"
 
 #include <cstdlib>
 #include <string>
@@ -14,12 +10,11 @@
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"
 #include "Util/Dataset/Dataset.h"
-#include "SceneSetup.pb.h"
 #include "Installers.h"
-#include "Boost/uml_dumper.hpp"
 #include "ExecutionLoop/GuiExecutionLoop.h"
+#include <filesystem>
 
-namespace di = boost::di;
+namespace di = Hypodermic;
 using namespace DeepestScatter;
 
 uint32_t width = 640u;
@@ -28,8 +23,11 @@ uint32_t height = 480u;
 void printUsageAndExit(const char* argv0);
 
 
+
 int main(int argc, char* argv[])
 {
+    di::Behavior::configureRuntimeRegistration(false);
+
     try
     {
         if (argc < 2)
@@ -58,23 +56,37 @@ int main(int argc, char* argv[])
 
         try 
         {
-            std::queue<GuiExecutionLoop::Task> tasks;
+            std::queue<GuiExecutionLoop::LazyTask> tasks;
 
-            for (int i = 0; i < 10; i++)
+            std::filesystem::path p("../Clouds/10_FREEBIE_CLOUDS");
+            for (std::filesystem::directory_iterator fileIt(p); !fileIt._At_end(); ++fileIt)
             {
-                auto task = std::make_shared<di::injector<std::shared_ptr<Scene>, std::shared_ptr<Camera>>>(di::make_injector<DIConfig>
-                (
-                    installFramework(cloudPath, databasePath, width, height),
-                    installSetupCollectorApp()
-                ));
+                std::cout << fileIt->path() << " -> " << fileIt->path().extension() << std::endl;
+                if (fileIt->path().has_extension() && ".vdb" == fileIt->path().extension())
+                {
+                    auto cloudPath = fileIt->path().string();
 
-                task->create<std::shared_ptr<Camera>>()->completed = false;
+                    GuiExecutionLoop::LazyTask task = [=]()
+                    {
+                        di::ContainerBuilder builder;
 
-                tasks.push(task);
+                        builder.addRegistrations(installFramework(cloudPath, databasePath, width, height));
+                        builder.addRegistrations(installSetupCollectorApp());
+
+                        auto container = builder.build();
+
+                        auto camera = container->resolve<Camera>();
+                        camera->completed = false;
+
+                        return container;
+                    };
+
+                    tasks.push(task);
+                }
             }
 
             GuiExecutionLoop loop(argc, argv);
-            loop.run(tasks);
+            loop.run(std::move(tasks));
         }
         catch (const std::exception& e)
         {

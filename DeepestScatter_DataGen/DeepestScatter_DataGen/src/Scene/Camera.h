@@ -1,8 +1,11 @@
 #pragma once
 
 #include <optixu/optixpp_namespace.h>
-#include <optixu/optixu_math_stream_namespace.h>
 
+#include <memory>
+#include <utility>
+
+#include "Util/Resources.h"
 #include "Util/Arcball.h"
 #include "SceneItem.h"
 
@@ -13,16 +16,21 @@ namespace DeepestScatter
     class Camera : public SceneItem
     {
     public:
-        struct Settings;
+        struct Settings
+        {
+            Settings(uint32_t width, uint32_t height) :
+                width(width), height(height) {}
 
-        Camera(const Settings& settings, optix::Context context, std::shared_ptr<Resources> resources):
-            width(settings.width), height(settings.height),
-            context(context),
-            resources(resources) 
+            uint32_t width;
+            uint32_t height;
+        };
+
+        Camera(std::shared_ptr<Settings> settings, std::shared_ptr<optix::Context> context, std::shared_ptr<Resources> resources) :
+            width(settings->width), height(settings->height),
+            context(*context.get()),
+            resources(std::move(resources))
         {
         }
-
-        virtual ~Camera() override = default;
 
         void init() override;
         void update() override;
@@ -35,26 +43,19 @@ namespace DeepestScatter
         void increaseExposure();
         void decreaseExposure();
 
-        struct Settings
-        {
-            Settings(uint32_t width, uint32_t height) :
-                width(width), height(height) {}
-
-            uint32_t width;
-            uint32_t height;
-        };
-
         bool completed = true;
 
     private:
+        void setupVariables(optix::Program& program);
+
         void render();
         void updatePosition();
+        
+        uint32_t width;
+        uint32_t height;
 
         optix::Context context;
         std::shared_ptr<Resources> resources;
-
-        uint32_t width;
-        uint32_t height;
 
         sutil::Arcball arcball;
 
@@ -75,6 +76,9 @@ namespace DeepestScatter
         optix::Program reinhardFirstPass;
         optix::Program reinhardSecondPass;
         optix::Program reinhardLastPass;
+
+        optix::Buffer  reinhardSumLuminanceColumn;
+        optix::Buffer  reinhardAverageLuminance;
 
         optix::Buffer  progressiveBuffer;
         optix::Buffer  varianceBuffer;

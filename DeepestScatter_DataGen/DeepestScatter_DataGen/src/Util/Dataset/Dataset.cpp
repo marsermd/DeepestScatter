@@ -5,30 +5,33 @@
 
 namespace DeepestScatter
 {
-    Dataset::Dataset(const Settings& settings)
+    Dataset::Dataset(std::shared_ptr<Settings> settings)
     {
-        std::cout << "creating environment" << std::endl;
+        std::cout << "Opening Dataset..." << std::endl;
         LmdbExceptions::checkError(mdb_env_create(&mdbEnv));
 
-        std::cout << "setting db count" << std::endl;
         LmdbExceptions::checkError(mdb_env_set_maxdbs(mdbEnv, 64u));
 
-        std::cout << "opening db" << std::endl;
         LmdbExceptions::checkError(
-            mdb_env_open(mdbEnv, settings.path.c_str(), MDB_NOTLS | MDB_NOSUBDIR, 0)
+            mdb_env_open(mdbEnv, settings->path.c_str(), MDB_NOTLS | MDB_NOSUBDIR, 0)
         );
-
-        std::cout << "success" << std::endl;
     }
 
     Dataset::~Dataset()
     {
+        std::vector<TableName> tablesToClose;
+        tablesToClose.reserve(openedTables.size());
         for (const auto& nameAndTable: openedTables)
         {
-            closeTable(nameAndTable.first);
+            tablesToClose.push_back(nameAndTable.first);
         }
 
-        std::cout << "closing environment" << std::endl;
+        for (const auto& table: tablesToClose)
+        {
+            closeTable(table);
+        }
+
+        std::cout << "Closing Dataset" << std::endl;
         mdb_env_close(mdbEnv);
     }
 
@@ -93,7 +96,6 @@ namespace DeepestScatter
 
         Transaction::withTransaction<void>(mdbEnv, nullptr, 0, [&](Transaction& transaction)
         {
-
             mdb_dbi_close(mdbEnv, openedTables[name]);
             openedTables.erase(name);
         });

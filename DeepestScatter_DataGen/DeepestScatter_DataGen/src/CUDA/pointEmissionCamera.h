@@ -8,11 +8,12 @@
 using namespace optix;
 
 rtDeclareVariable(uint, launchID, rtLaunchIndex, );
-rtBuffer<float, 1> resultBuffer;
-rtBuffer<float, 1> varianceBuffer;
 
 rtBuffer<float3, 1> directionBuffer;
 rtBuffer<float3, 1> positionBuffer;
+
+rtBuffer<float, 1> resultBuffer;
+rtBuffer<float, 1> varianceBuffer;
 
 rtDeclareVariable(rtObject, objectRoot, , );
 rtDeclareVariable(float3, errorColor, , );

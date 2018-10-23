@@ -2,6 +2,8 @@
 #include <cassert>
 #include <gsl/span>
 
+#include <iostream>
+
 #include <optixu/optixpp_namespace.h>
 
 namespace DeepestScatter

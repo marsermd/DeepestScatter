@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "SceneItem.h"
-#include <internal/optix_datatypes.h>
 #include "SceneDescription.h"
+#include <optix_world.h>
 
 namespace DeepestScatter
 {
@@ -10,7 +10,7 @@ namespace DeepestScatter
     public:
         typedef DirectionalLight Settings;
 
-        Sun(Settings settings, optix::Context context);
+        Sun(std::shared_ptr<Settings> settings, std::shared_ptr<optix::Context> context);
 
         void init() override;
         void reset() override {}

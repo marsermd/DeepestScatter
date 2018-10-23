@@ -15,11 +15,10 @@ rtDeclareVariable(rtObject, objectRoot, , );
 rtDeclareVariable(float3, errorColor, , );
 
 rtDeclareVariable(float, sceneEPS, , );
-rtDeclareVariable(unsigned int, subframeId, , );
 
 RT_PROGRAM void generatePoints()
 {
-    unsigned int seed = tea<6>(launchID * 32768, subframeId);
+    unsigned int seed = tea<6>(launchID * 32768, 0);
     while (true)
     {
         float3 discNormal = uniformOnSphere(seed);

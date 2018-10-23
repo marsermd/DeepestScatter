@@ -28,7 +28,7 @@ namespace DeepestScatter
 
         exception = resources->loadProgram("pinholeCamera.cu", "exception");
         context->setExceptionProgram(0, exception);
-        context["errorColor"]->setFloat(1, 0.6f, 0.6f);
+        exception["errorColor"]->setFloat(1, 0.6f, 0.6f);
 
         miss = resources->loadProgram("pinholeCamera.cu", "miss");
         context->setMissProgram(0, miss);
@@ -41,15 +41,17 @@ namespace DeepestScatter
         reinhardSecondPass = resources->loadProgram("reinhard.cu", "secondPass");
         reinhardLastPass = resources->loadProgram("reinhard.cu", "applyReinhard");
 
-        context["progressiveBuffer"]->setBuffer(progressiveBuffer);
-        context["varianceBuffer"]->setBuffer(varianceBuffer);
+        reinhardSumLuminanceColumn = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_FLOAT, width);
+        reinhardAverageLuminance = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_FLOAT, 1);
 
-        context["totalPixels"]->setUint(width * height);
-        context["screenBuffer"]->setBuffer(screenBuffer);
-
-        context["sumLogColumns"]->setBuffer(context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT, width));
-        context["lAverage"]->setBuffer(context->createBuffer(RT_BUFFER_INPUT_OUTPUT | RT_BUFFER_GPU_LOCAL, RT_FORMAT_FLOAT, 1));
-
+        setupVariables(camera);
+        setupVariables(clearScreen);
+        setupVariables(exception);
+        setupVariables(miss);
+        setupVariables(reinhardFirstPass);
+        setupVariables(reinhardSecondPass);
+        setupVariables(reinhardLastPass);
+        
         reset();
     }
 
@@ -114,9 +116,20 @@ namespace DeepestScatter
         camera["W"]->setFloat(w);
     }
 
+    void Camera::setupVariables(optix::Program& program)
+    {
+        program["progressiveBuffer"]->setBuffer(progressiveBuffer);
+        program["varianceBuffer"]->setBuffer(varianceBuffer);
+
+        program["totalPixels"]->setUint(width * height);
+        program["screenBuffer"]->setBuffer(screenBuffer);
+
+        program["sumLuminanceColumns"]->setBuffer(reinhardSumLuminanceColumn);
+        program["averageLuminance"]->setBuffer(reinhardAverageLuminance);
+    }
+
     void Camera::render()
     {
-
         for (int i = 0; i < 10; i++)
         {
             subframeId++;
@@ -141,7 +154,7 @@ namespace DeepestScatter
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
 
         {
-            BufferBind<optix::uint4> screen(screenBuffer);
+            BufferBind<optix::uchar4> screen(screenBuffer);
             glDrawPixels(width, height, glFormat, glDataType, static_cast<GLvoid*>(&screen[0]));
         }
     }

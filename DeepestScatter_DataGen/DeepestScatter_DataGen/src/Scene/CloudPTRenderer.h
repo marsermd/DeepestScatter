@@ -13,9 +13,9 @@ namespace DeepestScatter
     class CloudPTRenderer: public SceneItem
     {
     public:
-        typedef Cloud::Rendering Settings;
+        typedef std::shared_ptr<Cloud::Rendering> Settings;
 
-        CloudPTRenderer(Settings settings, optix::Context context, std::shared_ptr<Resources> resources);
+        CloudPTRenderer(Settings settings, std::shared_ptr<optix::Context> context, std::shared_ptr<Resources> resources);
 
         void init() override;
         void reset() override {}

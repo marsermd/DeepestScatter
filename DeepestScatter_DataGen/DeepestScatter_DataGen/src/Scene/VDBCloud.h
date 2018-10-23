@@ -2,7 +2,6 @@
 
 #include <optixu/optixpp_namespace.h>
 
-#include "Scene.h"
 #include "SceneItem.h"
 #include "SceneDescription.h"
 #include "Util/Resources.h"
@@ -14,12 +13,7 @@ namespace DeepestScatter
     public:
         typedef Cloud::Model Settings;
 
-        VDBCloud(Settings settings, const optix::Context& context, std::shared_ptr<Resources>& resources):
-            settings(settings),
-            context(context),
-            resources(resources)
-        {
-        }
+        VDBCloud(std::shared_ptr<Settings> settings, std::shared_ptr<optix::Context> context, std::shared_ptr<Resources> resources);
 
         void init() override;
         void reset() override {}

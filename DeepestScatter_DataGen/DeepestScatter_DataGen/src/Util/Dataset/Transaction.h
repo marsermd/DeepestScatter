@@ -39,7 +39,7 @@ namespace DeepestScatter
         {
             if (transaction.transaction != nullptr)
             {
-                std::cout << "Transaction aborting because of " << e.what() << std::endl;
+                std::cout << "Dataset transaction aborted because of " << e.what() << std::endl;
                 transaction.abort();
             }
             throw;
@@ -58,7 +58,7 @@ namespace DeepestScatter
         }
         catch (std::exception& e)
         {
-            std::cout << "Transaction aborting because of " << e.what() << std::endl;
+            std::cout << "Dataset transaction aborted because of " << e.what() << std::endl;
             transaction.abort();
             throw;
         }

@@ -2,15 +2,16 @@
 #include "Util/Resources.h"
 
 #include "CUDA/rayData.cuh"
+#include <iostream>
 
 namespace DeepestScatter
 {
-    CloudPTRenderer::CloudPTRenderer(Settings settings, optix::Context context, std::shared_ptr<Resources> resources)
-        : context(context),
+    CloudPTRenderer::CloudPTRenderer(Settings settings, std::shared_ptr<optix::Context> context, std::shared_ptr<Resources> resources)
+        : context(*context.get()),
           resources(std::move(resources)),
           renderSettings(settings)
     {
-        context["sampleStep"]->setFloat(settings.sampleStep);
+        this->context["sampleStep"]->setFloat(settings->sampleStep);
     }
 
     void CloudPTRenderer::init()
@@ -35,12 +36,11 @@ namespace DeepestScatter
         geometryGroup->setAcceleration(context->createAcceleration("MedianBvh", "Bvh"));
 
         context["objectRoot"]->set(geometryGroup);
-        std::cout << "groundIntensity" << context["groundIntensity"];
     }
 
     std::string CloudPTRenderer::getRenderProgramName() const
     {
-        switch (renderSettings.mode)
+        switch (renderSettings->mode)
         {
         case Cloud::Rendering::Mode::Full:
             return "totalRadiance";

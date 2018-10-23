@@ -13,20 +13,17 @@
     <Filter Include="src\CUDA">
       <UniqueIdentifier>{9121c0ad-7920-4b11-93a0-83ab46a7dcca}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Boost">
-      <UniqueIdentifier>{4a7c91da-dce9-4a42-9ecf-7aff273063bd}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\Uitl\Dataset">
       <UniqueIdentifier>{04e5528e-8012-401a-aae0-f9a5ae867314}</UniqueIdentifier>
     </Filter>
     <Filter Include="src\ExecutionLoop">
       <UniqueIdentifier>{be5f9d91-cee8-4de9-828d-e6d999f088b6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Hypodermic">
+      <UniqueIdentifier>{c1691ded-046b-47cb-8f4c-959b31c67364}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Scene\VDBCloud.cpp">
-      <Filter>src\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="src\Util\Resources.cpp">
       <Filter>src\Uitl</Filter>
     </ClCompile>
@@ -72,6 +69,12 @@
     <ClCompile Include="src\ExecutionLoop\GuiExecutionLoop.cpp">
       <Filter>src\ExecutionLoop</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\VDBCloud.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="Installers.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\CUDA\inScatter.cu">
@@ -115,9 +118,6 @@
     <ClInclude Include="src\Util\Resources.h">
       <Filter>src\Uitl</Filter>
     </ClInclude>
-    <ClInclude Include="src\Boost\di.hpp">
-      <Filter>src\Boost</Filter>
-    </ClInclude>
     <ClInclude Include="src\Scene\Scene.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
@@ -160,12 +160,6 @@
     <ClInclude Include="src\Scene\Sun.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\Boost\DIConfig.h">
-      <Filter>src\Boost</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Boost\uml_dumper.hpp">
-      <Filter>src\Boost</Filter>
-    </ClInclude>
     <ClInclude Include="src\CUDA\pointEmissionCamera.h">
       <Filter>src\CUDA</Filter>
     </ClInclude>
@@ -184,5 +178,300 @@
     <ClInclude Include="src\ExecutionLoop\GuiExecutionLoop.h">
       <Filter>src\ExecutionLoop</Filter>
     </ClInclude>
+    <ClInclude Include="src\Hypodermic\ActivatedRegistrationInfo.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ActivationException.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ActivationHandler.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ActivationHandlers.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ActivationRegistry.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ActivationResult.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\AnyArgument.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ArgumentPack.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ArgumentResolver.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\As.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\AsSelf.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\AutowireableConstructor.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\AutowireableConstructorRegistrationDescriptor.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\Behavior.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\CircularDependencyException.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ComponentContext.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\Config.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ConsoleLoggerSink.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ConstructorDescriptor.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ConstructorTypologyDeducer.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\Container.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ContainerBuilder.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ContainerInstanceRegistration.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ContainerInstanceRegistrationActivator.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\DependencyActivationException.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\DependencyFactories.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\DependencyFactory.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\DependencyFactoryTag.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ExceptionBase.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\FactoryWrapper.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\Hypodermic.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ILoggerSink.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\InstanceAlreadyActivatingException.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\InstanceFactory.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\InstanceLifetime.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\InstanceRegistrationTags.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\IntegerSequence.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\IRegistration.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\IRegistrationActivator.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\IRegistrationDescriptor.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\IRegistrationRegistry.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\IRegistrationScope.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\IResolutionContainer.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\IResolutionContext.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\IRuntimeRegistrationBuilder.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\IsComplete.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\IsSupportedArgument.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ITypeAlias.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\Log.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\Logger.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\LogLevel.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\MetaContains.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\MetaForEach.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\MetaIdentity.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\MetaInsert.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\MetaMap.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\MetaPair.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\Named.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\NamedTypeAlias.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\NestedRegistrationScope.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\NoopLoggerSink.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\OnActivated.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\PersistentInstanceRegistration.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\PointerAlignment.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\Pragmas.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ProvidedDependencyTag.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ProvidedInstanceDependencyTag.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ProvidedInstanceFactoryRegistrationDescriptor.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ProvidedInstanceRegistration.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ProvidedInstanceRegistrationActivator.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ProvidedInstanceRegistrationDescriptor.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\Registration.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\RegistrationActivator.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\RegistrationBuilder.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\RegistrationContext.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\RegistrationDescriptorBase.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\RegistrationDescriptorBuilder.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\RegistrationDescriptorInfo.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\RegistrationDescriptorInfoToString.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\RegistrationException.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\RegistrationScope.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ResolutionContainer.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ResolutionContext.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ResolutionException.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\ResolutionInfo.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\RuntimeRegistrationBuilder.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\SingleInstance.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\TypeAlias.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\TypeAliases.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\TypeAliasKey.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\TypeInfo.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\UseIfNone.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Hypodermic\With.h">
+      <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\Hypodermic\CMakeLists.txt">
+      <Filter>src\Hypodermic</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Hypodermic\Hypodermic.vcxproj">
+      <Filter>src\Hypodermic</Filter>
+    </None>
+    <None Include="src\Hypodermic\Hypodermic.vcxproj.filters">
+      <Filter>src\Hypodermic</Filter>
+    </None>
+    <None Include="src\Hypodermic\libhypodermic.pc.in">
+      <Filter>src\Hypodermic</Filter>
+    </None>
   </ItemGroup>
 </Project>

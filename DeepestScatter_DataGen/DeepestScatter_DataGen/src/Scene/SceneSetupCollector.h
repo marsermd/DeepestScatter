@@ -1,4 +1,5 @@
 ﻿#pragma once
+
 #include <memory>
 
 #include <optixu/optixpp_namespace.h>
@@ -24,23 +25,21 @@ namespace DeepestScatter
     {
     public:
 
-        SceneSetupCollector(optix::Context context, std::shared_ptr<Resources> resources, std::shared_ptr<Dataset> dataset,
-            BatchSettings settings, SceneDescription sceneDescription) :
-            context(context),
+        SceneSetupCollector(std::shared_ptr<optix::Context> context, std::shared_ptr<Resources> resources, std::shared_ptr<Dataset> dataset,
+            std::shared_ptr<BatchSettings> settings, std::shared_ptr<SceneDescription> sceneDescription) :
+            context(*context.get()),
             resources(std::move(resources)),
             dataset(std::move(dataset)),
-            settings(settings),
-            sceneDescription(sceneDescription)
+            settings(*settings.get()),
+            sceneDescription(*sceneDescription.get())
         {
         }
 
-        virtual ~SceneSetupCollector() override = default;
-
-        void Collect();
+        void collect();
 
         void init() override;
         void reset() override;
-        void update() {};
+        void update() override {};
 
     private:
         template <class T>

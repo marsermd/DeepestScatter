@@ -26,7 +26,7 @@ namespace DeepestScatter
 
     std::tuple<optix::Buffer, optix::float3> Resources::loadVolumeBuffer(const std::string &path, bool createMipmaps)
     {
-        std::cout << "Loading VDB" << path << std::endl;
+        std::cout << "Loading VDB..." << path << std::endl;
 
         openvdb::initialize();
 
@@ -91,7 +91,6 @@ namespace DeepestScatter
                     }
                 }
             }
-            std::cout << "finish" << std::endl;
             assert(targetPos == sizeX * sizeY * sizeZ);
         }
 

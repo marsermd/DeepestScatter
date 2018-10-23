@@ -3,13 +3,14 @@
 #include <tuple>
 #include <string>
 #include <optixu/optixpp_namespace.h>
+#include <iostream>
 
 namespace DeepestScatter
 {
     class Resources
     {
     public:
-        Resources(optix::Context context) : context(context) {}
+        Resources(std::shared_ptr<optix::Context> context) : context(*context.get()) {}
 
         /**
         * Load a volume from .vdb file with a density grid of type uint_8.

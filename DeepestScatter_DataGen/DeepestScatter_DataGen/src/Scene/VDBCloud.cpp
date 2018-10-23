@@ -5,6 +5,13 @@
 
 namespace DeepestScatter
 {
+    VDBCloud::VDBCloud(std::shared_ptr<Settings> settings, std::shared_ptr<optix::Context> context, std::shared_ptr<Resources> resources) :
+        settings(*settings.get()),
+        context(*context.get()),
+        resources(resources)
+    {
+    }
+
     void VDBCloud::init()
     {
         InitVolume();
@@ -33,7 +40,7 @@ namespace DeepestScatter
         optix::Program inScatter = resources->loadProgram("inScatter.cu", "inScatter");
         SetupVolumeVariables(inScatter);
 
-        inScatter["resultBuffer"]->setBuffer(inScatterBuffer);
+        inScatter["inScatterBuffer"]->setBuffer(inScatterBuffer);
         context->setRayGenerationProgram(0, inScatter);
 
         context->validate();

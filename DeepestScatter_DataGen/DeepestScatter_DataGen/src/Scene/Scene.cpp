@@ -1,26 +1,11 @@
 #include "Scene.h"
 
-#include <stdlib.h>
-#include <stdio.h>
 #include <algorithm>
-#include <memory>
 #include <iostream>
-#include <fstream>
-
-#include <gsl/gsl_util>
-
-#include <optix.h>
-#include "GL/freeglut.h"
+#include <utility>
 
 #pragma warning(push, 0)
 #include "Util/sutil.h"
-
-#include <openvdb/openvdb.h>
-#include <openvdb/io/Stream.h>
-
-#include <openvdb/Types.h>
-#include <openvdb/tools/Statistics.h>
-#include <openvdb/math/Stats.h>
 #pragma warning(pop)
 
 #include "SceneItem.h"
@@ -28,15 +13,15 @@
 
 namespace DeepestScatter
 {
-    Scene::Scene(const std::vector<std::shared_ptr<SceneItem>>& sceneItems, optix::Context context):
-        sceneItems(sceneItems),
-        context(context)
+    Scene::Scene(std::vector<std::shared_ptr<SceneItem>> sceneItems, std::shared_ptr<optix::Context> context):
+        sceneItems(std::move(sceneItems)),
+        context(*context.get())
     {
-        context["skyIntensity"]->setFloat(.6f, .6f, 2);
-        context["groundIntensity"]->setFloat(.6f, .8f, 1.1f);
+        this->context["skyIntensity"]->setFloat(.6f, .6f, 2);
+        this->context["groundIntensity"]->setFloat(.6f, .8f, 1.1f);
 
-        context->setRayTypeCount(2);
-        context->setEntryPointCount(1);
+        this->context->setRayTypeCount(2);
+        this->context->setEntryPointCount(1);
     }
 
     void Scene::restartProgressive()

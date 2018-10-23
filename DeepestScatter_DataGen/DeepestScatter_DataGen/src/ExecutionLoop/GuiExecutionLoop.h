@@ -3,8 +3,10 @@
 
 #include <optixu/optixu_math_namespace.h>
 #include <memory>
+#include <functional>
 #include <queue>
 
+#include "Hypodermic/Hypodermic.h"
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"
 
@@ -13,13 +15,14 @@ namespace DeepestScatter
     class GuiExecutionLoop : public ExecutionLoop
     {
     public:
-        using Task = std::shared_ptr<boost::di::injector<std::shared_ptr<Scene>, std::shared_ptr<Camera>>>;
+        using Task = Hypodermic::Container;
+        using LazyTask = std::function<std::shared_ptr<Task>(void)>;
 
         GuiExecutionLoop(int argc, char** argv);
         ~GuiExecutionLoop();
 
         void getNextTask();
-        void run(const std::queue<Task>& tasks);
+        void run(std::queue<LazyTask>&& tasks);
 
     private:
         static void glutInitialize(int* argc, char** argv);
@@ -40,11 +43,12 @@ namespace DeepestScatter
 
         std::shared_ptr<Scene> currentScene;
         std::shared_ptr<Camera> currentCamera;
+        std::shared_ptr<Task> currentContainer;
 
-        std::queue<Task> tasks;
+        std::queue<LazyTask> tasks;
     };
 
-    inline void GuiExecutionLoop::run(const std::queue<Task>& tasks)
+    inline void GuiExecutionLoop::run(std::queue<LazyTask>&& tasks)
     {
         this->tasks = tasks;
         getNextTask();

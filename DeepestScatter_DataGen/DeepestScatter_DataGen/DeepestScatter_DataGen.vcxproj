@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Installers.cpp" />
     <ClCompile Include="src\ExecutionLoop\GuiExecutionLoop.cpp" />
     <ClCompile Include="src\Mie.cpp" />
     <ClCompile Include="src\main.cpp" />
@@ -38,15 +39,105 @@
     <CudaCompile Include="src\CUDA\reinhard.cu" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\Boost\di.hpp" />
-    <ClInclude Include="src\Boost\DIConfig.h" />
-    <ClInclude Include="src\Boost\uml_dumper.hpp" />
     <ClInclude Include="src\CUDA\cloud.cuh" />
     <ClInclude Include="src\CUDA\optixExtraMath.cuh" />
     <ClInclude Include="src\CUDA\pointEmissionCamera.h" />
     <ClInclude Include="src\CUDA\random.cuh" />
     <ClInclude Include="src\ExecutionLoop\ExecutionLoop.h" />
     <ClInclude Include="src\ExecutionLoop\GuiExecutionLoop.h" />
+    <ClInclude Include="src\Hypodermic\ActivatedRegistrationInfo.h" />
+    <ClInclude Include="src\Hypodermic\ActivationException.h" />
+    <ClInclude Include="src\Hypodermic\ActivationHandler.h" />
+    <ClInclude Include="src\Hypodermic\ActivationHandlers.h" />
+    <ClInclude Include="src\Hypodermic\ActivationRegistry.h" />
+    <ClInclude Include="src\Hypodermic\ActivationResult.h" />
+    <ClInclude Include="src\Hypodermic\AnyArgument.h" />
+    <ClInclude Include="src\Hypodermic\ArgumentPack.h" />
+    <ClInclude Include="src\Hypodermic\ArgumentResolver.h" />
+    <ClInclude Include="src\Hypodermic\As.h" />
+    <ClInclude Include="src\Hypodermic\AsSelf.h" />
+    <ClInclude Include="src\Hypodermic\AutowireableConstructor.h" />
+    <ClInclude Include="src\Hypodermic\AutowireableConstructorRegistrationDescriptor.h" />
+    <ClInclude Include="src\Hypodermic\Behavior.h" />
+    <ClInclude Include="src\Hypodermic\CircularDependencyException.h" />
+    <ClInclude Include="src\Hypodermic\ComponentContext.h" />
+    <ClInclude Include="src\Hypodermic\Config.h" />
+    <ClInclude Include="src\Hypodermic\ConsoleLoggerSink.h" />
+    <ClInclude Include="src\Hypodermic\ConstructorDescriptor.h" />
+    <ClInclude Include="src\Hypodermic\ConstructorTypologyDeducer.h" />
+    <ClInclude Include="src\Hypodermic\Container.h" />
+    <ClInclude Include="src\Hypodermic\ContainerBuilder.h" />
+    <ClInclude Include="src\Hypodermic\ContainerInstanceRegistration.h" />
+    <ClInclude Include="src\Hypodermic\ContainerInstanceRegistrationActivator.h" />
+    <ClInclude Include="src\Hypodermic\DependencyActivationException.h" />
+    <ClInclude Include="src\Hypodermic\DependencyFactories.h" />
+    <ClInclude Include="src\Hypodermic\DependencyFactory.h" />
+    <ClInclude Include="src\Hypodermic\DependencyFactoryTag.h" />
+    <ClInclude Include="src\Hypodermic\ExceptionBase.h" />
+    <ClInclude Include="src\Hypodermic\FactoryWrapper.h" />
+    <ClInclude Include="src\Hypodermic\Hypodermic.h" />
+    <ClInclude Include="src\Hypodermic\ILoggerSink.h" />
+    <ClInclude Include="src\Hypodermic\InstanceAlreadyActivatingException.h" />
+    <ClInclude Include="src\Hypodermic\InstanceFactory.h" />
+    <ClInclude Include="src\Hypodermic\InstanceLifetime.h" />
+    <ClInclude Include="src\Hypodermic\InstanceRegistrationTags.h" />
+    <ClInclude Include="src\Hypodermic\IntegerSequence.h" />
+    <ClInclude Include="src\Hypodermic\IRegistration.h" />
+    <ClInclude Include="src\Hypodermic\IRegistrationActivator.h" />
+    <ClInclude Include="src\Hypodermic\IRegistrationDescriptor.h" />
+    <ClInclude Include="src\Hypodermic\IRegistrationRegistry.h" />
+    <ClInclude Include="src\Hypodermic\IRegistrationScope.h" />
+    <ClInclude Include="src\Hypodermic\IResolutionContainer.h" />
+    <ClInclude Include="src\Hypodermic\IResolutionContext.h" />
+    <ClInclude Include="src\Hypodermic\IRuntimeRegistrationBuilder.h" />
+    <ClInclude Include="src\Hypodermic\IsComplete.h" />
+    <ClInclude Include="src\Hypodermic\IsSupportedArgument.h" />
+    <ClInclude Include="src\Hypodermic\ITypeAlias.h" />
+    <ClInclude Include="src\Hypodermic\Log.h" />
+    <ClInclude Include="src\Hypodermic\Logger.h" />
+    <ClInclude Include="src\Hypodermic\LogLevel.h" />
+    <ClInclude Include="src\Hypodermic\MetaContains.h" />
+    <ClInclude Include="src\Hypodermic\MetaForEach.h" />
+    <ClInclude Include="src\Hypodermic\MetaIdentity.h" />
+    <ClInclude Include="src\Hypodermic\MetaInsert.h" />
+    <ClInclude Include="src\Hypodermic\MetaMap.h" />
+    <ClInclude Include="src\Hypodermic\MetaPair.h" />
+    <ClInclude Include="src\Hypodermic\Named.h" />
+    <ClInclude Include="src\Hypodermic\NamedTypeAlias.h" />
+    <ClInclude Include="src\Hypodermic\NestedRegistrationScope.h" />
+    <ClInclude Include="src\Hypodermic\NoopLoggerSink.h" />
+    <ClInclude Include="src\Hypodermic\OnActivated.h" />
+    <ClInclude Include="src\Hypodermic\PersistentInstanceRegistration.h" />
+    <ClInclude Include="src\Hypodermic\PointerAlignment.h" />
+    <ClInclude Include="src\Hypodermic\Pragmas.h" />
+    <ClInclude Include="src\Hypodermic\ProvidedDependencyTag.h" />
+    <ClInclude Include="src\Hypodermic\ProvidedInstanceDependencyTag.h" />
+    <ClInclude Include="src\Hypodermic\ProvidedInstanceFactoryRegistrationDescriptor.h" />
+    <ClInclude Include="src\Hypodermic\ProvidedInstanceRegistration.h" />
+    <ClInclude Include="src\Hypodermic\ProvidedInstanceRegistrationActivator.h" />
+    <ClInclude Include="src\Hypodermic\ProvidedInstanceRegistrationDescriptor.h" />
+    <ClInclude Include="src\Hypodermic\Registration.h" />
+    <ClInclude Include="src\Hypodermic\RegistrationActivator.h" />
+    <ClInclude Include="src\Hypodermic\RegistrationBuilder.h" />
+    <ClInclude Include="src\Hypodermic\RegistrationContext.h" />
+    <ClInclude Include="src\Hypodermic\RegistrationDescriptorBase.h" />
+    <ClInclude Include="src\Hypodermic\RegistrationDescriptorBuilder.h" />
+    <ClInclude Include="src\Hypodermic\RegistrationDescriptorInfo.h" />
+    <ClInclude Include="src\Hypodermic\RegistrationDescriptorInfoToString.h" />
+    <ClInclude Include="src\Hypodermic\RegistrationException.h" />
+    <ClInclude Include="src\Hypodermic\RegistrationScope.h" />
+    <ClInclude Include="src\Hypodermic\ResolutionContainer.h" />
+    <ClInclude Include="src\Hypodermic\ResolutionContext.h" />
+    <ClInclude Include="src\Hypodermic\ResolutionException.h" />
+    <ClInclude Include="src\Hypodermic\ResolutionInfo.h" />
+    <ClInclude Include="src\Hypodermic\RuntimeRegistrationBuilder.h" />
+    <ClInclude Include="src\Hypodermic\SingleInstance.h" />
+    <ClInclude Include="src\Hypodermic\TypeAlias.h" />
+    <ClInclude Include="src\Hypodermic\TypeAliases.h" />
+    <ClInclude Include="src\Hypodermic\TypeAliasKey.h" />
+    <ClInclude Include="src\Hypodermic\TypeInfo.h" />
+    <ClInclude Include="src\Hypodermic\UseIfNone.h" />
+    <ClInclude Include="src\Hypodermic\With.h" />
     <ClInclude Include="src\Installers.h" />
     <ClInclude Include="src\Mie.h" />
     <ClInclude Include="src\CUDA\rayData.cuh" />
@@ -67,6 +158,14 @@
     <ClInclude Include="src\Util\Resources.h" />
     <ClInclude Include="src\Util\sutil.h" />
     <ClInclude Include="src\Util\sutilapi.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="src\Hypodermic\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\Hypodermic\Hypodermic.vcxproj" />
+    <None Include="src\Hypodermic\Hypodermic.vcxproj.filters" />
+    <None Include="src\Hypodermic\libhypodermic.pc.in" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{70F7B276-C163-4F2F-9E8C-1DC3A00CF8DB}</ProjectGuid>
@@ -109,7 +208,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>OPENVDB_ABI_VERSION_NUMBER=5;OPENEXR_DLL;NOMINMAX;WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_DI_CFG_DIAGNOSTICS_LEVEL=2;OPENVDB_ABI_VERSION_NUMBER=5;OPENEXR_DLL;NOMINMAX;WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../DeepestScatter_Train/CppProtocols;src;$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -149,7 +248,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>OPENVDB_ABI_VERSION_NUMBER=5;OPENEXR_DLL;NOMINMAX;WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>BOOST_DI_CFG_DIAGNOSTICS_LEVEL=2;OPENVDB_ABI_VERSION_NUMBER=5;OPENEXR_DLL;NOMINMAX;WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>../../DeepestScatter_Train/CppProtocols;src;$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>

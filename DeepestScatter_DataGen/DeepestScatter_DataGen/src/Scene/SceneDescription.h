@@ -1,11 +1,9 @@
 ﻿#pragma once
 
-#include <optixu/optixpp_namespace.h>
+#include "Hypodermic/Hypodermic.h"
+
 #include <memory>
-#include "Boost/di.hpp"
 #include <optixu/optixu_math_namespace.h>
-#include <iostream>
-#include "Boost/DIConfig.h"
 
 namespace DeepestScatter
 {
@@ -68,7 +66,7 @@ namespace DeepestScatter
                 On
             };
 
-            Model(std::string& vdbPath, Mipmaps mipmaps, Size size, Meter meanFreePath)
+            Model(const std::string& vdbPath, Mipmaps mipmaps, Size size, Meter meanFreePath)
                 : vdbPath(vdbPath),
                   mipmapsOn(mipmaps),
                   size(size),
@@ -100,16 +98,17 @@ namespace DeepestScatter
 
     inline auto BindSceneDescription(SceneDescription& scene)
     {
-        namespace di = boost::di;
-        auto injector = di::make_injector(
-            di::bind<>().to(std::make_shared<Cloud::Model>(scene.cloud.model)),
-            di::bind<>().to(std::make_shared<Cloud::Rendering>(scene.cloud.rendering)),
-            di::bind<>().to(std::make_shared<Cloud>(scene.cloud)),
+        namespace di = Hypodermic;
+        di::ContainerBuilder builder;
 
-            di::bind<>().to(std::make_shared<DirectionalLight>(scene.light)),
+        builder.registerInstance(std::make_shared<Cloud::Model>(scene.cloud.model));
+        builder.registerInstance(std::make_shared<Cloud::Rendering>(scene.cloud.rendering));
+        builder.registerInstance(std::make_shared<Cloud>(scene.cloud));
 
-            di::bind<>().to(std::make_shared<SceneDescription>(scene))
-        );
-        return injector;
+        builder.registerInstance(std::make_shared<DirectionalLight>(scene.light));
+
+        builder.registerInstance(std::make_shared<SceneDescription>(scene));
+
+        return builder;
     }
 }

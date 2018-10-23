@@ -1,8 +1,6 @@
-#include <optix_world.h>
+#include <optix_device.h>
 #include <optixu/optixu_math_namespace.h>
 #include <optixu/optixu_vector_types.h>
-#include "random.cuh"
-#include "rayData.cuh"
 
 using namespace optix;
 
@@ -10,8 +8,8 @@ __device__ const float DELTA = 0.00001f;
 
 rtBuffer<float4, 2>   progressiveBuffer;
 rtBuffer<float4, 2>   varianceBuffer;
-rtBuffer<float , 1>   sumLogColumns;
-rtBuffer<float , 1>   lAverage;
+rtBuffer<float , 1>   sumLuminanceColumns;
+rtBuffer<float , 1>   averageLuminance;
 
 rtDeclareVariable(unsigned int, totalPixels, , );
 rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
@@ -28,7 +26,7 @@ __device__ __inline__ float getLuminance(float4 color)
 RT_PROGRAM void firstPass()
 {
     size_t2 screenSize = progressiveBuffer.size();
-    sumLogColumns[launchID.x] = 0;
+    sumLuminanceColumns[launchID.x] = 0;
 
     for (int y = 0; y < screenSize.y; y++)
     {
@@ -38,22 +36,22 @@ RT_PROGRAM void firstPass()
 
         // Normally we would calculate a log-average, but here we are trying to display the brightest part in it's best (the cloud)
         // And therefore we will use a simple average.
-        sumLogColumns[launchID.x] += luminance + DELTA;
+        sumLuminanceColumns[launchID.x] += luminance + DELTA;
     }
 }
 
 /// Call only once for the whole image
 RT_PROGRAM void secondPass()
 {
-    size_t horizontalSize = sumLogColumns.size();
+    size_t horizontalSize = sumLuminanceColumns.size();
     float result = 0;
     for (int i = 0; i < horizontalSize; i++)
     {
-        result += sumLogColumns[i];
+        result += sumLuminanceColumns[i];
     }
     result = result / (float)totalPixels;
 
-    lAverage[0] = result;
+    averageLuminance[0] = result;
 }
 
 rtDeclareVariable(float, exposure, , );
@@ -65,7 +63,7 @@ RT_PROGRAM void applyReinhard()
 {
     float4 color = progressiveBuffer[launchID];
     float lw = getLuminance(color);
-    float ld = lw * exposure / lAverage[0];
+    float ld = lw * exposure / averageLuminance[0];
     ld = ld / (1.f + ld);
 
     float4 rgb = color * (ld / lw);

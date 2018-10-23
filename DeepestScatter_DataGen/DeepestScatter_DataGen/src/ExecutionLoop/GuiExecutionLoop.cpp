@@ -7,13 +7,15 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#include <assert.h>
+
+#include <optixu/optixpp_namespace.h>
 
 #include "Util/sutil.h"
 
 #include "Scene/Scene.h"
 #include "Scene/Camera.h"
 #include "Util/Dataset/Dataset.h"
-#include "SceneSetup.pb.h"
 
 namespace DeepestScatter
 {
@@ -60,7 +62,7 @@ namespace DeepestScatter
 
     GuiExecutionLoop::GuiExecutionLoop(int argc, char** argv)
     {
-        assert(instance == nullptr, "Two GuiExecutionsLoops running at once!");
+        assert(instance == nullptr);//"Two GuiExecutionsLoops running at once!"
 
         instance = this;
 
@@ -88,28 +90,41 @@ namespace DeepestScatter
             return;
         }
 
-        Task& task = tasks.front();
-        tasks.pop();
-        currentScene = task->create<std::shared_ptr<Scene>>();
-        currentCamera = task->create<std::shared_ptr<Camera>>();
+        if (currentContainer) 
+        {
+            optix::Context ctx = *currentContainer->resolve<optix::Context>().get();
+            ctx->destroy();
+        }
+
+        currentContainer.reset();
+        currentScene.reset();
+        currentCamera.reset();
+
+        {
+            currentContainer = tasks.front()();
+            tasks.pop();
+
+            currentCamera = currentContainer->resolve<Camera>();
+            currentScene = currentContainer->resolve<Scene>();
+        }
 
         currentScene->init();
     }
 
     void GuiExecutionLoop::glutDisplay()
     {
-        if (instance->currentScene->isCompleted())
-        {
-            instance->getNextTask();
-        }
-
         double t1 = sutil::currentTime();
         instance->currentScene->update();
         double t2 = sutil::currentTime();
 
         sutil::displayMillisecondsPerFrame((t2 - t1) * 1000);
-        std::cout << "MS/FAME: " << (t2 - t1) * 1000 << std::endl;
+        std::cout << "MS/FRAME: " << (t2 - t1) * 1000 << std::endl;
         glutSwapBuffers();
+
+        if (instance->currentScene->isCompleted())
+        {
+            instance->getNextTask();
+        }
     }
 
     void GuiExecutionLoop::glutMousePress(int button, int state, int x, int y)

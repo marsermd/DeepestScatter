@@ -2,11 +2,11 @@
 
 namespace DeepestScatter
 {
-    Sun::Sun(Settings settings, optix::Context context)
-        : context(context),
-          direction(settings.direction),
-          color(settings.color),
-          intensity(settings.intensity)
+    Sun::Sun(std::shared_ptr<Settings> settings, std::shared_ptr<optix::Context> context)
+        : context(*context.get()),
+          direction(settings->direction),
+          color(settings->color),
+          intensity(settings->intensity)
     {
     }
 
