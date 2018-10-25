@@ -41,7 +41,10 @@
   <ItemGroup>
     <ClInclude Include="src\CUDA\cloud.cuh" />
     <ClInclude Include="src\CUDA\optixExtraMath.cuh" />
-    <ClInclude Include="src\CUDA\pointEmissionCamera.h" />
+    <CudaCompile Include="src\CUDA\pointEmissionCamera.cu">
+      <FileType>Document</FileType>
+    </CudaCompile>
+    <ClInclude Include="src\CUDA\PointRadianceTask.h" />
     <ClInclude Include="src\CUDA\random.cuh" />
     <ClInclude Include="src\ExecutionLoop\ExecutionLoop.h" />
     <ClInclude Include="src\ExecutionLoop\GuiExecutionLoop.h" />
@@ -152,6 +155,7 @@
     <ClInclude Include="src\Scene\VDBCloud.h" />
     <ClInclude Include="src\Util\Arcball.h" />
     <ClInclude Include="src\Util\BufferBind.h" />
+    <ClInclude Include="src\Util\Dataset\BatchSettings.h" />
     <ClInclude Include="src\Util\Dataset\Dataset.h" />
     <ClInclude Include="src\Util\Dataset\LmdbExceptions.h" />
     <ClInclude Include="src\Util\Dataset\Transaction.h" />

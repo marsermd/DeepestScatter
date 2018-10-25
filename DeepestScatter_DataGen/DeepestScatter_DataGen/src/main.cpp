@@ -7,12 +7,14 @@
 
 #include "Util/sutil.h"
 
-#include "Scene/Scene.h"
 #include "Scene/Camera.h"
-#include "Util/Dataset/Dataset.h"
 #include "Installers.h"
 #include "ExecutionLoop/GuiExecutionLoop.h"
-#include <filesystem>
+#include "Util/Dataset/Dataset.h"
+
+#pragma warning (push, 0)
+#include "SceneSetup.pb.h"
+#pragma warning (pop)
 
 namespace di = Hypodermic;
 using namespace DeepestScatter;
@@ -34,8 +36,8 @@ int main(int argc, char* argv[])
         {
             printUsageAndExit(argv[0]);
         }
-        std::string cloudPath = argv[1];
-        std::string databasePath = "../../DeepestScatter_Train/dataset.lmdb";
+        const std::string cloudPath = argv[1];
+        const std::string databasePath = "../../DeepestScatter_Train/dataset.lmdb";
 
         for (int i = 2; i < argc; i++)
         {
@@ -44,7 +46,7 @@ int main(int argc, char* argv[])
                 printUsageAndExit(argv[0]);
             }
             else if (strcmp(argv[i], "--show") == 0)
-            {
+            { 
                 // Nothing special yet.
             }
             else
@@ -58,35 +60,34 @@ int main(int argc, char* argv[])
         {
             di::ContainerBuilder datasetBuilder;
             datasetBuilder.addRegistrations(installDataset(databasePath));
-            auto dataset = datasetBuilder.build();
+            auto rootContainer = datasetBuilder.build();
+
+            auto dataset = rootContainer->resolve<Dataset>();
 
             std::queue<GuiExecutionLoop::LazyTask> tasks;
+            
+            size_t sceneCount = dataset->getRecordsCount<Storage::SceneSetup>();
 
-            std::filesystem::path p("../Clouds/10_FREEBIE_CLOUDS");
-            for (std::filesystem::directory_iterator fileIt(p); !fileIt._At_end(); ++fileIt)
+            for (int32_t i = 0; i < sceneCount; i++)
             {
-                std::cout << fileIt->path() << " -> " << fileIt->path().extension() << std::endl;
-                if (fileIt->path().has_extension() && ".vdb" == fileIt->path().extension())
+                auto sceneSetup = dataset->getRecord<Storage::SceneSetup>(i);
+
+                GuiExecutionLoop::LazyTask task = [=]()
                 {
-                    auto cloudPath = fileIt->path().string();
+                    di::ContainerBuilder taskBuilder;
 
-                    GuiExecutionLoop::LazyTask task = [=]()
-                    {
-                        di::ContainerBuilder builder;
+                    taskBuilder.addRegistrations(installFramework(sceneSetup.cloud_path(), i, width, height));
+                    taskBuilder.addRegistrations(installPathTracingApp());
 
-                        builder.addRegistrations(installFramework(cloudPath, width, height));
-                        builder.addRegistrations(installSetupCollectorApp());
+                    auto container = taskBuilder.buildNestedContainerFrom(*rootContainer.get());
 
-                        auto container = builder.buildNestedContainerFrom(*dataset.get());
+                    auto camera = container->resolve<Camera>();
+                    camera->completed = false;
 
-                        auto camera = container->resolve<Camera>();
-                        camera->completed = false;
+                    return container;
+                };
 
-                        return container;
-                    };
-
-                    tasks.push(task);
-                }
+                tasks.push(task);
             }
 
             GuiExecutionLoop loop(argc, argv);

@@ -17,6 +17,9 @@
 # Virtualenv
 venv
 
+# Jupyter Notebook
+.ipynb_checkpoints
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
@@ -30,7 +33,8 @@ bld/
 [Ll]og/
 
 # Clouds dataset
-DeepestScatter_DataGen/Clouds/
+Clouds_Evaluate/
+Clouds_Train/
 
 # Visual Studio 2015 cache/options directory
 .vs/

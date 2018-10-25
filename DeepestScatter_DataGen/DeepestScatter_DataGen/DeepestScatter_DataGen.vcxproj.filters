@@ -160,9 +160,6 @@
     <ClInclude Include="src\Scene\Sun.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
-    <ClInclude Include="src\CUDA\pointEmissionCamera.h">
-      <Filter>src\CUDA</Filter>
-    </ClInclude>
     <ClInclude Include="src\Util\Dataset\Dataset.h">
       <Filter>src\Uitl\Dataset</Filter>
     </ClInclude>
@@ -456,6 +453,15 @@
     </ClInclude>
     <ClInclude Include="src\Hypodermic\With.h">
       <Filter>src\Hypodermic</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util\Dataset\BatchSettings.h">
+      <Filter>src\Uitl\Dataset</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CUDA\pointEmissionCamera.cu">
+      <Filter>src\CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CUDA\PointRadianceTask.h">
+      <Filter>src\CUDA</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

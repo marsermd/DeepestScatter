@@ -28,7 +28,7 @@ namespace DeepestScatter
 
         exception = resources->loadProgram("pinholeCamera.cu", "exception");
         context->setExceptionProgram(0, exception);
-        exception["errorColor"]->setFloat(1, 0.6f, 0.6f);
+        exception["errorColor"]->setFloat(123123123.123123123f, 0, 0);
 
         miss = resources->loadProgram("pinholeCamera.cu", "miss");
         context->setMissProgram(0, miss);
@@ -67,7 +67,7 @@ namespace DeepestScatter
 
         subframeId = 0;
         context->setRayGenerationProgram(0, clearScreen);
-        context->launch(0, width, height); //TODO: width, height from settings
+        context->launch(0, width, height);
 
         context->setRayGenerationProgram(0, tmp);
     }
@@ -130,6 +130,12 @@ namespace DeepestScatter
 
     void Camera::render()
     {
+        uint32_t previousSubframe;
+        if (context["subframeId"]->getType() != RT_OBJECTTYPE_UNKNOWN)
+        {
+            context["subframeId"]->getUint(previousSubframe);
+        }
+
         for (int i = 0; i < 10; i++)
         {
             subframeId++;
@@ -137,17 +143,19 @@ namespace DeepestScatter
             context->setRayGenerationProgram(0, camera);
             context->validate();
             context->launch(0, width, height);
-
-            context->setRayGenerationProgram(0, reinhardFirstPass);
-            context->launch(0, width, 1);
-
-            context->setRayGenerationProgram(0, reinhardSecondPass);
-            context->launch(0, 1, 1);
-
-            context["exposure"]->setFloat(exposure);
-            context->setRayGenerationProgram(0, reinhardLastPass);
-            context->launch(0, width, height);
         }
+
+        context->setRayGenerationProgram(0, reinhardFirstPass);
+        context->launch(0, width, 1);
+
+        context->setRayGenerationProgram(0, reinhardSecondPass);
+        context->launch(0, 1, 1);
+
+        context["exposure"]->setFloat(exposure);
+        context->setRayGenerationProgram(0, reinhardLastPass);
+        context->launch(0, width, height);
+
+        context["subframeId"]->getUint(previousSubframe);
 
         GLenum glDataType = GL_UNSIGNED_BYTE;
         GLenum glFormat = GL_RGBA;

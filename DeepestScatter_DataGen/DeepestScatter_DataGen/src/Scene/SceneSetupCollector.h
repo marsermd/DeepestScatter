@@ -8,19 +8,10 @@
 #include "Util/Resources.h"
 #include "Util/Dataset/Dataset.h"
 #include "VDBCloud.h"
+#include "Util/Dataset/BatchSettings.h"
 
 namespace DeepestScatter
 {
-    struct BatchSettings
-    {
-        explicit BatchSettings(uint32_t size)
-            : size(size)
-        {
-        }
-
-        uint32_t size;
-    };
-
     class SceneSetupCollector: public SceneItem
     {
     public:
@@ -43,7 +34,7 @@ namespace DeepestScatter
 
     private:
         template <class T>
-        void SetupVariables(optix::Handle<T>& scope) const;
+        void setupVariables(optix::Handle<T>& scope) const;
 
         optix::Context context;
         std::shared_ptr<Resources> resources;
@@ -59,11 +50,4 @@ namespace DeepestScatter
         optix::Buffer directionBuffer;
         optix::Buffer positionBuffer;
     };
-
-    template <class T>
-    void SceneSetupCollector::SetupVariables(optix::Handle<T>& scope) const
-    {
-        scope["directionBuffer"]->setBuffer(directionBuffer);
-        scope["positionBuffer"]->setBuffer(positionBuffer);
-    }
 }

@@ -132,7 +132,7 @@ namespace DeepestScatter
         return std::make_tuple(buffer, floatSize);
     }
 
-    optix::Program Resources::loadProgram(const std::string &fileName, const std::string programName)
+    optix::Program Resources::loadProgram(const std::string& fileName, const std::string& programName)
     {
         const static std::string ptxPath = "./CUDA/";
         const static std::string ptxExtension = ".ptx";

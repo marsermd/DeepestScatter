@@ -23,10 +23,16 @@ namespace DeepestScatter
         ~Dataset();
 
         template<class T>
+        size_t getRecordsCount();
+
+        template<class T>
+        T getRecord(int32_t id);
+
+        template<class T>
         void append(const T& example);
 
         template<class T>
-        void batchAppend(gsl::span<T> examples);
+        void batchAppend(const gsl::span<T>& examples);
 
         struct Settings
         {
@@ -44,7 +50,7 @@ namespace DeepestScatter
         void tryAppend(const T& example, int entryId);
 
         template<class T>
-        void tryBatchAppend(gsl::span<T> examples, int nextExampleId);
+        void tryBatchAppend(const gsl::span<T>& examples, int nextExampleId);
 
         void increaseSizeIfNeededWhile(const std::function<void(void)>& action);
         void increaseSize();
@@ -58,6 +64,45 @@ namespace DeepestScatter
 
         MDB_env* mdbEnv = nullptr;
     };
+
+    template <class T>
+    size_t Dataset::getRecordsCount()
+    {
+        const TableName tableName = T::descriptor()->full_name();
+
+        MDB_dbi dbi = getTable(tableName);
+
+        return Transaction::withTransaction<size_t>(mdbEnv, nullptr, 0, [&](Transaction& transaction)
+        {
+            MDB_stat stats;
+            LmdbExceptions::checkError(mdb_stat(transaction, dbi, &stats));
+            return stats.ms_entries;
+        });
+    }
+
+    template <class T>
+    T Dataset::getRecord(int32_t recordId)
+    {
+        const TableName tableName = T::descriptor()->full_name();
+        MDB_dbi dbi = getTable(tableName);
+
+        return Transaction::withTransaction<T>(mdbEnv, nullptr, 0, [&](Transaction& transaction)
+        {
+            MDB_val mdbKey
+            {
+                sizeof(int32_t),
+                &recordId
+            };
+
+            MDB_val mdbVal;
+            LmdbExceptions::checkError(mdb_get(transaction, dbi, &mdbKey, &mdbVal));
+
+            T record{};
+            record.ParseFromArray(mdbVal.mv_data, mdbVal.mv_size);
+
+            return record;
+        });
+    }
 
     template <class T>
     void Dataset::append(const T& example)
@@ -75,7 +120,7 @@ namespace DeepestScatter
     }
 
     template <class T>
-    void Dataset::batchAppend(gsl::span<T> examples)
+    void Dataset::batchAppend(const gsl::span<T>& examples)
     {
         const TableName tableName = T::descriptor()->full_name();
         // Returns zero if not initialized;
@@ -120,7 +165,7 @@ namespace DeepestScatter
     }
 
     template <class T>
-    void Dataset::tryBatchAppend(gsl::span<T> examples, int nextExampleId)
+    void Dataset::tryBatchAppend(const gsl::span<T>& examples, int nextExampleId)
     {
         const TableName tableName = T::descriptor()->full_name();
         MDB_dbi dbi = getTable(tableName);

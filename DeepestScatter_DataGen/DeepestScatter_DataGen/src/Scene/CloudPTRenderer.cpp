@@ -20,7 +20,7 @@ namespace DeepestScatter
         geometry->setBoundingBoxProgram(resources->loadProgram("cloudBBox.cu", "bounds"));
         geometry->setIntersectionProgram(resources->loadProgram("cloudBBox.cu", "intersect"));
         geometry->setPrimitiveCount(1u);
-        geometry["minimalRayDistance"]->setFloat(0.001f);
+        geometry["minimalRayDistance"]->setFloat(0.000001f);
 
         material = context->createMaterial();
         material->setClosestHitProgram(

@@ -18,7 +18,7 @@ namespace DeepestScatter
         * Returns buffer and the bounding box of the cloud, in pixels.
         */
         std::tuple<optix::Buffer, optix::float3> loadVolumeBuffer(const std::string &path, bool createMipmaps = false);
-        optix::Program loadProgram(const std::string &fileName, const std::string programName);
+        optix::Program loadProgram(const std::string& fileName, const std::string& programName);
 
     private:
         optix::Context context;

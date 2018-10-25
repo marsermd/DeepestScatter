@@ -20,6 +20,8 @@ namespace DeepestScatter
         this->context["skyIntensity"]->setFloat(.6f, .6f, 2);
         this->context["groundIntensity"]->setFloat(.6f, .8f, 1.1f);
 
+        this->context["sceneFps"]->setFloat(0);
+
         this->context->setRayTypeCount(2);
         this->context->setEntryPointCount(1);
     }

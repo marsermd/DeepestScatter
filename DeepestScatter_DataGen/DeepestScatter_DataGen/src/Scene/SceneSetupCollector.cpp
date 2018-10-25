@@ -10,14 +10,14 @@ namespace DeepestScatter
 {
     void SceneSetupCollector::init()
     {
-        directionBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, settings.size);
-        positionBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, settings.size);
+        directionBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, settings.batchSize);
+        positionBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, settings.batchSize);
 
         resetProgram = resources->loadProgram("pointGeneratorCamera.cu", "clear");
         generateProgram = resources->loadProgram("pointGeneratorCamera.cu", "generatePoints");
 
-        SetupVariables(resetProgram);
-        SetupVariables(generateProgram);
+        setupVariables(resetProgram);
+        setupVariables(generateProgram);
 
         reset();
         collect();
@@ -26,14 +26,14 @@ namespace DeepestScatter
     void SceneSetupCollector::reset()
     {
         context->setRayGenerationProgram(0, resetProgram);
-        context->launch(0, settings.size);
+        context->launch(0, settings.batchSize);
     }
 
     void SceneSetupCollector::collect()
     {
         std::cout << "Generating samples..." << std::endl;
         context->setRayGenerationProgram(0, generateProgram);
-        context->launch(0, settings.size);
+        context->launch(0, settings.batchSize);
 
         {
             BufferBind<optix::float3> directions(directionBuffer);
@@ -51,9 +51,9 @@ namespace DeepestScatter
                 dataset->append(sceneSetup);
             }
 
-            std::vector<Storage::ScatterSample> samples(settings.size);
+            std::vector<Storage::ScatterSample> samples(settings.batchSize);
             std::cout << "Serializing samples..." << std::endl;
-            for(int i = 0; i < settings.size; i++)
+            for(int i = 0; i < settings.batchSize; i++)
             {
                 samples[i].mutable_point()->set_x(positions[i].x);
                 samples[i].mutable_point()->set_y(positions[i].y);
@@ -68,5 +68,12 @@ namespace DeepestScatter
             dataset->batchAppend(gsl::make_span(samples));
             std::cout << "Finished writing samples." << std::endl;
         }
+    }
+
+    template <class T>
+    void SceneSetupCollector::setupVariables(optix::Handle<T>& scope) const
+    {
+        scope["directionBuffer"]->setBuffer(directionBuffer);
+        scope["positionBuffer"]->setBuffer(positionBuffer);
     }
 }

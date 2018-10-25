@@ -11,6 +11,7 @@
 #include "Scene/Camera.h"
 
 #include "Scene/Scene.h"
+#include "Scene/RadianceCollector.h"
 
 namespace DeepestScatter
 {
@@ -47,19 +48,46 @@ namespace DeepestScatter
         return builder;
     }
 
+    di::ContainerBuilder installRadianceCollectorApp()
+    {
+        di::ContainerBuilder builder;
+
+        addSceneItem<Sun>(builder);
+        addSceneItem<VDBCloud>(builder);
+        addSceneItem<CloudPTRenderer>(builder);
+        addSceneItem<RadianceCollector>(builder);
+        addSceneItem<Camera>(builder);
+
+        return builder;
+    }
+
     di::ContainerBuilder installDataset(const std::string& databasePath)
     {
         di::ContainerBuilder builder;
 
         builder.registerInstance(std::make_shared<Dataset::Settings>(databasePath));
-        builder.registerInstance(std::make_shared<BatchSettings>(2048));
         builder.registerType<Dataset>().singleInstance();
 
         return builder;
     }
 
+    di::ContainerBuilder BindSceneDescription(SceneDescription& scene)
+    {
+        di::ContainerBuilder builder;
+
+        builder.registerInstance(std::make_shared<Cloud::Model>(scene.cloud.model));
+        builder.registerInstance(std::make_shared<Cloud::Rendering>(scene.cloud.rendering));
+        builder.registerInstance(std::make_shared<Cloud>(scene.cloud));
+
+        builder.registerInstance(std::make_shared<DirectionalLight>(scene.light));
+
+        builder.registerInstance(std::make_shared<SceneDescription>(scene));
+
+        return builder;
+    }
+
     di::ContainerBuilder installFramework(
-        const std::string& cloudPath,
+        const std::string& cloudPath, int32_t sceneId,
         uint32_t width, uint32_t height)
     {
         auto scene = SceneDescription
@@ -69,7 +97,7 @@ namespace DeepestScatter
                 Cloud::Rendering
                 {
                     Cloud::Rendering::SampleStep{1.0f / 512.f},
-                    Cloud::Rendering::Mode::Full
+                    Cloud::Rendering::Mode::SunMultipleScatter
                 },
                 Cloud::Model
                 {
@@ -82,8 +110,8 @@ namespace DeepestScatter
             DirectionalLight
             {
                 optix::make_float3(-0.586f, -0.766f, -0.2717f),
-                Color{optix::make_float3(1.3f, 1.25f, 1.15f)},
-                6e5f
+                Color{optix::make_float3(1, 1, 1)},
+                1e6
             }
         };
 
@@ -96,6 +124,7 @@ namespace DeepestScatter
 
         builder.registerType<Resources>().singleInstance();
         builder.registerType<Scene>().singleInstance();
+        builder.registerInstance(std::make_shared<BatchSettings>(sceneId * 2048, 2048));
 
         return builder;
     }

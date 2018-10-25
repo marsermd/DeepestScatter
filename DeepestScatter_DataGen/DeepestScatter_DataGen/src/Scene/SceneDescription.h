@@ -95,20 +95,4 @@ namespace DeepestScatter
         const Cloud cloud;
         const DirectionalLight light;
     };
-
-    inline auto BindSceneDescription(SceneDescription& scene)
-    {
-        namespace di = Hypodermic;
-        di::ContainerBuilder builder;
-
-        builder.registerInstance(std::make_shared<Cloud::Model>(scene.cloud.model));
-        builder.registerInstance(std::make_shared<Cloud::Rendering>(scene.cloud.rendering));
-        builder.registerInstance(std::make_shared<Cloud>(scene.cloud));
-
-        builder.registerInstance(std::make_shared<DirectionalLight>(scene.light));
-
-        builder.registerInstance(std::make_shared<SceneDescription>(scene));
-
-        return builder;
-    }
 }

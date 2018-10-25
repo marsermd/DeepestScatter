@@ -152,11 +152,18 @@ class Result : public ::google::protobuf::Message /* @@protoc_insertion_point(cl
   float light_intensity() const;
   void set_light_intensity(float value);
 
+  // bool is_converged = 2;
+  void clear_is_converged();
+  static const int kIsConvergedFieldNumber = 2;
+  bool is_converged() const;
+  void set_is_converged(bool value);
+
   // @@protoc_insertion_point(class_scope:Storage.Result)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   float light_intensity_;
+  bool is_converged_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_Result_2eproto::TableStruct;
 };
@@ -183,6 +190,20 @@ inline void Result::set_light_intensity(float value) {
   
   light_intensity_ = value;
   // @@protoc_insertion_point(field_set:Storage.Result.light_intensity)
+}
+
+// bool is_converged = 2;
+inline void Result::clear_is_converged() {
+  is_converged_ = false;
+}
+inline bool Result::is_converged() const {
+  // @@protoc_insertion_point(field_get:Storage.Result.is_converged)
+  return is_converged_;
+}
+inline void Result::set_is_converged(bool value) {
+  
+  is_converged_ = value;
+  // @@protoc_insertion_point(field_set:Storage.Result.is_converged)
 }
 
 #ifdef __GNUC__

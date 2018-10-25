@@ -54,6 +54,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Storage::Result, light_intensity_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Storage::Result, is_converged_),
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::Storage::Result)},
@@ -84,11 +85,12 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\014Result.proto\022\007Storage\"!\n\006Result\022\027\n\017lig"
-      "ht_intensity\030\001 \001(\002b\006proto3"
+      "\n\014Result.proto\022\007Storage\"7\n\006Result\022\027\n\017lig"
+      "ht_intensity\030\001 \001(\002\022\024\n\014is_converged\030\002 \001(\010"
+      "b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 66);
+      descriptor, 88);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Result.proto", &protobuf_RegisterTypes);
 }
@@ -112,6 +114,7 @@ void Result::InitAsDefaultInstance() {
 }
 #if !defined(_MSC_VER) || _MSC_VER >= 1900
 const int Result::kLightIntensityFieldNumber;
+const int Result::kIsConvergedFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 Result::Result()
@@ -125,12 +128,16 @@ Result::Result(const Result& from)
   : ::google::protobuf::Message(),
       _internal_metadata_(NULL) {
   _internal_metadata_.MergeFrom(from._internal_metadata_);
-  light_intensity_ = from.light_intensity_;
+  ::memcpy(&light_intensity_, &from.light_intensity_,
+    static_cast<size_t>(reinterpret_cast<char*>(&is_converged_) -
+    reinterpret_cast<char*>(&light_intensity_)) + sizeof(is_converged_));
   // @@protoc_insertion_point(copy_constructor:Storage.Result)
 }
 
 void Result::SharedCtor() {
-  light_intensity_ = 0;
+  ::memset(&light_intensity_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&is_converged_) -
+      reinterpret_cast<char*>(&light_intensity_)) + sizeof(is_converged_));
 }
 
 Result::~Result() {
@@ -161,7 +168,9 @@ void Result::Clear() {
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
 
-  light_intensity_ = 0;
+  ::memset(&light_intensity_, 0, static_cast<size_t>(
+      reinterpret_cast<char*>(&is_converged_) -
+      reinterpret_cast<char*>(&light_intensity_)) + sizeof(is_converged_));
   _internal_metadata_.Clear();
 }
 
@@ -183,6 +192,20 @@ bool Result::MergePartialFromCodedStream(
           DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
                    float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
                  input, &light_intensity_)));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // bool is_converged = 2;
+      case 2: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(16u /* 16 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   bool, ::google::protobuf::internal::WireFormatLite::TYPE_BOOL>(
+                 input, &is_converged_)));
         } else {
           goto handle_unusual;
         }
@@ -220,6 +243,11 @@ void Result::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormatLite::WriteFloat(1, this->light_intensity(), output);
   }
 
+  // bool is_converged = 2;
+  if (this->is_converged() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteBool(2, this->is_converged(), output);
+  }
+
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
@@ -237,6 +265,11 @@ void Result::SerializeWithCachedSizes(
   // float light_intensity = 1;
   if (this->light_intensity() != 0) {
     target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(1, this->light_intensity(), target);
+  }
+
+  // bool is_converged = 2;
+  if (this->is_converged() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteBoolToArray(2, this->is_converged(), target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -259,6 +292,11 @@ size_t Result::ByteSizeLong() const {
   // float light_intensity = 1;
   if (this->light_intensity() != 0) {
     total_size += 1 + 4;
+  }
+
+  // bool is_converged = 2;
+  if (this->is_converged() != 0) {
+    total_size += 1 + 1;
   }
 
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
@@ -291,6 +329,9 @@ void Result::MergeFrom(const Result& from) {
   if (from.light_intensity() != 0) {
     set_light_intensity(from.light_intensity());
   }
+  if (from.is_converged() != 0) {
+    set_is_converged(from.is_converged());
+  }
 }
 
 void Result::CopyFrom(const ::google::protobuf::Message& from) {
@@ -318,6 +359,7 @@ void Result::Swap(Result* other) {
 void Result::InternalSwap(Result* other) {
   using std::swap;
   swap(light_intensity_, other->light_intensity_);
+  swap(is_converged_, other->is_converged_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 
