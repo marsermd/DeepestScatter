@@ -32,9 +32,8 @@ bld/
 [Oo]bj/
 [Ll]og/
 
-# Clouds dataset
-Clouds_Evaluate/
-Clouds_Train/
+# Cl;ouds and Dataset
+Data/
 
 # Visual Studio 2015 cache/options directory
 .vs/

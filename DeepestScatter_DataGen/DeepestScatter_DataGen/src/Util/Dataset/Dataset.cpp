@@ -87,7 +87,6 @@ namespace DeepestScatter
 
             return dbi;
         });
-        
     }
 
     void Dataset::closeTable(const TableName& name)
