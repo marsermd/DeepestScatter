@@ -1,4 +1,4 @@
-﻿#include "SceneSetupCollector.h"
+﻿#include "ScatterSampleCollector.h"
 #include "Util/BufferBind.h"
 
 #pragma warning(push, 0)
@@ -8,7 +8,7 @@
 
 namespace DeepestScatter 
 {
-    void SceneSetupCollector::init()
+    void ScatterSampleCollector::init()
     {
         directionBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, settings.batchSize);
         positionBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, settings.batchSize);
@@ -23,13 +23,13 @@ namespace DeepestScatter
         collect();
     }
 
-    void SceneSetupCollector::reset()
+    void ScatterSampleCollector::reset()
     {
         context->setRayGenerationProgram(0, resetProgram);
         context->launch(0, settings.batchSize);
     }
 
-    void SceneSetupCollector::collect()
+    void ScatterSampleCollector::collect()
     {
         std::cout << "Generating samples..." << std::endl;
         context->setRayGenerationProgram(0, generateProgram);
@@ -38,18 +38,6 @@ namespace DeepestScatter
         {
             BufferBind<optix::float3> directions(directionBuffer);
             BufferBind<optix::float3> positions(positionBuffer);
-
-            {
-                Storage::SceneSetup sceneSetup;
-
-                sceneSetup.set_cloud_path(sceneDescription.cloud.model.vdbPath);
-                sceneSetup.set_cloud_size_m(sceneDescription.cloud.model.size);
-                sceneSetup.mutable_light_direction()->set_x(sceneDescription.light.direction.x);
-                sceneSetup.mutable_light_direction()->set_y(sceneDescription.light.direction.y);
-                sceneSetup.mutable_light_direction()->set_z(sceneDescription.light.direction.z);
-
-                dataset->append(sceneSetup);
-            }
 
             std::vector<Storage::ScatterSample> samples(settings.batchSize);
             std::cout << "Serializing samples..." << std::endl;
@@ -65,13 +53,13 @@ namespace DeepestScatter
             }
 
             std::cout << "Writing samples..." << std::endl;
-            dataset->batchAppend(gsl::make_span(samples));
+            dataset->batchAppend(gsl::make_span(samples), settings.batchStartId);
             std::cout << "Finished writing samples." << std::endl;
         }
     }
 
     template <class T>
-    void SceneSetupCollector::setupVariables(optix::Handle<T>& scope) const
+    void ScatterSampleCollector::setupVariables(optix::Handle<T>& scope) const
     {
         scope["directionBuffer"]->setBuffer(directionBuffer);
         scope["positionBuffer"]->setBuffer(positionBuffer);

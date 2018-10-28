@@ -32,7 +32,7 @@ namespace DeepestScatter
         void append(const T& example);
 
         template<class T>
-        void batchAppend(const gsl::span<T>& examples);
+        void batchAppend(const gsl::span<T>& examples, int32_t startId);
 
         struct Settings
         {
@@ -120,11 +120,9 @@ namespace DeepestScatter
     }
 
     template <class T>
-    void Dataset::batchAppend(const gsl::span<T>& examples)
+    void Dataset::batchAppend(const gsl::span<T>& examples, int32_t startId)
     {
         const TableName tableName = T::descriptor()->full_name();
-        // Returns zero if not initialized;
-        int startId = nextIds[tableName];
 
         increaseSizeIfNeededWhile([&]()
         {

@@ -66,18 +66,17 @@ namespace DeepestScatter
                 On
             };
 
-            Model(const std::string& vdbPath, Mipmaps mipmaps, Size size, Meter meanFreePath)
+            Model(const std::string& vdbPath, Mipmaps mipmaps, Size size)
                 : vdbPath(vdbPath),
                   mipmapsOn(mipmaps),
-                  size(size),
-                  meanFreePath(meanFreePath)
+                  size(size)
             {
             }
 
             const std::string vdbPath;
             const Mipmaps mipmapsOn;
             const Size size;
-            const MeanFreePath meanFreePath;
+            const MeanFreePath meanFreePath = MeanFreePath{ Meter{10} };
         };
 
         const Rendering rendering;

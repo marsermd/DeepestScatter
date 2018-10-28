@@ -7,11 +7,12 @@
 #include "Scene/Sun.h"
 #include "Scene/VDBCloud.h"
 #include "Scene/CloudPTRenderer.h"
-#include "Scene/SceneSetupCollector.h"
+#include "Scene/ScatterSampleCollector.h"
 #include "Scene/Camera.h"
 
 #include "Scene/Scene.h"
 #include "Scene/RadianceCollector.h"
+#include <filesystem>
 
 namespace DeepestScatter
 {
@@ -35,14 +36,14 @@ namespace DeepestScatter
         return builder;
     }
 
-    di::ContainerBuilder installSetupCollectorApp()
+    di::ContainerBuilder installSampleCollectorApp()
     {
         di::ContainerBuilder builder;
 
         addSceneItem<Sun>(builder);
         addSceneItem<VDBCloud>(builder);
         addSceneItem<CloudPTRenderer>(builder);
-        addSceneItem<SceneSetupCollector>(builder);
+        addSceneItem<ScatterSampleCollector>(builder);
         addSceneItem<Camera>(builder);
 
         return builder;
@@ -71,7 +72,7 @@ namespace DeepestScatter
         return builder;
     }
 
-    di::ContainerBuilder BindSceneDescription(SceneDescription& scene)
+    di::ContainerBuilder bindSceneDescription(SceneDescription& scene)
     {
         di::ContainerBuilder builder;
 
@@ -86,10 +87,10 @@ namespace DeepestScatter
         return builder;
     }
 
-    di::ContainerBuilder installFramework(
-        const std::string& cloudPath, int32_t sceneId,
-        uint32_t width, uint32_t height)
+    Hypodermic::ContainerBuilder installSceneSetup(const Storage::SceneSetup& sceneSetup, const std::string& cloudsRoot)
     {
+        std::filesystem::path cloudPath(cloudsRoot);
+        cloudPath /= sceneSetup.cloud_path();
         auto scene = SceneDescription
         {
             Cloud
@@ -101,23 +102,30 @@ namespace DeepestScatter
                 },
                 Cloud::Model
                 {
-                    cloudPath,
+                    cloudPath.string(),
                     Cloud::Model::Mipmaps::Off,
-                    Cloud::Model::Size{Meter{3000}},
-                    Cloud::Model::MeanFreePath{Meter{10}}
+                    Cloud::Model::Size{Meter{sceneSetup.cloud_size_m()}}
                 }
             },
             DirectionalLight
             {
-                optix::make_float3(-0.586f, -0.766f, -0.2717f),
+                optix::make_float3(
+                    sceneSetup.light_direction().x(), 
+                    sceneSetup.light_direction().y(),
+                    sceneSetup.light_direction().z()
+                ),
                 Color{optix::make_float3(1, 1, 1)},
                 1e6
             }
         };
 
+        return bindSceneDescription(scene);
+    }
+
+    di::ContainerBuilder installFramework(int32_t sceneId, uint32_t width, uint32_t height)
+    {
         di::ContainerBuilder builder;
 
-        builder.addRegistrations(BindSceneDescription(scene));
         builder.registerInstance(std::make_shared<Camera::Settings>(width, height));
 
         builder.registerInstance(std::make_shared<optix::Context>(optix::Context::create()));

@@ -45,9 +45,6 @@
     <ClCompile Include="src\Scene\RadianceCollector.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="src\Scene\SceneSetupCollector.cpp">
-      <Filter>src\Scene</Filter>
-    </ClCompile>
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
@@ -75,6 +72,9 @@
     <ClCompile Include="Installers.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\ScatterSampleCollector.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\CUDA\inScatter.cu">
@@ -98,6 +98,7 @@
     <CudaCompile Include="src\CUDA\pointGeneratorCamera.cu">
       <Filter>src\CUDA</Filter>
     </CudaCompile>
+    <CudaCompile Include="src\CUDA\pointEmissionCamera.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CUDA\rayData.cuh">
@@ -143,9 +144,6 @@
       <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\RadianceCollector.h">
-      <Filter>src\Scene</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\SceneSetupCollector.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\SceneDescription.h">
@@ -457,11 +455,11 @@
     <ClInclude Include="src\Util\Dataset\BatchSettings.h">
       <Filter>src\Uitl\Dataset</Filter>
     </ClInclude>
-    <ClInclude Include="src\CUDA\pointEmissionCamera.cu">
-      <Filter>src\CUDA</Filter>
-    </ClInclude>
     <ClInclude Include="src\CUDA\PointRadianceTask.h">
       <Filter>src\CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\ScatterSampleCollector.h">
+      <Filter>src\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

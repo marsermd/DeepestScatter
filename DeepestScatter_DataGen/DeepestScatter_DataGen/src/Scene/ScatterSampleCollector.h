@@ -12,11 +12,11 @@
 
 namespace DeepestScatter
 {
-    class SceneSetupCollector: public SceneItem
+    class ScatterSampleCollector: public SceneItem
     {
     public:
 
-        SceneSetupCollector(std::shared_ptr<optix::Context> context, std::shared_ptr<Resources> resources, std::shared_ptr<Dataset> dataset,
+        ScatterSampleCollector(std::shared_ptr<optix::Context> context, std::shared_ptr<Resources> resources, std::shared_ptr<Dataset> dataset,
             std::shared_ptr<BatchSettings> settings, std::shared_ptr<SceneDescription> sceneDescription) :
             context(*context.get()),
             resources(std::move(resources)),

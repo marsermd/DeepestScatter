@@ -159,7 +159,7 @@ namespace DeepestScatter
         }
 
         std::cout << "Writing emissions..." << std::endl;
-        dataset->batchAppend(gsl::make_span(results));
+        dataset->batchAppend(gsl::make_span(results), settings.batchStartId);
         std::cout << "Finished writing emissions." << std::endl;
     }
 

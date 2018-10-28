@@ -19,7 +19,7 @@
     <ClCompile Include="src\Scene\CloudPTRenderer.cpp" />
     <ClCompile Include="src\Scene\RadianceCollector.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
-    <ClCompile Include="src\Scene\SceneSetupCollector.cpp" />
+    <ClCompile Include="src\Scene\ScatterSampleCollector.cpp" />
     <ClCompile Include="src\Scene\Sun.cpp" />
     <ClCompile Include="src\Scene\VDBCloud.cpp" />
     <ClCompile Include="src\Util\Arcball.cpp" />
@@ -150,7 +150,7 @@
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\SceneDescription.h" />
     <ClInclude Include="src\Scene\SceneItem.h" />
-    <ClInclude Include="src\Scene\SceneSetupCollector.h" />
+    <ClInclude Include="src\Scene\ScatterSampleCollector.h" />
     <ClInclude Include="src\Scene\Sun.h" />
     <ClInclude Include="src\Scene\VDBCloud.h" />
     <ClInclude Include="src\Util\Arcball.h" />

@@ -57,8 +57,11 @@ namespace DeepestScatter
 
     void Camera::update()
     {
-        updatePosition();
-        render();
+        if (!isCompleted())
+        {
+            updatePosition();
+            render();
+        }
     }
 
     void Camera::reset()
