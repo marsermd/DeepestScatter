@@ -5,6 +5,7 @@
 #include "PointRadianceTask.h"
 
 using namespace optix;
+using namespace DeepestScatter::Gpu;
 
 rtDeclareVariable(uint, launchID, rtLaunchIndex, );
 

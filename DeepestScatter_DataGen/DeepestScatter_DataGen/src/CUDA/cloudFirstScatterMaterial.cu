@@ -14,7 +14,7 @@ RT_PROGRAM void firstScatterPosition()
 
     float3 direction = normalize(ray.direction);
 
-    unsigned int seed = tea<4>(launchID.x * 4096 + launchID.y, subframeId);
+    unsigned int seed = tea<4>(launchID.x * 4096 + launchID.y);
 
     ScatteringEvent scatter = getNextScatteringEvent(seed, pos, direction);
     if (isInBox(scatter.scatterPos))

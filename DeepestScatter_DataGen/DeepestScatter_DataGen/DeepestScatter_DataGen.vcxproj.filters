@@ -75,6 +75,9 @@
     <ClCompile Include="src\Scene\ScatterSampleCollector.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\DisneyDescriptorCollector.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\CUDA\inScatter.cu">
@@ -98,7 +101,12 @@
     <CudaCompile Include="src\CUDA\pointGeneratorCamera.cu">
       <Filter>src\CUDA</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\CUDA\pointEmissionCamera.cu" />
+    <CudaCompile Include="src\CUDA\disneyDescriptorCollector.cu">
+      <Filter>src\CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CUDA\pointEmissionCamera.cu">
+      <Filter>src\CUDA</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CUDA\rayData.cuh">
@@ -459,6 +467,15 @@
       <Filter>src\CUDA</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\ScatterSampleCollector.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CUDA\DisneyDescriptor.h">
+      <Filter>src\CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CUDA\DisneyDescriptor.cuh">
+      <Filter>src\CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\DisneyDescriptorCollector.h">
       <Filter>src\Scene</Filter>
     </ClInclude>
   </ItemGroup>

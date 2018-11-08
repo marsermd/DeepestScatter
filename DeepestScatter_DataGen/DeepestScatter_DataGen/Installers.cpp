@@ -13,6 +13,7 @@
 #include "Scene/Scene.h"
 #include "Scene/RadianceCollector.h"
 #include <filesystem>
+#include "Scene/DisneyDescriptorCollector.h"
 
 namespace DeepestScatter
 {
@@ -44,6 +45,19 @@ namespace DeepestScatter
         addSceneItem<VDBCloud>(builder);
         addSceneItem<CloudPTRenderer>(builder);
         addSceneItem<ScatterSampleCollector>(builder);
+        addSceneItem<Camera>(builder);
+
+        return builder;
+    }
+
+    di::ContainerBuilder installDisneyDescriptorCollectorApp()
+    {
+        di::ContainerBuilder builder;
+
+        addSceneItem<Sun>(builder);
+        addSceneItem<VDBCloud>(builder);
+        addSceneItem<CloudPTRenderer>(builder);
+        addSceneItem<DisneyDescriptorCollector>(builder);
         addSceneItem<Camera>(builder);
 
         return builder;

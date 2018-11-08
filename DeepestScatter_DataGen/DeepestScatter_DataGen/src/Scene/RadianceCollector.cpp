@@ -20,9 +20,9 @@ namespace DeepestScatter
         renderProgram = resources->loadProgram("pointEmissionCamera.cu", "estimateEmission");
 
         tasksBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, MAX_THREAD_COUNT);
-        tasksBuffer->setElementSize(sizeof(PointRadianceTask));
+        tasksBuffer->setElementSize(sizeof(Gpu::PointRadianceTask));
 
-        std::vector<PointRadianceTask> tasks;
+        std::vector<Gpu::PointRadianceTask> tasks;
         for (int i = 0; i < settings.batchSize; i++)
         {
             auto sample = dataset->getRecord<Storage::ScatterSample>(settings.batchStartId + i);
@@ -40,7 +40,7 @@ namespace DeepestScatter
                 sample.view_direction().z()
             );
 
-            tasks.emplace_back(PointRadianceTask(i, position, direction));
+            tasks.emplace_back(Gpu::PointRadianceTask(i, position, direction));
         }
 
         scheduleTasks(tasks);
@@ -95,13 +95,13 @@ namespace DeepestScatter
         std::cout << "MS/Render: " << totalTime * 1000 << " " << settings.batchSize - getConvergedCount() << std::endl;
         context["subframeId"]->setUint(previousSubframe);
 
-        std::vector<PointRadianceTask> todoTasks;
+        std::vector<Gpu::PointRadianceTask> todoTasks;
         {
-            BufferBind<PointRadianceTask> tasksBind(tasksBuffer);
+            BufferBind<Gpu::PointRadianceTask> tasksBind(tasksBuffer);
             const uint32_t remainigCount = getRemainingCount();
             for (uint32_t i = 0; i < remainigCount; i++)
             {
-                PointRadianceTask& representative = tasksBind[i * taskRepeatCount];
+                Gpu::PointRadianceTask& representative = tasksBind[i * taskRepeatCount];
                 for (uint32_t j = 1; j < taskRepeatCount; j++)
                 {
                     representative += tasksBind[i * taskRepeatCount + j];
@@ -142,7 +142,7 @@ namespace DeepestScatter
     void RadianceCollector::recordToDataset()
     {
         std::sort(convergedTasks.begin(), convergedTasks.end(),
-            [&](const PointRadianceTask& a, const PointRadianceTask& b)
+            [&](const Gpu::PointRadianceTask& a, const Gpu::PointRadianceTask& b)
             {
                 return a.id < b.id;
             }
@@ -168,20 +168,20 @@ namespace DeepestScatter
         handle["tasks"]->setBuffer(tasksBuffer);
     }
 
-    void RadianceCollector::scheduleTasks(const gsl::span<PointRadianceTask>& tasks)
+    void RadianceCollector::scheduleTasks(const gsl::span<Gpu::PointRadianceTask>& tasks)
     {
         taskRepeatCount = MAX_THREAD_COUNT / tasks.size();
         assert(taskRepeatCount > 0);
 
         threadsCount = tasks.size() * taskRepeatCount;
 
-        BufferBind<PointRadianceTask> tasksBind(tasksBuffer);
+        BufferBind<Gpu::PointRadianceTask> tasksBind(tasksBuffer);
         for (uint32_t i = 0; i < tasks.size(); i++)
         {
             tasksBind[i * taskRepeatCount] = tasks[i];
             for (uint32_t j = 1; j < taskRepeatCount; j++)
             {
-                tasksBind[i * taskRepeatCount + j] = PointRadianceTask(tasks[i].id, tasks[i].position, tasks[i].direction);
+                tasksBind[i * taskRepeatCount + j] = Gpu::PointRadianceTask(tasks[i].id, tasks[i].position, tasks[i].direction);
             }
         }
     }

@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+package Storage;
+
+import "Vector.proto";
+
+message DisneyDescriptor {
+	// w * z * y * x == 10 * 9 * 5 * 5 grid
+	bytes grid = 1;
+}

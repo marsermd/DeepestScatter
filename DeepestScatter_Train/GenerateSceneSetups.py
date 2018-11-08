@@ -45,7 +45,10 @@ def addScenes(clouds, scenesPerCloud, datasets):
         dataset = np.random.choice(datasets, p=weights)
 
         for i in range(scenesPerCloud):
-            sizeMeters = np.random.uniform(500, 20_000)
+            minSize = 500
+            maxSize = 20_000
+            logSizeMeters = np.random.uniform(np.log(minSize), np.log(maxSize))
+            sizeMeters = np.exp(logSizeMeters)
             lightDirection = uniformOnSphere()
             scene = generateScene(cloud, sizeMeters, lightDirection)
 

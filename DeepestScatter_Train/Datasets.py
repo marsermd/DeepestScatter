@@ -10,13 +10,11 @@ TRAIN_NAME = "Train.lmdb"
 VALIDATION_NAME = "Validation.lmdb"
 TEST_NAME = "Test.lmdb"
 
-TB_1 = 1099511627776
-
 class Dataset:
 
     def __init__(self, databasePath, readonly=True):
         create = not readonly
-        self.env = Environment(databasePath, map_size=TB_1, subdir=False, max_dbs=64, mode=0, create=create, readonly=readonly)
+        self.env = Environment(databasePath, subdir=False, max_dbs=64, mode=0, create=create, readonly=readonly)
         self.descriptorToDb = {}
         self.nextIds = {}
         self.scenes_db = self.__addDb(SceneSetup, create=create)

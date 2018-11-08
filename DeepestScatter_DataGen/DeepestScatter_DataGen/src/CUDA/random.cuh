@@ -29,12 +29,13 @@
 */
 #include <math_constants.h>
 #include <optixu/optixu_math_namespace.h>
+#include <gsl/gsl_util>
 
 template<unsigned int N>
-static __host__ __device__ __inline__ unsigned int tea(unsigned int val0, unsigned int val1)
+static __host__ __device__ __inline__ unsigned int tea(unsigned int val0)
 {
     unsigned int v0 = val0;
-    unsigned int v1 = val1;
+    unsigned int v1 = (uint32_t)clock();
     unsigned int s0 = 0;
 
     for (unsigned int n = 0; n < N; n++)

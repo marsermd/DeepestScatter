@@ -3,14 +3,12 @@
 #include <optixu/optixpp_namespace.h>
 #include <utility>
 #include <memory>
-#include <unordered_set>
 
 #include "Scene/SceneItem.h"
 #include "Util/Resources.h"
 #include "Util/Dataset/Dataset.h"
 #include "Util/Dataset/BatchSettings.h"
 #include "CUDA/PointRadianceTask.h"
-#include <boost/detail/container_fwd.hpp>
 
 namespace DeepestScatter
 {
@@ -41,7 +39,7 @@ namespace DeepestScatter
         static constexpr uint32_t MAX_THREAD_COUNT = 20 * 2048;
 
         void setupVariables(optix::Program& handle);
-        void scheduleTasks(const gsl::span<PointRadianceTask>& tasks);
+        void scheduleTasks(const gsl::span<Gpu::PointRadianceTask>& tasks);
         void recordToDataset();
 
 
@@ -62,8 +60,6 @@ namespace DeepestScatter
 
         optix::Buffer tasksBuffer;
 
-        std::vector<PointRadianceTask> convergedTasks;
-
-        std::vector<uint32_t> inBatchId;
+        std::vector<Gpu::PointRadianceTask> convergedTasks;
     };
 }

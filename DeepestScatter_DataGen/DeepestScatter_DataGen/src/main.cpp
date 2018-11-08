@@ -14,6 +14,7 @@
 
 #pragma warning (push, 0)
 #include "SceneSetup.pb.h"
+#include "Result.pb.h"
 #pragma warning (pop)
 
 namespace di = Hypodermic;
@@ -37,7 +38,7 @@ int main(int argc, char* argv[])
             printUsageAndExit(argv[0]);
         }
         const std::string cloudPath = argv[1];
-        const std::string databasePath = "../../Data/Dataset/Train.lmdb";
+        const std::string databasePath = "../../Data/Dataset/Validation.lmdb";
         const std::string cloudRoot = "../../Data/Clouds_Train";
 
         for (int i = 2; i < argc; i++)

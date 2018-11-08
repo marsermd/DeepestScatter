@@ -5,11 +5,13 @@
     <ClCompile Include="SceneSetup.pb.cc" />
     <ClCompile Include="Vector.pb.cc" />
     <ClCompile Include="ScatterSample.pb.cc" />
+    <ClCompile Include="DisneyDescriptor.pb.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Result.pb.h" />
     <ClInclude Include="SceneSetup.pb.h" />
     <ClInclude Include="Vector.pb.h" />
     <ClInclude Include="ScatterSample.pb.h" />
+    <ClInclude Include="DisneyDescriptor.pb.h" />
   </ItemGroup>
 </Project>

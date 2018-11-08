@@ -17,6 +17,7 @@
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Scene\Camera.cpp" />
     <ClCompile Include="src\Scene\CloudPTRenderer.cpp" />
+    <ClCompile Include="src\Scene\DisneyDescriptorCollector.cpp" />
     <ClCompile Include="src\Scene\RadianceCollector.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
     <ClCompile Include="src\Scene\ScatterSampleCollector.cpp" />
@@ -33,6 +34,7 @@
     <CudaCompile Include="src\CUDA\cloudBBox.cu" />
     <CudaCompile Include="src\CUDA\cloudFirstScatterMaterial.cu" />
     <CudaCompile Include="src\CUDA\cloudRadianceMaterials.cu" />
+    <CudaCompile Include="src\CUDA\disneyDescriptorCollector.cu" />
     <CudaCompile Include="src\CUDA\pointGeneratorCamera.cu" />
     <CudaCompile Include="src\CUDA\inScatter.cu" />
     <CudaCompile Include="src\CUDA\pinholeCamera.cu" />
@@ -40,6 +42,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CUDA\cloud.cuh" />
+    <ClInclude Include="src\CUDA\DisneyDescriptor.cuh" />
+    <ClInclude Include="src\CUDA\DisneyDescriptor.h" />
     <ClInclude Include="src\CUDA\optixExtraMath.cuh" />
     <CudaCompile Include="src\CUDA\pointEmissionCamera.cu">
       <FileType>Document</FileType>
@@ -146,6 +150,7 @@
     <ClInclude Include="src\CUDA\rayData.cuh" />
     <ClInclude Include="src\Scene\Camera.h" />
     <ClInclude Include="src\Scene\CloudPTRenderer.h" />
+    <ClInclude Include="src\Scene\DisneyDescriptorCollector.h" />
     <ClInclude Include="src\Scene\RadianceCollector.h" />
     <ClInclude Include="src\Scene\Scene.h" />
     <ClInclude Include="src\Scene\SceneDescription.h" />
@@ -218,6 +223,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -237,8 +243,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <GPUDebugInfo>false</GPUDebugInfo>
       <AdditionalCompilerOptions>--disable-warnings</AdditionalCompilerOptions>
       <CodeGeneration>compute_61,sm_61</CodeGeneration>
-      <Defines>
-      </Defines>
+      <Defines>CUDA=1</Defines>
       <AdditionalDeps>
       </AdditionalDeps>
     </CudaCompile>
@@ -259,6 +264,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
+      <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -282,8 +288,7 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <FastMath>true</FastMath>
       <Keep>false</Keep>
       <CodeGeneration>compute_61,sm_61</CodeGeneration>
-      <Defines>
-      </Defines>
+      <Defines>CUDA=1</Defines>
       <AdditionalDeps>
       </AdditionalDeps>
     </CudaCompile>

@@ -19,12 +19,14 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="DisneyDescriptor.pb.cc" />
     <ClCompile Include="Result.pb.cc" />
     <ClCompile Include="ScatterSample.pb.cc" />
     <ClCompile Include="SceneSetup.pb.cc" />
     <ClCompile Include="Vector.pb.cc" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="DisneyDescriptor.pb.h" />
     <ClInclude Include="Result.pb.h" />
     <ClInclude Include="ScatterSample.pb.h" />
     <ClInclude Include="SceneSetup.pb.h" />

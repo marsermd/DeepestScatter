@@ -11,6 +11,7 @@ namespace DeepestScatter
     Hypodermic::ContainerBuilder installPathTracingApp();
 
     Hypodermic::ContainerBuilder installSampleCollectorApp();
+    Hypodermic::ContainerBuilder installDisneyDescriptorCollectorApp();
     Hypodermic::ContainerBuilder installRadianceCollectorApp();
 
     Hypodermic::ContainerBuilder installDataset(const std::string& databasePath);

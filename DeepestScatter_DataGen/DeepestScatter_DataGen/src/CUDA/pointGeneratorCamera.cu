@@ -4,6 +4,7 @@
 #include "rayData.cuh"
 #include "random.cuh"
 #include <cassert>
+#include <gsl/gsl_util>
 
 using namespace optix;
 
@@ -18,7 +19,7 @@ rtDeclareVariable(float, sceneEPS, , );
 
 RT_PROGRAM void generatePoints()
 {
-    unsigned int seed = tea<6>(launchID * 32768, 0);
+    unsigned int seed = tea<6>(launchID);
     while (true)
     {
         float3 discNormal = uniformOnSphere(seed);

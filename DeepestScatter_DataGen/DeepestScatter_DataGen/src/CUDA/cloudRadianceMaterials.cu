@@ -17,7 +17,7 @@ RT_PROGRAM void totalRadiance()
 
     resultRadiance.result = make_float3(0);
 
-    unsigned int seed = tea<4>(launchID.x * 4096 + launchID.y, subframeId);
+    unsigned int seed = tea<4>(launchID.x * 4096 + launchID.y);
 
     float skySampleProbability = 0.1f;
     bool shouldSampleSky = subframeId % 10 == 0;
@@ -79,7 +79,7 @@ RT_PROGRAM void multipleScatterSunRadiance()
 
     resultRadiance.result = make_float3(0);
 
-    unsigned int seed = tea<4>(launchID.x * 4096 + launchID.y, subframeId);
+    unsigned int seed = tea<4>(launchID.x * 4096 + launchID.y);
 
     int depth = 0;
     while (isInBox(pos))
