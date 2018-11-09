@@ -34,7 +34,7 @@ inline RT_HOSTDEVICE float3 make_float3(size_t3 st)
 static __host__ __device__ __inline__ float sampleCloud(float3 pos)
 {
     pos = pos * textureScale;
-    return tex3D(density, pos.x, pos.y, pos.z) * 2;
+    return tex3D(density, pos.x, pos.y, pos.z);
 }
 
 RT_PROGRAM void inScatter()
