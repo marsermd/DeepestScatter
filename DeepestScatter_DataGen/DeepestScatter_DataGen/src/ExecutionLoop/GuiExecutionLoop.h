@@ -51,6 +51,10 @@ namespace DeepestScatter
     inline void GuiExecutionLoop::run(std::queue<LazyTask>&& tasks)
     {
         this->tasks = tasks;
+        if (tasks.empty())
+        {
+            return;
+        }
         getNextTask();
         glutRun();
     }

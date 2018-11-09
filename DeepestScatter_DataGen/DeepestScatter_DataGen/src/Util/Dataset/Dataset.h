@@ -26,7 +26,10 @@ namespace DeepestScatter
         size_t getRecordsCount();
 
         template<class T>
-        T getRecord(int32_t id);
+        T getRecord(int32_t recordId);
+
+        template<class T>
+        void dropTable();
 
         template<class T>
         void append(const T& example);
@@ -101,6 +104,35 @@ namespace DeepestScatter
             record.ParseFromArray(mdbVal.mv_data, mdbVal.mv_size);
 
             return record;
+        });
+    }
+
+    template <class T>
+    void Dataset::dropTable()
+    {
+        const TableName tableName = T::descriptor()->full_name();
+        MDB_dbi dbi = getTable(tableName);
+
+        while (true)
+        {
+            std::string tableConfirmation;
+
+            std::cout << "YOU ARE GOING TO DELETE " << getRecordsCount<T>() << " RECORDS!!!" << std::endl;
+            std::cout << "Type table name: \"" << T::descriptor()->name() << "\" to drop it" << std::endl;
+            std::cin >> tableConfirmation;
+
+            if (tableConfirmation == T::descriptor()->name())
+            {
+                break;
+            }
+
+            std::cout << "Mismatched table name. Try again.";
+        }
+
+        Transaction::withTransaction<void>(mdbEnv, nullptr, 0, [&](Transaction& transaction)
+        {
+            mdb_drop(transaction, dbi, 0);
+            nextIds[tableName] = 0;
         });
     }
 

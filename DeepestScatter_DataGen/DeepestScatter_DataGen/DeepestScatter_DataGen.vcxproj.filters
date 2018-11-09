@@ -69,14 +69,17 @@
     <ClCompile Include="src\Scene\VDBCloud.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="Installers.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\Scene\ScatterSampleCollector.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\DisneyDescriptorCollector.cpp">
       <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="installers.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\ExecutionLoop\Tasks.cpp">
+      <Filter>src\ExecutionLoop</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -158,9 +161,6 @@
       <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Mie.h">
-      <Filter>src</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Installers.h">
       <Filter>src</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\Sun.h">
@@ -477,6 +477,12 @@
     </ClInclude>
     <ClInclude Include="src\Scene\DisneyDescriptorCollector.h">
       <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\installers.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\ExecutionLoop\Tasks.h">
+      <Filter>src\ExecutionLoop</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

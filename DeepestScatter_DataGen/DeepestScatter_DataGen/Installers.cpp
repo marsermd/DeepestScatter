@@ -1,4 +1,4 @@
-#include "Installers.h"
+#include "installers.h"
 
 #include "Scene/SceneDescription.h"
 
@@ -25,52 +25,13 @@ namespace DeepestScatter
         builder.registerType<T>().template as<SceneItem>().asSelf().singleInstance();
     }
 
-    di::ContainerBuilder installPathTracingApp()
+    di::ContainerBuilder installApp()
     {
         di::ContainerBuilder builder;
 
         addSceneItem<Sun>(builder);
         addSceneItem<VDBCloud>(builder);
         addSceneItem<CloudPTRenderer>(builder);
-        addSceneItem<Camera>(builder);
-
-        return builder;
-    }
-
-    di::ContainerBuilder installSampleCollectorApp()
-    {
-        di::ContainerBuilder builder;
-
-        addSceneItem<Sun>(builder);
-        addSceneItem<VDBCloud>(builder);
-        addSceneItem<CloudPTRenderer>(builder);
-        addSceneItem<ScatterSampleCollector>(builder);
-        addSceneItem<Camera>(builder);
-
-        return builder;
-    }
-
-    di::ContainerBuilder installDisneyDescriptorCollectorApp()
-    {
-        di::ContainerBuilder builder;
-
-        addSceneItem<Sun>(builder);
-        addSceneItem<VDBCloud>(builder);
-        addSceneItem<CloudPTRenderer>(builder);
-        addSceneItem<DisneyDescriptorCollector>(builder);
-        addSceneItem<Camera>(builder);
-
-        return builder;
-    }
-
-    di::ContainerBuilder installRadianceCollectorApp()
-    {
-        di::ContainerBuilder builder;
-
-        addSceneItem<Sun>(builder);
-        addSceneItem<VDBCloud>(builder);
-        addSceneItem<CloudPTRenderer>(builder);
-        addSceneItem<RadianceCollector>(builder);
         addSceneItem<Camera>(builder);
 
         return builder;
@@ -101,7 +62,10 @@ namespace DeepestScatter
         return builder;
     }
 
-    Hypodermic::ContainerBuilder installSceneSetup(const Storage::SceneSetup& sceneSetup, const std::string& cloudsRoot)
+    Hypodermic::ContainerBuilder installSceneSetup(
+        const Storage::SceneSetup& sceneSetup, 
+        const std::string& cloudsRoot,
+        Cloud::Rendering::Mode renderingMode)
     {
         std::filesystem::path cloudPath(cloudsRoot);
         cloudPath /= sceneSetup.cloud_path();
@@ -112,7 +76,7 @@ namespace DeepestScatter
                 Cloud::Rendering
                 {
                     Cloud::Rendering::SampleStep{1.0f / 512.f},
-                    Cloud::Rendering::Mode::SunMultipleScatter
+                    renderingMode
                 },
                 Cloud::Model
                 {
@@ -136,7 +100,7 @@ namespace DeepestScatter
         return bindSceneDescription(scene);
     }
 
-    di::ContainerBuilder installFramework(int32_t sceneId, uint32_t width, uint32_t height)
+    di::ContainerBuilder installFramework(uint32_t width, uint32_t height)
     {
         di::ContainerBuilder builder;
 
@@ -146,7 +110,6 @@ namespace DeepestScatter
 
         builder.registerType<Resources>().singleInstance();
         builder.registerType<Scene>().singleInstance();
-        builder.registerInstance(std::make_shared<BatchSettings>(sceneId * 2048, 2048));
 
         return builder;
     }

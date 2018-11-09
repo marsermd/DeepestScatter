@@ -8,20 +8,18 @@
 #include "Util/sutil.h"
 
 #include "Scene/Camera.h"
-#include "Installers.h"
+#include "installers.h"
 #include "ExecutionLoop/GuiExecutionLoop.h"
 #include "Util/Dataset/Dataset.h"
 
 #pragma warning (push, 0)
 #include "SceneSetup.pb.h"
 #include "Result.pb.h"
+#include "ExecutionLoop/Tasks.h"
 #pragma warning (pop)
 
 namespace di = Hypodermic;
 using namespace DeepestScatter;
-
-uint32_t width = 640u;
-uint32_t height = 480u;
 
 void printUsageAndExit(const char* argv0);
 
@@ -38,7 +36,7 @@ int main(int argc, char* argv[])
             printUsageAndExit(argv[0]);
         }
         const std::string cloudPath = argv[1];
-        const std::string databasePath = "../../Data/Dataset/Validation.lmdb";
+        const std::string databasePath = "../../Data/Dataset_WIP/Train.lmdb";
         const std::string cloudRoot = "../../Data/Clouds_Train";
 
         for (int i = 2; i < argc; i++)
@@ -60,41 +58,8 @@ int main(int argc, char* argv[])
 
         try 
         {
-            di::ContainerBuilder datasetBuilder;
-            datasetBuilder.addRegistrations(installDataset(databasePath));
-            auto rootContainer = datasetBuilder.build();
-
-            auto dataset = rootContainer->resolve<Dataset>();
-
-            std::queue<GuiExecutionLoop::LazyTask> tasks;
-            
-            size_t sceneCount = dataset->getRecordsCount<Storage::SceneSetup>();
-
-            for (int32_t i = 0; i < sceneCount; i++)
-            {
-                auto sceneSetup = dataset->getRecord<Storage::SceneSetup>(i);
-
-                GuiExecutionLoop::LazyTask task = [=]()
-                {
-                    di::ContainerBuilder taskBuilder;
-
-                    taskBuilder.addRegistrations(installFramework(i, width, height));
-                    taskBuilder.addRegistrations(installSceneSetup(sceneSetup, cloudRoot));
-                    taskBuilder.addRegistrations(installSampleCollectorApp());
-
-                    auto container = taskBuilder.buildNestedContainerFrom(*rootContainer.get());
-
-                    auto camera = container->resolve<Camera>();
-                    //camera->completed = false;
-
-                    return container;
-                };
-
-                tasks.push(task);
-            }
-
             GuiExecutionLoop loop(argc, argv);
-            loop.run(std::move(tasks));
+            loop.run(std::move(Tasks::collect<Storage::Result>(databasePath, cloudRoot, Tasks::CollectMode::Continue)));
         }
         catch (const std::exception& e)
         {

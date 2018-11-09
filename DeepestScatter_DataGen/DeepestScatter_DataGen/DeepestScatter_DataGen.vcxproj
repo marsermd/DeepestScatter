@@ -11,8 +11,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Installers.cpp" />
+    <ClCompile Include="installers.cpp" />
     <ClCompile Include="src\ExecutionLoop\GuiExecutionLoop.cpp" />
+    <ClCompile Include="src\ExecutionLoop\Tasks.cpp" />
     <ClCompile Include="src\Mie.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Scene\Camera.cpp" />
@@ -52,6 +53,7 @@
     <ClInclude Include="src\CUDA\random.cuh" />
     <ClInclude Include="src\ExecutionLoop\ExecutionLoop.h" />
     <ClInclude Include="src\ExecutionLoop\GuiExecutionLoop.h" />
+    <ClInclude Include="src\ExecutionLoop\Tasks.h" />
     <ClInclude Include="src\Hypodermic\ActivatedRegistrationInfo.h" />
     <ClInclude Include="src\Hypodermic\ActivationException.h" />
     <ClInclude Include="src\Hypodermic\ActivationHandler.h" />
@@ -145,7 +147,7 @@
     <ClInclude Include="src\Hypodermic\TypeInfo.h" />
     <ClInclude Include="src\Hypodermic\UseIfNone.h" />
     <ClInclude Include="src\Hypodermic\With.h" />
-    <ClInclude Include="src\Installers.h" />
+    <ClInclude Include="src\installers.h" />
     <ClInclude Include="src\Mie.h" />
     <ClInclude Include="src\CUDA\rayData.cuh" />
     <ClInclude Include="src\Scene\Camera.h" />

@@ -17,10 +17,8 @@ namespace DeepestScatter
         sceneItems(std::move(sceneItems)),
         context(*context.get())
     {
-        this->context["skyIntensity"]->setFloat(.6f, .6f, 2);
-        this->context["groundIntensity"]->setFloat(.6f, .8f, 1.1f);
-
-        this->context["sceneFps"]->setFloat(0);
+        this->context["skyIntensity"]->setFloat(.1f, .2f, 2);
+        this->context["groundIntensity"]->setFloat(.9f, 1.1f, 1.1f);
 
         this->context->setRayTypeCount(2);
         this->context->setEntryPointCount(1);
