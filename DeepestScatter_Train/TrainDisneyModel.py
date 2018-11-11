@@ -24,7 +24,7 @@ if __name__ == '__main__':
     device = torch.device("cuda:0" if useCuda else "cpu")
 
     # Parameters
-    params = {'batch_size': 512,
+    params = {'batch_size': 1024,
               'shuffle': True,
               'num_workers': 4,
               'drop_last': True}
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     logModel.to(device)
 
     criterion = torch.nn.MSELoss()
-    optimizer = optim.SGD(model.parameters(), lr=0.01)
+    optimizer = optim.SGD(logModel.parameters(), lr=0.01)
 
     for epoch in range(max_epochs):
         id = 0
@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
             optimizer.zero_grad()
             outputs = logModel((descriptors, angles))
-            loss = criterion(outputs.squeeze(1), labels.float())
+            loss = criterion(outputs.squeeze(1), labels.float()).to(device)
             print("Train #", epoch, id, loss)
 
             loss.backward()

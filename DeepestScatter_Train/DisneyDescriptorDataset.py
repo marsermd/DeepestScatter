@@ -9,17 +9,6 @@ from PythonProtocols.DisneyDescriptor_pb2 import DisneyDescriptor
 from PythonProtocols.Result_pb2 import Result
 from GlobalSettings import BATCH_SIZE
 
-import time
-
-def profile(func):
-    def wrap(*args, **kwargs):
-        started_at = time.time()
-        result = func(*args, **kwargs)
-        print(func.__name__, time.time() - started_at)
-        return result
-
-    return wrap
-
 
 def normalized(v):
     magnitude = np.sqrt(np.dot(v, v))
