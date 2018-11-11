@@ -6,7 +6,7 @@ import numpy as np
 import progressbar
 
 from PythonProtocols.SceneSetup_pb2 import SceneSetup
-from Datasets import Datasets
+from LmdbDataset import LmdbDatasets
 
 def uniformOnSphere():
     cosTheta = np.random.uniform(-1, 1)
@@ -64,6 +64,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     clouds = getAllClouds(args.cloudsRoot)
-    datasets = Datasets(args.datasetRoot, readonly=False)
+    datasets = LmdbDatasets(args.datasetRoot, readonly=False)
     addScenes(clouds, args.scenesPerCloud, datasets)
 
