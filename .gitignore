@@ -17,6 +17,9 @@
 # Virtualenv
 venv
 
+# Tesorboard
+runs
+
 # Jupyter Notebook
 .ipynb_checkpoints
 

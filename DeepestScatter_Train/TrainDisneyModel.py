@@ -1,7 +1,6 @@
 import datetime
 
 import torch
-from python_utils import time
 from torch.utils import data
 import torch.optim as optim
 
@@ -9,6 +8,7 @@ from DisneyDescriptorDataset import DisneyDescriptorDataset
 from DisneyModel import DisneyModel
 from LmdbDataset import LmdbDatasets
 
+from tensorboardX import SummaryWriter
 
 class LogModel(torch.nn.Module):
     def __init__(self, model):
@@ -28,9 +28,10 @@ if __name__ == '__main__':
               'shuffle': True,
               'num_workers': 4,
               'drop_last': True}
-    max_epochs = 100
+    max_epochs = 200
 
     lmdbDatasets = LmdbDatasets("..\Data\Dataset")
+    writer = SummaryWriter()
 
     # Generators
     training_set = DisneyDescriptorDataset(lmdbDatasets.train)
@@ -61,13 +62,15 @@ if __name__ == '__main__':
             outputs = logModel((descriptors, angles))
             loss = criterion(outputs.squeeze(1), labels.float()).to(device)
             print("Train #", epoch, id, loss)
+            writer.add_scalar('loss', loss, id + epoch * 100)
 
             loss.backward()
             optimizer.step()
+
             id += 1
             if id > 100:
                 break
-        print((datetime.datetime.now() - start) / training_generator.batch_size)
+        print((datetime.datetime.now() - start))
 
 
         # id = 0
@@ -86,3 +89,5 @@ if __name__ == '__main__':
         #         id += 1
         #         if id > 20:
         #             break
+
+    writer.close()
