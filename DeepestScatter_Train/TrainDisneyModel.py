@@ -24,9 +24,9 @@ if __name__ == '__main__':
     device = torch.device("cuda:0" if useCuda else "cpu")
 
     # Parameters
-    params = {'batch_size': 4096,
+    params = {'batch_size': 512,
               'shuffle': True,
-              'num_workers': 8,
+              'num_workers': 4,
               'drop_last': True}
     max_epochs = 100
 
@@ -46,13 +46,12 @@ if __name__ == '__main__':
     criterion = torch.nn.MSELoss()
     optimizer = optim.SGD(model.parameters(), lr=0.01)
 
-    start = datetime.datetime.now()
     for epoch in range(max_epochs):
         id = 0
+        start = datetime.datetime.now()
         # Training
         for descriptors, angles, labels in training_generator:
             # Transfer to GPU
-            print(datetime.datetime.now() - start)
             descriptors = descriptors.to(device)
             angles = angles.to(device)
             labels = labels.to(device)
@@ -66,9 +65,9 @@ if __name__ == '__main__':
             loss.backward()
             optimizer.step()
             id += 1
-            start = datetime.datetime.now()
-            if id > 20:
-                exit(0)
+            if id > 100:
+                break
+        print((datetime.datetime.now() - start) / training_generator.batch_size)
 
 
         # id = 0

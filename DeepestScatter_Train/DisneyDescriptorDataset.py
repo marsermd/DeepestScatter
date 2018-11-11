@@ -45,19 +45,13 @@ class DisneyDescriptorDataset(data.Dataset):
         return descriptor, angle, light
 
     def __getDescriptor(self, sampleId):
-        started_at = time.time()
         descriptor = self.lmdbDataset.get(DisneyDescriptor, sampleId)
-        print("get", time.time() - started_at)
 
-        started_at = time.time()
         # Grid values are stored as bytes. Let's convert them to 0-1 range
         descriptor = torch.tensor(list(descriptor.grid), dtype=torch.float32) / 128
-        print("convert to tensor", time.time() - started_at)
 
-        started_at = time.time()
         # Shape the grid according to the layers
         descriptor = descriptor.reshape((10, 225))
-        print("reshape", time.time() - started_at)
 
         return descriptor
 

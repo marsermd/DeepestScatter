@@ -7,6 +7,7 @@ from PythonProtocols.ScatterSample_pb2 import ScatterSample
 from PythonProtocols.DisneyDescriptor_pb2 import DisneyDescriptor
 from PythonProtocols.Result_pb2 import Result
 
+
 class LmdbDataset:
     def __init__(self, databasePath, readonly=True):
         self.databasePath = databasePath
@@ -49,7 +50,9 @@ class LmdbDataset:
 
         with self.env.begin() as transaction:
             serialized = transaction.get(id.to_bytes(4, 'little'), db=db)
+
             protocol = protocolType()
+
             protocol.ParseFromString(serialized)
             return protocol
 
