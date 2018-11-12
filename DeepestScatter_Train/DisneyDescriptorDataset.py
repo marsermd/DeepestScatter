@@ -20,9 +20,10 @@ def normalized(v):
 class DisneyDescriptorDataset(data.Dataset):
     def __init__(self, lmdbDataset):
         self.lmdbDataset = lmdbDataset
+        self.length = self.lmdbDataset.getCountOf(DisneyDescriptor)
 
     def __len__(self):
-        return self.lmdbDataset.getCountOf(DisneyDescriptor)
+        return self.length
 
     def __getitem__(self, index):
         sampleId = index
@@ -46,9 +47,9 @@ class DisneyDescriptorDataset(data.Dataset):
 
     def __getLightAngle(self, sampleId):
         sceneId = sampleId // BATCH_SIZE
+        scene = self.lmdbDataset.get(SceneSetup, sceneId)
 
         sample = self.lmdbDataset.get(ScatterSample, sampleId)
-        scene = self.lmdbDataset.get(SceneSetup, sceneId)
 
         lightDirection = np.array([scene.light_direction.x, scene.light_direction.y, scene.light_direction.z])
         viewDirection = np.array([sample.view_direction.x, sample.view_direction.y, sample.view_direction.z])

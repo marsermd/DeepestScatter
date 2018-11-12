@@ -23,14 +23,14 @@ class DisneyModel(torch.nn.Module):
         """
         assert(descriptor.size()[1:] == (self.BLOCK_COUNT, self.DESCRIPTOR_LAYER_DIMENSION))
 
-        batchSize = descriptor.size()[0]
-        out = self.__blocksForward(batchSize, angle, descriptor)
+        out = self.__blocksForward(angle, descriptor)
         out = self.fullyConnected(out)
 
         return out
 
-    def __blocksForward(self, batchSize, angle, descriptor):
-        device = next(self.parameters()).device
+    def __blocksForward(self, angle, descriptor):
+        batchSize = descriptor.size()[0]
+
         out = descriptor.new_zeros((batchSize, self.BLOCK_DIMENSION))
         for i, block in enumerate(self.blocks):
             descriptorLayer = descriptor[:, i, :]
