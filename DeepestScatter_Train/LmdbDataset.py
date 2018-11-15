@@ -18,7 +18,15 @@ class LmdbDataset:
     def __init(self):
         create = not self.readonly
 
-        self.env = Environment(self.databasePath, subdir=False, max_dbs=64, mode=0, create=create, readonly=self.readonly)
+        self.env = Environment(
+            self.databasePath,
+            map_size=3e9,
+            subdir=False,
+            max_dbs=64,
+            mode=0,
+            create=create,
+            readonly=self.readonly
+        )
         self.descriptorToDb = {}
         self.nextIds = {}
         self.scenes_db = self.__addDb(SceneSetup, create=create)

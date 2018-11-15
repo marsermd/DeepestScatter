@@ -34,7 +34,7 @@ class DisneyModel(torch.nn.Module):
         out = descriptor.new_zeros((batchSize, self.BLOCK_DIMENSION))
         for i, block in enumerate(self.blocks):
             descriptorLayer = descriptor[:, i, :]
-            z = torch.cat((descriptorLayer, angle.unsqueeze(-1)), dim=-1)
+            z = torch.cat((descriptorLayer, angle.view(-1, 1)), dim=-1)
             out = block(out, z)
         return out
 

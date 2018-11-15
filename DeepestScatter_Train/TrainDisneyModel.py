@@ -91,6 +91,10 @@ if __name__ == '__main__':
             print("Train #", epoch, batchId, loss)
             writer.add_scalar('loss', loss, batchId + epoch * len(trainingGenerator))
 
+            if math.isnan(loss):
+                print("Got NAN loss!")
+                exit(0)
+
             optimizer.step(closure)
 
         print((datetime.datetime.now() - start))
@@ -101,6 +105,7 @@ if __name__ == '__main__':
         }, True)
         exportModel(model)
 
+        # Todo: calculate loss on validation dataset
         # id = 0
         # # Validation
         # with torch.set_grad_enabled(False):
