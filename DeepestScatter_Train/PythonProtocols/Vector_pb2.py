@@ -16,10 +16,10 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='Vector.proto',
-  package='Storage',
+  package='Persistance',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x0cVector.proto\x12\x07Storage\"*\n\x07Vector3\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\x62\x06proto3')
+  serialized_pb=_b('\n\x0cVector.proto\x12\x0bPersistance\"*\n\x07Vector3\x12\t\n\x01x\x18\x01 \x01(\x02\x12\t\n\x01y\x18\x02 \x01(\x02\x12\t\n\x01z\x18\x03 \x01(\x02\x62\x06proto3')
 )
 
 
@@ -27,27 +27,27 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _VECTOR3 = _descriptor.Descriptor(
   name='Vector3',
-  full_name='Storage.Vector3',
+  full_name='Persistance.Vector3',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='x', full_name='Storage.Vector3.x', index=0,
+      name='x', full_name='Persistance.Vector3.x', index=0,
       number=1, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='y', full_name='Storage.Vector3.y', index=1,
+      name='y', full_name='Persistance.Vector3.y', index=1,
       number=2, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='z', full_name='Storage.Vector3.z', index=2,
+      name='z', full_name='Persistance.Vector3.z', index=2,
       number=3, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
@@ -65,8 +65,8 @@ _VECTOR3 = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=25,
-  serialized_end=67,
+  serialized_start=29,
+  serialized_end=71,
 )
 
 DESCRIPTOR.message_types_by_name['Vector3'] = _VECTOR3
@@ -75,7 +75,7 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 Vector3 = _reflection.GeneratedProtocolMessageType('Vector3', (_message.Message,), dict(
   DESCRIPTOR = _VECTOR3,
   __module__ = 'Vector_pb2'
-  # @@protoc_insertion_point(class_scope:Storage.Vector3)
+  # @@protoc_insertion_point(class_scope:Persistance.Vector3)
   ))
 _sym_db.RegisterMessage(Vector3)
 

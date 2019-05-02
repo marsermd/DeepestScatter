@@ -1,6 +1,9 @@
 ﻿#include "Tasks.h"
 #include "Util/Dataset/Dataset.h"
 #include "installers.h"
+#include "DisneyDescriptor.pb.h"
+#include "Scene/RadianceCollector.h"
+#include "Scene/DisneyDescriptorCollector.h"
 
 namespace DeepestScatter
 {
@@ -17,7 +20,7 @@ namespace DeepestScatter
         {
             di::ContainerBuilder taskBuilder;
 
-            Storage::SceneSetup sceneSetup{};
+            Persistance::SceneSetup sceneSetup{};
             sceneSetup.set_cloud_path(cloudPath);
             sceneSetup.set_cloud_size_m(sizeM);
             sceneSetup.mutable_light_direction()->set_x(-0.586f);
@@ -28,7 +31,7 @@ namespace DeepestScatter
             //sceneSetup.mutable_light_direction()->set_z(0.11f);
 
             taskBuilder.addRegistrations(installFramework(width, height));
-            taskBuilder.addRegistrations(installSceneSetup(sceneSetup, ".", Cloud::Rendering::Mode::Full));
+            taskBuilder.addRegistrations(installSceneSetup(sceneSetup, ".", Cloud::Rendering::Mode::Full, Cloud::Model::Mipmaps::On));
             taskBuilder.addRegistrations(installApp());
 
             auto container = taskBuilder.build();
@@ -53,11 +56,11 @@ namespace DeepestScatter
     {
         std::queue<GuiExecutionLoop::LazyTask> tasks;
 
-        const size_t sceneCount = dataset->getRecordsCount<Storage::SceneSetup>();
+        const size_t sceneCount = dataset->getRecordsCount<Persistance::SceneSetup>();
 
         for (int32_t i = startSceneId; i < sceneCount; i++)
         {
-            const auto sceneSetup = dataset->getRecord<Storage::SceneSetup>(i);
+            const auto sceneSetup = dataset->getRecord<Persistance::SceneSetup>(i);
 
             GuiExecutionLoop::LazyTask task = [=]()
             {
@@ -65,7 +68,7 @@ namespace DeepestScatter
 
                 taskBuilder.addRegistrations(installFramework(width, height));
                 taskBuilder.addRegistrations(installSceneSetup(
-                    sceneSetup, cloudRoot, Cloud::Rendering::Mode::SunMultipleScatter));
+                    sceneSetup, cloudRoot, Cloud::Rendering::Mode::SunMultipleScatter, Cloud::Model::Mipmaps::On));
                 taskBuilder.addRegistrations(installApp());
                 taskBuilder.registerInstance(std::make_shared<BatchSettings>(i * 2048, 2048));
                 taskBuilder.addRegistrations(collector);
@@ -85,8 +88,14 @@ namespace DeepestScatter
     }
 
     template<>
-    void Tasks::addCollector<Storage::Result>(Hypodermic::ContainerBuilder& builder)
+    void Tasks::addCollector<Persistance::Result>(Hypodermic::ContainerBuilder& builder)
     {
         builder.registerType<RadianceCollector>().as<SceneItem>().asSelf().singleInstance();
+    }
+
+    template<>
+    void Tasks::addCollector<Persistance::DisneyDescriptor>(Hypodermic::ContainerBuilder& builder)
+    {
+        builder.registerType<DisneyDescriptorCollector>().as<SceneItem>().asSelf().singleInstance();
     }
 }

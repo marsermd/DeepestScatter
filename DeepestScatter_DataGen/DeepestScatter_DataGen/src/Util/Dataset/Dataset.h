@@ -71,7 +71,7 @@ namespace DeepestScatter
     template <class T>
     size_t Dataset::getRecordsCount()
     {
-        const TableName tableName = T::descriptor()->full_name();
+        const TableName tableName = T::descriptor()->name();
 
         MDB_dbi dbi = getTable(tableName);
 
@@ -86,7 +86,7 @@ namespace DeepestScatter
     template <class T>
     T Dataset::getRecord(int32_t recordId)
     {
-        const TableName tableName = T::descriptor()->full_name();
+        const TableName tableName = T::descriptor()->name();
         MDB_dbi dbi = getTable(tableName);
 
         return Transaction::withTransaction<T>(mdbEnv, nullptr, 0, [&](Transaction& transaction)
@@ -110,8 +110,13 @@ namespace DeepestScatter
     template <class T>
     void Dataset::dropTable()
     {
-        const TableName tableName = T::descriptor()->full_name();
+        const TableName tableName = T::descriptor()->name();
         MDB_dbi dbi = getTable(tableName);
+
+        if (getRecordsCount<T>() == 0)
+        {
+            return;
+        }
 
         while (true)
         {
@@ -139,7 +144,7 @@ namespace DeepestScatter
     template <class T>
     void Dataset::append(const T& example)
     {
-        const TableName tableName = T::descriptor()->full_name();
+        const TableName tableName = T::descriptor()->name();
         // Returns zero if not initialized;
         int entryId = nextIds[tableName];
 
@@ -154,7 +159,7 @@ namespace DeepestScatter
     template <class T>
     void Dataset::batchAppend(const gsl::span<T>& examples, int32_t startId)
     {
-        const TableName tableName = T::descriptor()->full_name();
+        const TableName tableName = T::descriptor()->name();
 
         increaseSizeIfNeededWhile([&]()
         {
@@ -168,7 +173,7 @@ namespace DeepestScatter
     template <class T>
     void Dataset::tryAppend(const T& example, int entryId)
     {
-        const TableName tableName = T::descriptor()->full_name();
+        const TableName tableName = T::descriptor()->name();
         MDB_dbi dbi = getTable(tableName);
 
         Transaction::withTransaction<void>(mdbEnv, nullptr, 0, [&](Transaction& transaction)
@@ -197,7 +202,7 @@ namespace DeepestScatter
     template <class T>
     void Dataset::tryBatchAppend(const gsl::span<T>& examples, int nextExampleId)
     {
-        const TableName tableName = T::descriptor()->full_name();
+        const TableName tableName = T::descriptor()->name();
         MDB_dbi dbi = getTable(tableName);
 
         Transaction::withTransaction<void>(mdbEnv, nullptr, 0, [&](Transaction& transaction)

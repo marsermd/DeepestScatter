@@ -39,7 +39,7 @@ namespace DeepestScatter
             BufferBind<optix::float3> directions(directionBuffer);
             BufferBind<optix::float3> positions(positionBuffer);
 
-            std::vector<Storage::ScatterSample> samples(settings.batchSize);
+            std::vector<Persistance::ScatterSample> samples(settings.batchSize);
             std::cout << "Serializing samples..." << std::endl;
             for(int i = 0; i < settings.batchSize; i++)
             {

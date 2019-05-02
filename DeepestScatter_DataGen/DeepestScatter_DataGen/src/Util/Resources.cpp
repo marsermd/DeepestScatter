@@ -19,6 +19,8 @@
 
 namespace DeepestScatter
 {
+    std::unique_ptr<Resources::VolumeCache> Resources::volumeCache = nullptr;
+
     size_t getId(size_t x, size_t y, size_t z, size_t size)
     {
         return z * size * size + y * size + x;
@@ -27,6 +29,14 @@ namespace DeepestScatter
     std::tuple<optix::Buffer, optix::float3> Resources::loadVolumeBuffer(const std::string &path, bool createMipmaps)
     {
         std::cout << "Loading VDB... " << path << std::endl;
+        auto buffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_BYTE);
+
+        if (volumeCache != nullptr && volumeCache->cloudPath == path)
+        {
+            std::cout << "Using cached." << std::endl;
+            volumeCache->fillBuffer(buffer);
+            return std::make_tuple(buffer, volumeCache->floatSize);;
+        }
 
         openvdb::initialize();
 
@@ -55,9 +65,6 @@ namespace DeepestScatter
         size_t sizeY = boundingSize.y();
         size_t sizeZ = boundingSize.z();
 
-        std::cout << "Creating buffer of size " << sizeX << "x" << sizeY << "x" << sizeZ << std::endl;
-
-        auto buffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_BYTE);
         int levelCount = 1;
         if (createMipmaps)
         {
@@ -67,8 +74,11 @@ namespace DeepestScatter
             {
                 levelCount++;
             }
-            sizeX = sizeY = sizeZ = 1 << levelCount;
+            sizeX = sizeY = sizeZ = 1ll << levelCount;
+            std::cout << "And creating mipmaps... " << levelCount << std::endl;
         }
+
+        std::cout << "Creating buffer of size " << sizeX << "x" << sizeY << "x" << sizeZ << std::endl;
         buffer->setMipLevelCount(levelCount);
         buffer->setSize(sizeX, sizeY, sizeZ);
 
@@ -129,6 +139,9 @@ namespace DeepestScatter
         }
 
         optix::float3 floatSize = optix::make_float3(boundingSize.x(), boundingSize.y(), boundingSize.z());
+
+        volumeCache = std::make_unique<VolumeCache>(path, buffer, floatSize);
+
         return std::make_tuple(buffer, floatSize);
     }
 
@@ -137,11 +150,49 @@ namespace DeepestScatter
         const static std::string ptxPath = "./CUDA/";
         const static std::string ptxExtension = ".ptx";
 
-        std::string path = ptxPath + fileName + ptxExtension;
+        const std::string path = ptxPath + fileName + ptxExtension;
 
         std::cout << "Loading program: " << path << "::" << programName << std::endl;
 
-
         return context->createProgramFromPTXFile(path, programName);
+    }
+
+    Resources::VolumeCache::VolumeCache(std::string cloudPath, optix::Buffer& buffer, optix::float3 floatSize):
+        cloudPath(cloudPath),
+        floatSize(floatSize)
+    {
+        const size_t mipLevelCount = buffer->getMipLevelCount();
+
+        buffer->getSize(size.x, size.y, size.z);
+
+        for (size_t i = 0; i < mipLevelCount; i++)
+        {
+            optix::size_t3 levelSize;
+            buffer->getMipLevelSize(i, levelSize.x, levelSize.y, levelSize.z);
+            BufferBind<uint8_t> bufferLevel(buffer, i);
+
+            const size_t totalSize = levelSize.x * levelSize.y * levelSize.z;
+
+            std::vector<uint8_t> level(totalSize);
+            std::memcpy(&level[0], &bufferLevel[0], totalSize * sizeof(uint8_t));
+
+            cache.emplace_back(level);
+        }
+    }
+
+    void Resources::VolumeCache::fillBuffer(optix::Buffer& buffer)
+    {
+        const size_t mipLevelCount = cache.size();
+        buffer->setSize(size.x, size.y, size.z);
+        buffer->setMipLevelCount(mipLevelCount);
+        for (int i = 0; i < mipLevelCount; i++)
+        {
+            BufferBind<uint8_t> bufferLevel(buffer, i);
+            const std::vector<uint8_t>& level = cache[i];
+
+            const size_t totalSize = level.size();
+
+            std::memcpy(&bufferLevel[0], &cache[i][0], totalSize * sizeof(uint8_t));
+        }
     }
 }

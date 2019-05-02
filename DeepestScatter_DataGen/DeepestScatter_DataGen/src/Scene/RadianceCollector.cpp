@@ -25,7 +25,7 @@ namespace DeepestScatter
         std::vector<Gpu::PointRadianceTask> tasks;
         for (int i = 0; i < settings.batchSize; i++)
         {
-            auto sample = dataset->getRecord<Storage::ScatterSample>(settings.batchStartId + i);
+            auto sample = dataset->getRecord<Persistance::ScatterSample>(settings.batchStartId + i);
             const auto position = optix::make_float3
             (
                 sample.point().x(),
@@ -148,7 +148,7 @@ namespace DeepestScatter
             }
         );
 
-        std::vector<Storage::Result> results(settings.batchSize);
+        std::vector<Persistance::Result> results(settings.batchSize);
         std::cout << "Serializing emissions..." << std::endl;
 
         for (int i = 0; i < settings.batchSize; i++)

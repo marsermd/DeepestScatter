@@ -15,27 +15,27 @@ class DisneyModel(torch.nn.Module):
         self.blocks = self.__createBlocks()
         self.fullyConnected = self.__createFullyConnected()
 
-    def forward(self, descriptor, angle):
+    def forward(self, zLayers):
         """
-        :param descriptor: hierarchical descriptor as an array of layers
-        :param angle: angle between light and view direction
-        :return estimated radiance given that light has radiance of 1e6
+        :param zLayers: hierarchical descriptor as a 2D tensor, with 1D layers,
+         with an angle between light and view direction appended to each layer.
+        :return estimated radiance, given that light has radiance of 1e6
         """
-        assert(descriptor.size()[1:] == (self.BLOCK_COUNT, self.DESCRIPTOR_LAYER_DIMENSION))
 
-        out = self.__blocksForward(angle, descriptor)
+        assert(zLayers.size()[1] == self.BLOCK_COUNT)
+        assert(zLayers.size()[2] == self.DESCRIPTOR_LAYER_WITH_ANGLE_DIMENSION)
+
+        out = self.__blocksForward(zLayers)
         out = self.fullyConnected(out)
 
         return out
 
-    def __blocksForward(self, angle, descriptor):
-        batchSize = descriptor.size()[0]
+    def __blocksForward(self, zLayers):
+        batchSize = zLayers.size()[0]
 
-        out = descriptor.new_zeros((batchSize, self.BLOCK_DIMENSION))
+        out = torch.zeros((batchSize, self.BLOCK_DIMENSION))
         for i, block in enumerate(self.blocks):
-            descriptorLayer = descriptor[:, i, :]
-            z = torch.cat((descriptorLayer, angle.view(-1, 1)), dim=-1)
-            out = block(out, z)
+            out = block(out, zLayers.narrow(1, i, 1).squeeze(1))
         return out
 
     def __createBlocks(self):
@@ -53,6 +53,8 @@ class DisneyModel(torch.nn.Module):
     def __createFullyConnected(self):
         return torch.nn.Sequential(
             torch.nn.Linear(self.BLOCK_DIMENSION, self.BLOCK_DIMENSION),
+            torch.nn.ReLU(),
             torch.nn.Linear(self.BLOCK_DIMENSION, self.BLOCK_DIMENSION),
+            torch.nn.ReLU(),
             torch.nn.Linear(self.BLOCK_DIMENSION, 1)
         )

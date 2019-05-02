@@ -19,23 +19,23 @@
 #endif
 // @@protoc_insertion_point(includes)
 
-namespace Storage {
+namespace Persistance {
 class ResultDefaultTypeInternal {
  public:
   ::google::protobuf::internal::ExplicitlyConstructed<Result>
       _instance;
 } _Result_default_instance_;
-}  // namespace Storage
+}  // namespace Persistance
 namespace protobuf_Result_2eproto {
 static void InitDefaultsResult() {
   GOOGLE_PROTOBUF_VERIFY_VERSION;
 
   {
-    void* ptr = &::Storage::_Result_default_instance_;
-    new (ptr) ::Storage::Result();
+    void* ptr = &::Persistance::_Result_default_instance_;
+    new (ptr) ::Persistance::Result();
     ::google::protobuf::internal::OnShutdownDestroyMessage(ptr);
   }
-  ::Storage::Result::InitAsDefaultInstance();
+  ::Persistance::Result::InitAsDefaultInstance();
 }
 
 ::google::protobuf::internal::SCCInfo<0> scc_info_Result =
@@ -49,19 +49,19 @@ void InitDefaults() {
 
 const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   ~0u,  // no _has_bits_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Storage::Result, _internal_metadata_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Persistance::Result, _internal_metadata_),
   ~0u,  // no _extensions_
   ~0u,  // no _oneof_case_
   ~0u,  // no _weak_field_map_
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Storage::Result, light_intensity_),
-  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Storage::Result, is_converged_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Persistance::Result, light_intensity_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Persistance::Result, is_converged_),
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-  { 0, -1, sizeof(::Storage::Result)},
+  { 0, -1, sizeof(::Persistance::Result)},
 };
 
 static ::google::protobuf::Message const * const file_default_instances[] = {
-  reinterpret_cast<const ::google::protobuf::Message*>(&::Storage::_Result_default_instance_),
+  reinterpret_cast<const ::google::protobuf::Message*>(&::Persistance::_Result_default_instance_),
 };
 
 void protobuf_AssignDescriptors() {
@@ -85,12 +85,12 @@ void protobuf_RegisterTypes(const ::std::string&) {
 void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
-      "\n\014Result.proto\022\007Storage\"7\n\006Result\022\027\n\017lig"
-      "ht_intensity\030\001 \001(\002\022\024\n\014is_converged\030\002 \001(\010"
-      "b\006proto3"
+      "\n\014Result.proto\022\013Persistance\"7\n\006Result\022\027\n"
+      "\017light_intensity\030\001 \001(\002\022\024\n\014is_converged\030\002"
+      " \001(\010b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 88);
+      descriptor, 92);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "Result.proto", &protobuf_RegisterTypes);
 }
@@ -106,7 +106,7 @@ struct StaticDescriptorInitializer {
   }
 } static_descriptor_initializer;
 }  // namespace protobuf_Result_2eproto
-namespace Storage {
+namespace Persistance {
 
 // ===================================================================
 
@@ -122,7 +122,7 @@ Result::Result()
   ::google::protobuf::internal::InitSCC(
       &protobuf_Result_2eproto::scc_info_Result.base);
   SharedCtor();
-  // @@protoc_insertion_point(constructor:Storage.Result)
+  // @@protoc_insertion_point(constructor:Persistance.Result)
 }
 Result::Result(const Result& from)
   : ::google::protobuf::Message(),
@@ -131,7 +131,7 @@ Result::Result(const Result& from)
   ::memcpy(&light_intensity_, &from.light_intensity_,
     static_cast<size_t>(reinterpret_cast<char*>(&is_converged_) -
     reinterpret_cast<char*>(&light_intensity_)) + sizeof(is_converged_));
-  // @@protoc_insertion_point(copy_constructor:Storage.Result)
+  // @@protoc_insertion_point(copy_constructor:Persistance.Result)
 }
 
 void Result::SharedCtor() {
@@ -141,7 +141,7 @@ void Result::SharedCtor() {
 }
 
 Result::~Result() {
-  // @@protoc_insertion_point(destructor:Storage.Result)
+  // @@protoc_insertion_point(destructor:Persistance.Result)
   SharedDtor();
 }
 
@@ -163,7 +163,7 @@ const Result& Result::default_instance() {
 
 
 void Result::Clear() {
-// @@protoc_insertion_point(message_clear_start:Storage.Result)
+// @@protoc_insertion_point(message_clear_start:Persistance.Result)
   ::google::protobuf::uint32 cached_has_bits = 0;
   // Prevent compiler warnings about cached_has_bits being unused
   (void) cached_has_bits;
@@ -178,7 +178,7 @@ bool Result::MergePartialFromCodedStream(
     ::google::protobuf::io::CodedInputStream* input) {
 #define DO_(EXPRESSION) if (!GOOGLE_PREDICT_TRUE(EXPRESSION)) goto failure
   ::google::protobuf::uint32 tag;
-  // @@protoc_insertion_point(parse_start:Storage.Result)
+  // @@protoc_insertion_point(parse_start:Persistance.Result)
   for (;;) {
     ::std::pair<::google::protobuf::uint32, bool> p = input->ReadTagWithCutoffNoLastTag(127u);
     tag = p.first;
@@ -224,17 +224,17 @@ bool Result::MergePartialFromCodedStream(
     }
   }
 success:
-  // @@protoc_insertion_point(parse_success:Storage.Result)
+  // @@protoc_insertion_point(parse_success:Persistance.Result)
   return true;
 failure:
-  // @@protoc_insertion_point(parse_failure:Storage.Result)
+  // @@protoc_insertion_point(parse_failure:Persistance.Result)
   return false;
 #undef DO_
 }
 
 void Result::SerializeWithCachedSizes(
     ::google::protobuf::io::CodedOutputStream* output) const {
-  // @@protoc_insertion_point(serialize_start:Storage.Result)
+  // @@protoc_insertion_point(serialize_start:Persistance.Result)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -252,13 +252,13 @@ void Result::SerializeWithCachedSizes(
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
   }
-  // @@protoc_insertion_point(serialize_end:Storage.Result)
+  // @@protoc_insertion_point(serialize_end:Persistance.Result)
 }
 
 ::google::protobuf::uint8* Result::InternalSerializeWithCachedSizesToArray(
     bool deterministic, ::google::protobuf::uint8* target) const {
   (void)deterministic; // Unused
-  // @@protoc_insertion_point(serialize_to_array_start:Storage.Result)
+  // @@protoc_insertion_point(serialize_to_array_start:Persistance.Result)
   ::google::protobuf::uint32 cached_has_bits = 0;
   (void) cached_has_bits;
 
@@ -276,12 +276,12 @@ void Result::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), target);
   }
-  // @@protoc_insertion_point(serialize_to_array_end:Storage.Result)
+  // @@protoc_insertion_point(serialize_to_array_end:Persistance.Result)
   return target;
 }
 
 size_t Result::ByteSizeLong() const {
-// @@protoc_insertion_point(message_byte_size_start:Storage.Result)
+// @@protoc_insertion_point(message_byte_size_start:Persistance.Result)
   size_t total_size = 0;
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -305,22 +305,22 @@ size_t Result::ByteSizeLong() const {
 }
 
 void Result::MergeFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_merge_from_start:Storage.Result)
+// @@protoc_insertion_point(generalized_merge_from_start:Persistance.Result)
   GOOGLE_DCHECK_NE(&from, this);
   const Result* source =
       ::google::protobuf::internal::DynamicCastToGenerated<const Result>(
           &from);
   if (source == NULL) {
-  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Storage.Result)
+  // @@protoc_insertion_point(generalized_merge_from_cast_fail:Persistance.Result)
     ::google::protobuf::internal::ReflectionOps::Merge(from, this);
   } else {
-  // @@protoc_insertion_point(generalized_merge_from_cast_success:Storage.Result)
+  // @@protoc_insertion_point(generalized_merge_from_cast_success:Persistance.Result)
     MergeFrom(*source);
   }
 }
 
 void Result::MergeFrom(const Result& from) {
-// @@protoc_insertion_point(class_specific_merge_from_start:Storage.Result)
+// @@protoc_insertion_point(class_specific_merge_from_start:Persistance.Result)
   GOOGLE_DCHECK_NE(&from, this);
   _internal_metadata_.MergeFrom(from._internal_metadata_);
   ::google::protobuf::uint32 cached_has_bits = 0;
@@ -335,14 +335,14 @@ void Result::MergeFrom(const Result& from) {
 }
 
 void Result::CopyFrom(const ::google::protobuf::Message& from) {
-// @@protoc_insertion_point(generalized_copy_from_start:Storage.Result)
+// @@protoc_insertion_point(generalized_copy_from_start:Persistance.Result)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
 }
 
 void Result::CopyFrom(const Result& from) {
-// @@protoc_insertion_point(class_specific_copy_from_start:Storage.Result)
+// @@protoc_insertion_point(class_specific_copy_from_start:Persistance.Result)
   if (&from == this) return;
   Clear();
   MergeFrom(from);
@@ -370,11 +370,11 @@ void Result::InternalSwap(Result* other) {
 
 
 // @@protoc_insertion_point(namespace_scope)
-}  // namespace Storage
+}  // namespace Persistance
 namespace google {
 namespace protobuf {
-template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::Storage::Result* Arena::CreateMaybeMessage< ::Storage::Result >(Arena* arena) {
-  return Arena::CreateInternal< ::Storage::Result >(arena);
+template<> GOOGLE_PROTOBUF_ATTRIBUTE_NOINLINE ::Persistance::Result* Arena::CreateMaybeMessage< ::Persistance::Result >(Arena* arena) {
+  return Arena::CreateInternal< ::Persistance::Result >(arena);
 }
 }  // namespace protobuf
 }  // namespace google

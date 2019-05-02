@@ -16,6 +16,7 @@
 #include "SceneSetup.pb.h"
 #include "Result.pb.h"
 #include "ExecutionLoop/Tasks.h"
+#include "DisneyDescriptor.pb.h"
 #pragma warning (pop)
 
 namespace di = Hypodermic;
@@ -36,7 +37,7 @@ int main(int argc, char* argv[])
             printUsageAndExit(argv[0]);
         }
         const std::string cloudPath = argv[1];
-        const std::string databasePath = "../../Data/Dataset_WIP/Train.lmdb";
+        const std::string databasePath = "../../Data/Dataset/Train.lmdb";
         const std::string cloudRoot = "../../Data/Clouds_Train";
 
         for (int i = 2; i < argc; i++)
@@ -59,7 +60,9 @@ int main(int argc, char* argv[])
         try 
         {
             GuiExecutionLoop loop(argc, argv);
-            loop.run(std::move(Tasks::collect<Storage::Result>(databasePath, cloudRoot, Tasks::CollectMode::Continue)));
+
+            loop.run(Tasks::collect<Persistance::DisneyDescriptor>(databasePath, cloudRoot, Tasks::CollectMode::Reset));
+            //loop.run(std::move(Tasks::renderCloud(cloudPath, 1000)));
         }
         catch (const std::exception& e)
         {

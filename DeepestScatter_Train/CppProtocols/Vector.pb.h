@@ -45,21 +45,21 @@ struct TableStruct {
 };
 void AddDescriptors();
 }  // namespace protobuf_Vector_2eproto
-namespace Storage {
+namespace Persistance {
 class Vector3;
 class Vector3DefaultTypeInternal;
 extern Vector3DefaultTypeInternal _Vector3_default_instance_;
-}  // namespace Storage
+}  // namespace Persistance
 namespace google {
 namespace protobuf {
-template<> ::Storage::Vector3* Arena::CreateMaybeMessage<::Storage::Vector3>(Arena*);
+template<> ::Persistance::Vector3* Arena::CreateMaybeMessage<::Persistance::Vector3>(Arena*);
 }  // namespace protobuf
 }  // namespace google
-namespace Storage {
+namespace Persistance {
 
 // ===================================================================
 
-class Vector3 : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Storage.Vector3) */ {
+class Vector3 : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Persistance.Vector3) */ {
  public:
   Vector3();
   virtual ~Vector3();
@@ -164,7 +164,7 @@ class Vector3 : public ::google::protobuf::Message /* @@protoc_insertion_point(c
   float z() const;
   void set_z(float value);
 
-  // @@protoc_insertion_point(class_scope:Storage.Vector3)
+  // @@protoc_insertion_point(class_scope:Persistance.Vector3)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -190,13 +190,13 @@ inline void Vector3::clear_x() {
   x_ = 0;
 }
 inline float Vector3::x() const {
-  // @@protoc_insertion_point(field_get:Storage.Vector3.x)
+  // @@protoc_insertion_point(field_get:Persistance.Vector3.x)
   return x_;
 }
 inline void Vector3::set_x(float value) {
   
   x_ = value;
-  // @@protoc_insertion_point(field_set:Storage.Vector3.x)
+  // @@protoc_insertion_point(field_set:Persistance.Vector3.x)
 }
 
 // float y = 2;
@@ -204,13 +204,13 @@ inline void Vector3::clear_y() {
   y_ = 0;
 }
 inline float Vector3::y() const {
-  // @@protoc_insertion_point(field_get:Storage.Vector3.y)
+  // @@protoc_insertion_point(field_get:Persistance.Vector3.y)
   return y_;
 }
 inline void Vector3::set_y(float value) {
   
   y_ = value;
-  // @@protoc_insertion_point(field_set:Storage.Vector3.y)
+  // @@protoc_insertion_point(field_set:Persistance.Vector3.y)
 }
 
 // float z = 3;
@@ -218,13 +218,13 @@ inline void Vector3::clear_z() {
   z_ = 0;
 }
 inline float Vector3::z() const {
-  // @@protoc_insertion_point(field_get:Storage.Vector3.z)
+  // @@protoc_insertion_point(field_get:Persistance.Vector3.z)
   return z_;
 }
 inline void Vector3::set_z(float value) {
   
   z_ = value;
-  // @@protoc_insertion_point(field_set:Storage.Vector3.z)
+  // @@protoc_insertion_point(field_set:Persistance.Vector3.z)
 }
 
 #ifdef __GNUC__
@@ -233,7 +233,7 @@ inline void Vector3::set_z(float value) {
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace Storage
+}  // namespace Persistance
 
 // @@protoc_insertion_point(global_scope)
 

@@ -22,6 +22,12 @@
     <Filter Include="src\Hypodermic">
       <UniqueIdentifier>{c1691ded-046b-47cb-8f4c-959b31c67364}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\Model">
+      <UniqueIdentifier>{b4317810-4634-493a-9fa3-051f335fc382}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\Model\Disney">
+      <UniqueIdentifier>{195cac2c-f3fb-448a-ad5f-a6701a19b5dd}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Util\Resources.cpp">
@@ -80,6 +86,9 @@
     </ClCompile>
     <ClCompile Include="src\ExecutionLoop\Tasks.cpp">
       <Filter>src\ExecutionLoop</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Model\Disney\Predictor.cpp">
+      <Filter>src\Model\Disney</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -483,6 +492,9 @@
     </ClInclude>
     <ClInclude Include="src\ExecutionLoop\Tasks.h">
       <Filter>src\ExecutionLoop</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Model\Disney\Predictor.h">
+      <Filter>src\Model\Disney</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

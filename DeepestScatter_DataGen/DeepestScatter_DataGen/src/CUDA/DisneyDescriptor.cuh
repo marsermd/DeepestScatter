@@ -16,8 +16,9 @@ rtDeclareVariable(float, densityMultiplier, , );
 
 rtDeclareVariable(float3, bboxSize, , );
 rtDeclareVariable(float3, textureScale, , );
+rtDeclareVariable(float, firstMipmapLevel, , );
 
-rtTextureSampler<uchar, 3, cudaReadModeNormalizedFloat> density;
+rtDeclareVariable(int, densityTextureId, , );
 
 inline RT_HOSTDEVICE float3 make_float3(size_t3 st)
 {
@@ -29,10 +30,10 @@ inline RT_HOSTDEVICE float3 make_float3(size_t3 st)
 }
 
 
-static __host__ __device__ __inline__ float sampleCloud(float3 pos)
+static __host__ __device__ __inline__ float sampleCloud(float3 pos, float mipLevel)
 {
     pos = pos * textureScale;
-    return tex3D(density, pos.x, pos.y, pos.z);
+    return rtTex3DLod<float>(densityTextureId, pos.x, pos.y, pos.z, fmaxf(0.0f, mipLevel));
 }
 
 namespace DeepestScatter
@@ -47,8 +48,11 @@ namespace DeepestScatter
 
             const float3 origin = worldPos + 0.5f * bboxSize;
 
-            /*0.5f so that [−1, −1, −1] and [1, 1, 3] are in two opposing corners*/
+            // 0.5f so that [−1, −1, −1] and [1, 1, 3] are in two opposing corners
             float scale = 0.5f / densityMultiplier;
+            // -1 because there are two sample points between 0 and 1.
+            float mipmapLevel = firstMipmapLevel - 1;
+
             for (size_t layerId = 0; layerId < DisneyDescriptor::LAYERS_CNT; layerId++)
             {
                 DisneyDescriptor::Layer& layer = descriptor.layers[layerId];
@@ -62,13 +66,14 @@ namespace DeepestScatter
                         {
                             float3 offset = (eX * x + eY * y + eZ * z) * scale;
                             const float3 pos = origin + offset;
-                            layer.density[sampleId] = make_uchar1(sampleCloud(pos) * 255.0f).x;
+                            layer.density[sampleId] = make_uchar1(sampleCloud(pos, mipmapLevel) * 255.0f).x;
                             sampleId++;
                         }
                     }
                 }
 
                 scale *= 2;
+                mipmapLevel++;
             }
         }
     }

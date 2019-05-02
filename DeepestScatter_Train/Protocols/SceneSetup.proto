@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package Storage;
+package Persistance;
 
 import "Vector.proto";
 
 message SceneSetup {
 	string cloud_path = 1;
 	float cloud_size_m = 2;
-	Storage.Vector3 light_direction = 3;
+	Persistance.Vector3 light_direction = 3;
 }

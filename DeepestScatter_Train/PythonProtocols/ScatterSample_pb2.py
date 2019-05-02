@@ -17,10 +17,10 @@ import Vector_pb2 as Vector__pb2
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='ScatterSample.proto',
-  package='Storage',
+  package='Persistance',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x13ScatterSample.proto\x12\x07Storage\x1a\x0cVector.proto\"r\n\rScatterSample\x12\x16\n\x0escene_setup_id\x18\x01 \x01(\x05\x12\x1f\n\x05point\x18\x02 \x01(\x0b\x32\x10.Storage.Vector3\x12(\n\x0eview_direction\x18\x03 \x01(\x0b\x32\x10.Storage.Vector3b\x06proto3')
+  serialized_pb=_b('\n\x13ScatterSample.proto\x12\x0bPersistance\x1a\x0cVector.proto\"z\n\rScatterSample\x12\x16\n\x0escene_setup_id\x18\x01 \x01(\x05\x12#\n\x05point\x18\x02 \x01(\x0b\x32\x14.Persistance.Vector3\x12,\n\x0eview_direction\x18\x03 \x01(\x0b\x32\x14.Persistance.Vector3b\x06proto3')
   ,
   dependencies=[Vector__pb2.DESCRIPTOR,])
 
@@ -29,27 +29,27 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _SCATTERSAMPLE = _descriptor.Descriptor(
   name='ScatterSample',
-  full_name='Storage.ScatterSample',
+  full_name='Persistance.ScatterSample',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='scene_setup_id', full_name='Storage.ScatterSample.scene_setup_id', index=0,
+      name='scene_setup_id', full_name='Persistance.ScatterSample.scene_setup_id', index=0,
       number=1, type=5, cpp_type=1, label=1,
       has_default_value=False, default_value=0,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='point', full_name='Storage.ScatterSample.point', index=1,
+      name='point', full_name='Persistance.ScatterSample.point', index=1,
       number=2, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='view_direction', full_name='Storage.ScatterSample.view_direction', index=2,
+      name='view_direction', full_name='Persistance.ScatterSample.view_direction', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -67,8 +67,8 @@ _SCATTERSAMPLE = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=46,
-  serialized_end=160,
+  serialized_start=50,
+  serialized_end=172,
 )
 
 _SCATTERSAMPLE.fields_by_name['point'].message_type = Vector__pb2._VECTOR3
@@ -79,7 +79,7 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 ScatterSample = _reflection.GeneratedProtocolMessageType('ScatterSample', (_message.Message,), dict(
   DESCRIPTOR = _SCATTERSAMPLE,
   __module__ = 'ScatterSample_pb2'
-  # @@protoc_insertion_point(class_scope:Storage.ScatterSample)
+  # @@protoc_insertion_point(class_scope:Persistance.ScatterSample)
   ))
 _sym_db.RegisterMessage(ScatterSample)
 

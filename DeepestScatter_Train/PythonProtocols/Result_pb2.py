@@ -16,10 +16,10 @@ _sym_db = _symbol_database.Default()
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='Result.proto',
-  package='Storage',
+  package='Persistance',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x0cResult.proto\x12\x07Storage\"7\n\x06Result\x12\x17\n\x0flight_intensity\x18\x01 \x01(\x02\x12\x14\n\x0cis_converged\x18\x02 \x01(\x08\x62\x06proto3')
+  serialized_pb=_b('\n\x0cResult.proto\x12\x0bPersistance\"7\n\x06Result\x12\x17\n\x0flight_intensity\x18\x01 \x01(\x02\x12\x14\n\x0cis_converged\x18\x02 \x01(\x08\x62\x06proto3')
 )
 
 
@@ -27,20 +27,20 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _RESULT = _descriptor.Descriptor(
   name='Result',
-  full_name='Storage.Result',
+  full_name='Persistance.Result',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='light_intensity', full_name='Storage.Result.light_intensity', index=0,
+      name='light_intensity', full_name='Persistance.Result.light_intensity', index=0,
       number=1, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='is_converged', full_name='Storage.Result.is_converged', index=1,
+      name='is_converged', full_name='Persistance.Result.is_converged', index=1,
       number=2, type=8, cpp_type=7, label=1,
       has_default_value=False, default_value=False,
       message_type=None, enum_type=None, containing_type=None,
@@ -58,8 +58,8 @@ _RESULT = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=25,
-  serialized_end=80,
+  serialized_start=29,
+  serialized_end=84,
 )
 
 DESCRIPTOR.message_types_by_name['Result'] = _RESULT
@@ -68,7 +68,7 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 Result = _reflection.GeneratedProtocolMessageType('Result', (_message.Message,), dict(
   DESCRIPTOR = _RESULT,
   __module__ = 'Result_pb2'
-  # @@protoc_insertion_point(class_scope:Storage.Result)
+  # @@protoc_insertion_point(class_scope:Persistance.Result)
   ))
 _sym_db.RegisterMessage(Result)
 

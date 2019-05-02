@@ -46,21 +46,21 @@ struct TableStruct {
 };
 void AddDescriptors();
 }  // namespace protobuf_ScatterSample_2eproto
-namespace Storage {
+namespace Persistance {
 class ScatterSample;
 class ScatterSampleDefaultTypeInternal;
 extern ScatterSampleDefaultTypeInternal _ScatterSample_default_instance_;
-}  // namespace Storage
+}  // namespace Persistance
 namespace google {
 namespace protobuf {
-template<> ::Storage::ScatterSample* Arena::CreateMaybeMessage<::Storage::ScatterSample>(Arena*);
+template<> ::Persistance::ScatterSample* Arena::CreateMaybeMessage<::Persistance::ScatterSample>(Arena*);
 }  // namespace protobuf
 }  // namespace google
-namespace Storage {
+namespace Persistance {
 
 // ===================================================================
 
-class ScatterSample : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Storage.ScatterSample) */ {
+class ScatterSample : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Persistance.ScatterSample) */ {
  public:
   ScatterSample();
   virtual ~ScatterSample();
@@ -147,29 +147,29 @@ class ScatterSample : public ::google::protobuf::Message /* @@protoc_insertion_p
 
   // accessors -------------------------------------------------------
 
-  // .Storage.Vector3 point = 2;
+  // .Persistance.Vector3 point = 2;
   bool has_point() const;
   void clear_point();
   static const int kPointFieldNumber = 2;
   private:
-  const ::Storage::Vector3& _internal_point() const;
+  const ::Persistance::Vector3& _internal_point() const;
   public:
-  const ::Storage::Vector3& point() const;
-  ::Storage::Vector3* release_point();
-  ::Storage::Vector3* mutable_point();
-  void set_allocated_point(::Storage::Vector3* point);
+  const ::Persistance::Vector3& point() const;
+  ::Persistance::Vector3* release_point();
+  ::Persistance::Vector3* mutable_point();
+  void set_allocated_point(::Persistance::Vector3* point);
 
-  // .Storage.Vector3 view_direction = 3;
+  // .Persistance.Vector3 view_direction = 3;
   bool has_view_direction() const;
   void clear_view_direction();
   static const int kViewDirectionFieldNumber = 3;
   private:
-  const ::Storage::Vector3& _internal_view_direction() const;
+  const ::Persistance::Vector3& _internal_view_direction() const;
   public:
-  const ::Storage::Vector3& view_direction() const;
-  ::Storage::Vector3* release_view_direction();
-  ::Storage::Vector3* mutable_view_direction();
-  void set_allocated_view_direction(::Storage::Vector3* view_direction);
+  const ::Persistance::Vector3& view_direction() const;
+  ::Persistance::Vector3* release_view_direction();
+  ::Persistance::Vector3* mutable_view_direction();
+  void set_allocated_view_direction(::Persistance::Vector3* view_direction);
 
   // int32 scene_setup_id = 1;
   void clear_scene_setup_id();
@@ -177,12 +177,12 @@ class ScatterSample : public ::google::protobuf::Message /* @@protoc_insertion_p
   ::google::protobuf::int32 scene_setup_id() const;
   void set_scene_setup_id(::google::protobuf::int32 value);
 
-  // @@protoc_insertion_point(class_scope:Storage.ScatterSample)
+  // @@protoc_insertion_point(class_scope:Persistance.ScatterSample)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
-  ::Storage::Vector3* point_;
-  ::Storage::Vector3* view_direction_;
+  ::Persistance::Vector3* point_;
+  ::Persistance::Vector3* view_direction_;
   ::google::protobuf::int32 scene_setup_id_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_ScatterSample_2eproto::TableStruct;
@@ -203,45 +203,45 @@ inline void ScatterSample::clear_scene_setup_id() {
   scene_setup_id_ = 0;
 }
 inline ::google::protobuf::int32 ScatterSample::scene_setup_id() const {
-  // @@protoc_insertion_point(field_get:Storage.ScatterSample.scene_setup_id)
+  // @@protoc_insertion_point(field_get:Persistance.ScatterSample.scene_setup_id)
   return scene_setup_id_;
 }
 inline void ScatterSample::set_scene_setup_id(::google::protobuf::int32 value) {
   
   scene_setup_id_ = value;
-  // @@protoc_insertion_point(field_set:Storage.ScatterSample.scene_setup_id)
+  // @@protoc_insertion_point(field_set:Persistance.ScatterSample.scene_setup_id)
 }
 
-// .Storage.Vector3 point = 2;
+// .Persistance.Vector3 point = 2;
 inline bool ScatterSample::has_point() const {
   return this != internal_default_instance() && point_ != NULL;
 }
-inline const ::Storage::Vector3& ScatterSample::_internal_point() const {
+inline const ::Persistance::Vector3& ScatterSample::_internal_point() const {
   return *point_;
 }
-inline const ::Storage::Vector3& ScatterSample::point() const {
-  const ::Storage::Vector3* p = point_;
-  // @@protoc_insertion_point(field_get:Storage.ScatterSample.point)
-  return p != NULL ? *p : *reinterpret_cast<const ::Storage::Vector3*>(
-      &::Storage::_Vector3_default_instance_);
+inline const ::Persistance::Vector3& ScatterSample::point() const {
+  const ::Persistance::Vector3* p = point_;
+  // @@protoc_insertion_point(field_get:Persistance.ScatterSample.point)
+  return p != NULL ? *p : *reinterpret_cast<const ::Persistance::Vector3*>(
+      &::Persistance::_Vector3_default_instance_);
 }
-inline ::Storage::Vector3* ScatterSample::release_point() {
-  // @@protoc_insertion_point(field_release:Storage.ScatterSample.point)
+inline ::Persistance::Vector3* ScatterSample::release_point() {
+  // @@protoc_insertion_point(field_release:Persistance.ScatterSample.point)
   
-  ::Storage::Vector3* temp = point_;
+  ::Persistance::Vector3* temp = point_;
   point_ = NULL;
   return temp;
 }
-inline ::Storage::Vector3* ScatterSample::mutable_point() {
+inline ::Persistance::Vector3* ScatterSample::mutable_point() {
   
   if (point_ == NULL) {
-    auto* p = CreateMaybeMessage<::Storage::Vector3>(GetArenaNoVirtual());
+    auto* p = CreateMaybeMessage<::Persistance::Vector3>(GetArenaNoVirtual());
     point_ = p;
   }
-  // @@protoc_insertion_point(field_mutable:Storage.ScatterSample.point)
+  // @@protoc_insertion_point(field_mutable:Persistance.ScatterSample.point)
   return point_;
 }
-inline void ScatterSample::set_allocated_point(::Storage::Vector3* point) {
+inline void ScatterSample::set_allocated_point(::Persistance::Vector3* point) {
   ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
   if (message_arena == NULL) {
     delete reinterpret_cast< ::google::protobuf::MessageLite*>(point_);
@@ -257,39 +257,39 @@ inline void ScatterSample::set_allocated_point(::Storage::Vector3* point) {
     
   }
   point_ = point;
-  // @@protoc_insertion_point(field_set_allocated:Storage.ScatterSample.point)
+  // @@protoc_insertion_point(field_set_allocated:Persistance.ScatterSample.point)
 }
 
-// .Storage.Vector3 view_direction = 3;
+// .Persistance.Vector3 view_direction = 3;
 inline bool ScatterSample::has_view_direction() const {
   return this != internal_default_instance() && view_direction_ != NULL;
 }
-inline const ::Storage::Vector3& ScatterSample::_internal_view_direction() const {
+inline const ::Persistance::Vector3& ScatterSample::_internal_view_direction() const {
   return *view_direction_;
 }
-inline const ::Storage::Vector3& ScatterSample::view_direction() const {
-  const ::Storage::Vector3* p = view_direction_;
-  // @@protoc_insertion_point(field_get:Storage.ScatterSample.view_direction)
-  return p != NULL ? *p : *reinterpret_cast<const ::Storage::Vector3*>(
-      &::Storage::_Vector3_default_instance_);
+inline const ::Persistance::Vector3& ScatterSample::view_direction() const {
+  const ::Persistance::Vector3* p = view_direction_;
+  // @@protoc_insertion_point(field_get:Persistance.ScatterSample.view_direction)
+  return p != NULL ? *p : *reinterpret_cast<const ::Persistance::Vector3*>(
+      &::Persistance::_Vector3_default_instance_);
 }
-inline ::Storage::Vector3* ScatterSample::release_view_direction() {
-  // @@protoc_insertion_point(field_release:Storage.ScatterSample.view_direction)
+inline ::Persistance::Vector3* ScatterSample::release_view_direction() {
+  // @@protoc_insertion_point(field_release:Persistance.ScatterSample.view_direction)
   
-  ::Storage::Vector3* temp = view_direction_;
+  ::Persistance::Vector3* temp = view_direction_;
   view_direction_ = NULL;
   return temp;
 }
-inline ::Storage::Vector3* ScatterSample::mutable_view_direction() {
+inline ::Persistance::Vector3* ScatterSample::mutable_view_direction() {
   
   if (view_direction_ == NULL) {
-    auto* p = CreateMaybeMessage<::Storage::Vector3>(GetArenaNoVirtual());
+    auto* p = CreateMaybeMessage<::Persistance::Vector3>(GetArenaNoVirtual());
     view_direction_ = p;
   }
-  // @@protoc_insertion_point(field_mutable:Storage.ScatterSample.view_direction)
+  // @@protoc_insertion_point(field_mutable:Persistance.ScatterSample.view_direction)
   return view_direction_;
 }
-inline void ScatterSample::set_allocated_view_direction(::Storage::Vector3* view_direction) {
+inline void ScatterSample::set_allocated_view_direction(::Persistance::Vector3* view_direction) {
   ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
   if (message_arena == NULL) {
     delete reinterpret_cast< ::google::protobuf::MessageLite*>(view_direction_);
@@ -305,7 +305,7 @@ inline void ScatterSample::set_allocated_view_direction(::Storage::Vector3* view
     
   }
   view_direction_ = view_direction;
-  // @@protoc_insertion_point(field_set_allocated:Storage.ScatterSample.view_direction)
+  // @@protoc_insertion_point(field_set_allocated:Persistance.ScatterSample.view_direction)
 }
 
 #ifdef __GNUC__
@@ -314,7 +314,7 @@ inline void ScatterSample::set_allocated_view_direction(::Storage::Vector3* view
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace Storage
+}  // namespace Persistance
 
 // @@protoc_insertion_point(global_scope)
 

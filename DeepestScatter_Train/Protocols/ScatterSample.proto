@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package Storage;
+package Persistance;
 
 import "Vector.proto";
 
 message ScatterSample {
     int32 scene_setup_id = 1;
-	Storage.Vector3 point = 2;
-	Storage.Vector3 view_direction = 3;
+	Persistance.Vector3 point = 2;
+	Persistance.Vector3 view_direction = 3;
 }

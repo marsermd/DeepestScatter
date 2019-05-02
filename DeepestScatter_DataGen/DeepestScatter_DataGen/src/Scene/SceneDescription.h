@@ -62,8 +62,8 @@ namespace DeepestScatter
 
             enum class Mipmaps : bool
             {
-                Off,
-                On
+                Off = false,
+                On = true
             };
 
             Model(const std::string& vdbPath, Mipmaps mipmaps, Size size)

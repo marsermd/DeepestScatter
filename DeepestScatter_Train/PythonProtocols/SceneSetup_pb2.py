@@ -17,10 +17,10 @@ import Vector_pb2 as Vector__pb2
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='SceneSetup.proto',
-  package='Storage',
+  package='Persistance',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x10SceneSetup.proto\x12\x07Storage\x1a\x0cVector.proto\"a\n\nSceneSetup\x12\x12\n\ncloud_path\x18\x01 \x01(\t\x12\x14\n\x0c\x63loud_size_m\x18\x02 \x01(\x02\x12)\n\x0flight_direction\x18\x03 \x01(\x0b\x32\x10.Storage.Vector3b\x06proto3')
+  serialized_pb=_b('\n\x10SceneSetup.proto\x12\x0bPersistance\x1a\x0cVector.proto\"e\n\nSceneSetup\x12\x12\n\ncloud_path\x18\x01 \x01(\t\x12\x14\n\x0c\x63loud_size_m\x18\x02 \x01(\x02\x12-\n\x0flight_direction\x18\x03 \x01(\x0b\x32\x14.Persistance.Vector3b\x06proto3')
   ,
   dependencies=[Vector__pb2.DESCRIPTOR,])
 
@@ -29,27 +29,27 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _SCENESETUP = _descriptor.Descriptor(
   name='SceneSetup',
-  full_name='Storage.SceneSetup',
+  full_name='Persistance.SceneSetup',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='cloud_path', full_name='Storage.SceneSetup.cloud_path', index=0,
+      name='cloud_path', full_name='Persistance.SceneSetup.cloud_path', index=0,
       number=1, type=9, cpp_type=9, label=1,
       has_default_value=False, default_value=_b("").decode('utf-8'),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='cloud_size_m', full_name='Storage.SceneSetup.cloud_size_m', index=1,
+      name='cloud_size_m', full_name='Persistance.SceneSetup.cloud_size_m', index=1,
       number=2, type=2, cpp_type=6, label=1,
       has_default_value=False, default_value=float(0),
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
     _descriptor.FieldDescriptor(
-      name='light_direction', full_name='Storage.SceneSetup.light_direction', index=2,
+      name='light_direction', full_name='Persistance.SceneSetup.light_direction', index=2,
       number=3, type=11, cpp_type=10, label=1,
       has_default_value=False, default_value=None,
       message_type=None, enum_type=None, containing_type=None,
@@ -67,8 +67,8 @@ _SCENESETUP = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=43,
-  serialized_end=140,
+  serialized_start=47,
+  serialized_end=148,
 )
 
 _SCENESETUP.fields_by_name['light_direction'].message_type = Vector__pb2._VECTOR3
@@ -78,7 +78,7 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 SceneSetup = _reflection.GeneratedProtocolMessageType('SceneSetup', (_message.Message,), dict(
   DESCRIPTOR = _SCENESETUP,
   __module__ = 'SceneSetup_pb2'
-  # @@protoc_insertion_point(class_scope:Storage.SceneSetup)
+  # @@protoc_insertion_point(class_scope:Persistance.SceneSetup)
   ))
 _sym_db.RegisterMessage(SceneSetup)
 

@@ -46,21 +46,21 @@ struct TableStruct {
 };
 void AddDescriptors();
 }  // namespace protobuf_SceneSetup_2eproto
-namespace Storage {
+namespace Persistance {
 class SceneSetup;
 class SceneSetupDefaultTypeInternal;
 extern SceneSetupDefaultTypeInternal _SceneSetup_default_instance_;
-}  // namespace Storage
+}  // namespace Persistance
 namespace google {
 namespace protobuf {
-template<> ::Storage::SceneSetup* Arena::CreateMaybeMessage<::Storage::SceneSetup>(Arena*);
+template<> ::Persistance::SceneSetup* Arena::CreateMaybeMessage<::Persistance::SceneSetup>(Arena*);
 }  // namespace protobuf
 }  // namespace google
-namespace Storage {
+namespace Persistance {
 
 // ===================================================================
 
-class SceneSetup : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Storage.SceneSetup) */ {
+class SceneSetup : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Persistance.SceneSetup) */ {
  public:
   SceneSetup();
   virtual ~SceneSetup();
@@ -161,17 +161,17 @@ class SceneSetup : public ::google::protobuf::Message /* @@protoc_insertion_poin
   ::std::string* release_cloud_path();
   void set_allocated_cloud_path(::std::string* cloud_path);
 
-  // .Storage.Vector3 light_direction = 3;
+  // .Persistance.Vector3 light_direction = 3;
   bool has_light_direction() const;
   void clear_light_direction();
   static const int kLightDirectionFieldNumber = 3;
   private:
-  const ::Storage::Vector3& _internal_light_direction() const;
+  const ::Persistance::Vector3& _internal_light_direction() const;
   public:
-  const ::Storage::Vector3& light_direction() const;
-  ::Storage::Vector3* release_light_direction();
-  ::Storage::Vector3* mutable_light_direction();
-  void set_allocated_light_direction(::Storage::Vector3* light_direction);
+  const ::Persistance::Vector3& light_direction() const;
+  ::Persistance::Vector3* release_light_direction();
+  ::Persistance::Vector3* mutable_light_direction();
+  void set_allocated_light_direction(::Persistance::Vector3* light_direction);
 
   // float cloud_size_m = 2;
   void clear_cloud_size_m();
@@ -179,12 +179,12 @@ class SceneSetup : public ::google::protobuf::Message /* @@protoc_insertion_poin
   float cloud_size_m() const;
   void set_cloud_size_m(float value);
 
-  // @@protoc_insertion_point(class_scope:Storage.SceneSetup)
+  // @@protoc_insertion_point(class_scope:Persistance.SceneSetup)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
   ::google::protobuf::internal::ArenaStringPtr cloud_path_;
-  ::Storage::Vector3* light_direction_;
+  ::Persistance::Vector3* light_direction_;
   float cloud_size_m_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_SceneSetup_2eproto::TableStruct;
@@ -205,41 +205,41 @@ inline void SceneSetup::clear_cloud_path() {
   cloud_path_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline const ::std::string& SceneSetup::cloud_path() const {
-  // @@protoc_insertion_point(field_get:Storage.SceneSetup.cloud_path)
+  // @@protoc_insertion_point(field_get:Persistance.SceneSetup.cloud_path)
   return cloud_path_.GetNoArena();
 }
 inline void SceneSetup::set_cloud_path(const ::std::string& value) {
   
   cloud_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:Storage.SceneSetup.cloud_path)
+  // @@protoc_insertion_point(field_set:Persistance.SceneSetup.cloud_path)
 }
 #if LANG_CXX11
 inline void SceneSetup::set_cloud_path(::std::string&& value) {
   
   cloud_path_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:Storage.SceneSetup.cloud_path)
+  // @@protoc_insertion_point(field_set_rvalue:Persistance.SceneSetup.cloud_path)
 }
 #endif
 inline void SceneSetup::set_cloud_path(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   cloud_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:Storage.SceneSetup.cloud_path)
+  // @@protoc_insertion_point(field_set_char:Persistance.SceneSetup.cloud_path)
 }
 inline void SceneSetup::set_cloud_path(const char* value, size_t size) {
   
   cloud_path_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:Storage.SceneSetup.cloud_path)
+  // @@protoc_insertion_point(field_set_pointer:Persistance.SceneSetup.cloud_path)
 }
 inline ::std::string* SceneSetup::mutable_cloud_path() {
   
-  // @@protoc_insertion_point(field_mutable:Storage.SceneSetup.cloud_path)
+  // @@protoc_insertion_point(field_mutable:Persistance.SceneSetup.cloud_path)
   return cloud_path_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* SceneSetup::release_cloud_path() {
-  // @@protoc_insertion_point(field_release:Storage.SceneSetup.cloud_path)
+  // @@protoc_insertion_point(field_release:Persistance.SceneSetup.cloud_path)
   
   return cloud_path_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -250,7 +250,7 @@ inline void SceneSetup::set_allocated_cloud_path(::std::string* cloud_path) {
     
   }
   cloud_path_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), cloud_path);
-  // @@protoc_insertion_point(field_set_allocated:Storage.SceneSetup.cloud_path)
+  // @@protoc_insertion_point(field_set_allocated:Persistance.SceneSetup.cloud_path)
 }
 
 // float cloud_size_m = 2;
@@ -258,45 +258,45 @@ inline void SceneSetup::clear_cloud_size_m() {
   cloud_size_m_ = 0;
 }
 inline float SceneSetup::cloud_size_m() const {
-  // @@protoc_insertion_point(field_get:Storage.SceneSetup.cloud_size_m)
+  // @@protoc_insertion_point(field_get:Persistance.SceneSetup.cloud_size_m)
   return cloud_size_m_;
 }
 inline void SceneSetup::set_cloud_size_m(float value) {
   
   cloud_size_m_ = value;
-  // @@protoc_insertion_point(field_set:Storage.SceneSetup.cloud_size_m)
+  // @@protoc_insertion_point(field_set:Persistance.SceneSetup.cloud_size_m)
 }
 
-// .Storage.Vector3 light_direction = 3;
+// .Persistance.Vector3 light_direction = 3;
 inline bool SceneSetup::has_light_direction() const {
   return this != internal_default_instance() && light_direction_ != NULL;
 }
-inline const ::Storage::Vector3& SceneSetup::_internal_light_direction() const {
+inline const ::Persistance::Vector3& SceneSetup::_internal_light_direction() const {
   return *light_direction_;
 }
-inline const ::Storage::Vector3& SceneSetup::light_direction() const {
-  const ::Storage::Vector3* p = light_direction_;
-  // @@protoc_insertion_point(field_get:Storage.SceneSetup.light_direction)
-  return p != NULL ? *p : *reinterpret_cast<const ::Storage::Vector3*>(
-      &::Storage::_Vector3_default_instance_);
+inline const ::Persistance::Vector3& SceneSetup::light_direction() const {
+  const ::Persistance::Vector3* p = light_direction_;
+  // @@protoc_insertion_point(field_get:Persistance.SceneSetup.light_direction)
+  return p != NULL ? *p : *reinterpret_cast<const ::Persistance::Vector3*>(
+      &::Persistance::_Vector3_default_instance_);
 }
-inline ::Storage::Vector3* SceneSetup::release_light_direction() {
-  // @@protoc_insertion_point(field_release:Storage.SceneSetup.light_direction)
+inline ::Persistance::Vector3* SceneSetup::release_light_direction() {
+  // @@protoc_insertion_point(field_release:Persistance.SceneSetup.light_direction)
   
-  ::Storage::Vector3* temp = light_direction_;
+  ::Persistance::Vector3* temp = light_direction_;
   light_direction_ = NULL;
   return temp;
 }
-inline ::Storage::Vector3* SceneSetup::mutable_light_direction() {
+inline ::Persistance::Vector3* SceneSetup::mutable_light_direction() {
   
   if (light_direction_ == NULL) {
-    auto* p = CreateMaybeMessage<::Storage::Vector3>(GetArenaNoVirtual());
+    auto* p = CreateMaybeMessage<::Persistance::Vector3>(GetArenaNoVirtual());
     light_direction_ = p;
   }
-  // @@protoc_insertion_point(field_mutable:Storage.SceneSetup.light_direction)
+  // @@protoc_insertion_point(field_mutable:Persistance.SceneSetup.light_direction)
   return light_direction_;
 }
-inline void SceneSetup::set_allocated_light_direction(::Storage::Vector3* light_direction) {
+inline void SceneSetup::set_allocated_light_direction(::Persistance::Vector3* light_direction) {
   ::google::protobuf::Arena* message_arena = GetArenaNoVirtual();
   if (message_arena == NULL) {
     delete reinterpret_cast< ::google::protobuf::MessageLite*>(light_direction_);
@@ -312,7 +312,7 @@ inline void SceneSetup::set_allocated_light_direction(::Storage::Vector3* light_
     
   }
   light_direction_ = light_direction;
-  // @@protoc_insertion_point(field_set_allocated:Storage.SceneSetup.light_direction)
+  // @@protoc_insertion_point(field_set_allocated:Persistance.SceneSetup.light_direction)
 }
 
 #ifdef __GNUC__
@@ -321,7 +321,7 @@ inline void SceneSetup::set_allocated_light_direction(::Storage::Vector3* light_
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace Storage
+}  // namespace Persistance
 
 // @@protoc_insertion_point(global_scope)
 

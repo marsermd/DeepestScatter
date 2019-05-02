@@ -63,9 +63,10 @@ namespace DeepestScatter
     }
 
     Hypodermic::ContainerBuilder installSceneSetup(
-        const Storage::SceneSetup& sceneSetup, 
+        const Persistance::SceneSetup& sceneSetup,
         const std::string& cloudsRoot,
-        Cloud::Rendering::Mode renderingMode)
+        Cloud::Rendering::Mode renderingMode,
+        Cloud::Model::Mipmaps mipmaps)
     {
         std::filesystem::path cloudPath(cloudsRoot);
         cloudPath /= sceneSetup.cloud_path();
@@ -81,7 +82,7 @@ namespace DeepestScatter
                 Cloud::Model
                 {
                     cloudPath.string(),
-                    Cloud::Model::Mipmaps::Off,
+                    mipmaps,
                     Cloud::Model::Size{Meter{sceneSetup.cloud_size_m()}}
                 }
             },
@@ -107,8 +108,8 @@ namespace DeepestScatter
         builder.registerInstance(std::make_shared<Camera::Settings>(width, height));
 
         builder.registerInstance(std::make_shared<optix::Context>(optix::Context::create()));
-
         builder.registerType<Resources>().singleInstance();
+
         builder.registerType<Scene>().singleInstance();
 
         return builder;

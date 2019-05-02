@@ -32,16 +32,18 @@ class DisneyDescriptorDataset(data.Dataset):
         angle = self.__getLightAngle(sampleId)
         light = self.__getLightIntensity(sampleId)
 
-        return descriptor, angle, light
+        angle = torch.ones((10, 1), dtype=torch.float32) * angle
+
+        descriptor = torch.cat((descriptor, angle), dim=1)
+        return descriptor, light
 
     def __getDescriptor(self, sampleId):
         descriptor = self.lmdbDataset.get(DisneyDescriptor, sampleId)
 
         # Grid values are stored as bytes. Let's convert them to 0-1 range
-        descriptor = torch.tensor(list(descriptor.grid), dtype=torch.float32) / 128
-
+        descriptor = torch.tensor(list(descriptor.grid), dtype=torch.float32) / 256
         # Shape the grid according to the layers
-        descriptor = descriptor.reshape((10, 225))
+        descriptor = descriptor.view((10, -1))
 
         return descriptor
 
@@ -54,7 +56,7 @@ class DisneyDescriptorDataset(data.Dataset):
         lightDirection = np.array([scene.light_direction.x, scene.light_direction.y, scene.light_direction.z])
         viewDirection = np.array([sample.view_direction.x, sample.view_direction.y, sample.view_direction.z])
 
-        angle = np.arccos(np.dot(normalized(lightDirection), normalized(viewDirection)))
+        angle = np.math.acos(np.dot(normalized(lightDirection), normalized(viewDirection)))
         return torch.tensor(angle, dtype=torch.float32)
 
     def __getLightIntensity(self, sampleId):

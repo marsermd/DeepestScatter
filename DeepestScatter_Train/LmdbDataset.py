@@ -35,9 +35,9 @@ class LmdbDataset:
         self.results_db = self.__addDb(Result, create=create)
 
     def __addDb(self, protocol, create):
-        db = self.env.open_db(protocol.DESCRIPTOR.full_name.encode('ascii'), integerkey=True, create=create)
-        self.descriptorToDb[protocol.DESCRIPTOR.full_name] = db
-        self.nextIds[protocol.DESCRIPTOR.full_name] = 0
+        db = self.env.open_db(protocol.DESCRIPTOR.name.encode('ascii'), integerkey=True, create=create)
+        self.descriptorToDb[protocol.DESCRIPTOR.name] = db
+        self.nextIds[protocol.DESCRIPTOR.name] = 0
         return db
 
     def append(self, value):
@@ -65,7 +65,7 @@ class LmdbDataset:
             return protocol
 
     def __getNameAndDb(self, protocolType):
-        name = protocolType.DESCRIPTOR.full_name
+        name = protocolType.DESCRIPTOR.name
         db = self.env.open_db(name.encode('ascii'), integerkey=True, create=False)
         return (name, db)
 
@@ -94,8 +94,8 @@ class LmdbDatasets:
 
     def __initDatasets(self):
         self.train = self.__createDataset(TRAIN_NAME)
-        self.validation = self.__createDataset(VALIDATION_NAME)
-        self.test = self.__createDataset(TEST_NAME)
+        #self.validation = self.__createDataset(VALIDATION_NAME)
+        #self.test = self.__createDataset(TEST_NAME)
 
     def __createDataset(self, name):
         return LmdbDataset(os.path.join(self.datasetRoot, name), self.readonly)

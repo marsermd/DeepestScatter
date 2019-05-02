@@ -22,7 +22,7 @@ namespace DeepestScatter
 
             for (int i = 0; i < settings.batchSize; i++)
             {
-                auto sample = dataset->getRecord<Storage::ScatterSample>(settings.batchStartId + i);
+                auto sample = dataset->getRecord<Persistance::ScatterSample>(settings.batchStartId + i);
                 positions[i] = optix::make_float3
                 (
                     sample.point().x(),
@@ -66,6 +66,11 @@ namespace DeepestScatter
 
     void DisneyDescriptorCollector::setupVariables(optix::Program& scope)
     {
+        const float voxelSize = cloud->getVoxelSizeInTermsOfFreePath();
+        const float firstMipmapLevel = -std::log2f(voxelSize);
+        std::cout << "firstMipmapLevel" << firstMipmapLevel << std::endl;
+
+        scope["firstMipmapLevel"]->setFloat(firstMipmapLevel);
         scope["directionBuffer"]->setBuffer(directionBuffer);
         scope["positionBuffer"]->setBuffer(positionBuffer);
         scope["descriptors"]->setBuffer(descriptorsBuffer);
@@ -75,7 +80,7 @@ namespace DeepestScatter
     {
         BufferBind<Gpu::DisneyDescriptor> descriptors(descriptorsBuffer);
 
-        std::vector<Storage::DisneyDescriptor> serializedDescriptors(settings.batchSize);
+        std::vector<Persistance::DisneyDescriptor> serializedDescriptors(settings.batchSize);
         for (int i = 0; i < settings.batchSize; i++)
         {
             constexpr size_t pointsInLayer =

@@ -46,21 +46,21 @@ struct TableStruct {
 };
 void AddDescriptors();
 }  // namespace protobuf_DisneyDescriptor_2eproto
-namespace Storage {
+namespace Persistance {
 class DisneyDescriptor;
 class DisneyDescriptorDefaultTypeInternal;
 extern DisneyDescriptorDefaultTypeInternal _DisneyDescriptor_default_instance_;
-}  // namespace Storage
+}  // namespace Persistance
 namespace google {
 namespace protobuf {
-template<> ::Storage::DisneyDescriptor* Arena::CreateMaybeMessage<::Storage::DisneyDescriptor>(Arena*);
+template<> ::Persistance::DisneyDescriptor* Arena::CreateMaybeMessage<::Persistance::DisneyDescriptor>(Arena*);
 }  // namespace protobuf
 }  // namespace google
-namespace Storage {
+namespace Persistance {
 
 // ===================================================================
 
-class DisneyDescriptor : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Storage.DisneyDescriptor) */ {
+class DisneyDescriptor : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Persistance.DisneyDescriptor) */ {
  public:
   DisneyDescriptor();
   virtual ~DisneyDescriptor();
@@ -161,7 +161,7 @@ class DisneyDescriptor : public ::google::protobuf::Message /* @@protoc_insertio
   ::std::string* release_grid();
   void set_allocated_grid(::std::string* grid);
 
-  // @@protoc_insertion_point(class_scope:Storage.DisneyDescriptor)
+  // @@protoc_insertion_point(class_scope:Persistance.DisneyDescriptor)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -185,41 +185,41 @@ inline void DisneyDescriptor::clear_grid() {
   grid_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline const ::std::string& DisneyDescriptor::grid() const {
-  // @@protoc_insertion_point(field_get:Storage.DisneyDescriptor.grid)
+  // @@protoc_insertion_point(field_get:Persistance.DisneyDescriptor.grid)
   return grid_.GetNoArena();
 }
 inline void DisneyDescriptor::set_grid(const ::std::string& value) {
   
   grid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
-  // @@protoc_insertion_point(field_set:Storage.DisneyDescriptor.grid)
+  // @@protoc_insertion_point(field_set:Persistance.DisneyDescriptor.grid)
 }
 #if LANG_CXX11
 inline void DisneyDescriptor::set_grid(::std::string&& value) {
   
   grid_.SetNoArena(
     &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
-  // @@protoc_insertion_point(field_set_rvalue:Storage.DisneyDescriptor.grid)
+  // @@protoc_insertion_point(field_set_rvalue:Persistance.DisneyDescriptor.grid)
 }
 #endif
 inline void DisneyDescriptor::set_grid(const char* value) {
   GOOGLE_DCHECK(value != NULL);
   
   grid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
-  // @@protoc_insertion_point(field_set_char:Storage.DisneyDescriptor.grid)
+  // @@protoc_insertion_point(field_set_char:Persistance.DisneyDescriptor.grid)
 }
 inline void DisneyDescriptor::set_grid(const void* value, size_t size) {
   
   grid_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
       ::std::string(reinterpret_cast<const char*>(value), size));
-  // @@protoc_insertion_point(field_set_pointer:Storage.DisneyDescriptor.grid)
+  // @@protoc_insertion_point(field_set_pointer:Persistance.DisneyDescriptor.grid)
 }
 inline ::std::string* DisneyDescriptor::mutable_grid() {
   
-  // @@protoc_insertion_point(field_mutable:Storage.DisneyDescriptor.grid)
+  // @@protoc_insertion_point(field_mutable:Persistance.DisneyDescriptor.grid)
   return grid_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
 inline ::std::string* DisneyDescriptor::release_grid() {
-  // @@protoc_insertion_point(field_release:Storage.DisneyDescriptor.grid)
+  // @@protoc_insertion_point(field_release:Persistance.DisneyDescriptor.grid)
   
   return grid_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
 }
@@ -230,7 +230,7 @@ inline void DisneyDescriptor::set_allocated_grid(::std::string* grid) {
     
   }
   grid_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), grid);
-  // @@protoc_insertion_point(field_set_allocated:Storage.DisneyDescriptor.grid)
+  // @@protoc_insertion_point(field_set_allocated:Persistance.DisneyDescriptor.grid)
 }
 
 #ifdef __GNUC__
@@ -239,7 +239,7 @@ inline void DisneyDescriptor::set_allocated_grid(::std::string* grid) {
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace Storage
+}  // namespace Persistance
 
 // @@protoc_insertion_point(global_scope)
 

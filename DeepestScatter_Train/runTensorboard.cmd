@@ -1,1 +1,1 @@
-tensorboard --logdir runs/ --port 2391 --host localhost
+tensorboard.exe --logdir runs/ --port 2391 --host localhost

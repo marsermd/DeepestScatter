@@ -20,27 +20,35 @@ namespace DeepestScatter
         void update() override {} // Does nothing.
 
         template <class T>
-        void SetupVariables(optix::Handle<T>& scope) const;
+        void setupVariables(optix::Handle<T>& scope) const;
 
-        optix::TextureSampler   densitySampler;
+        void disableRendering();
+
+        optix::size_t3 getResolution();
+        float getVoxelSize();
+        float getVoxelSizeInTermsOfFreePath();
+
     private:
+        Settings settings;
         optix::Context context;
         std::shared_ptr<Resources> resources;
-        Settings settings;
 
         optix::Buffer           densityBuffer;
+        optix::TextureSampler   densitySampler;
         optix::float3           bboxSize;
         float                   textureScale;
         optix::Buffer           inScatterBuffer;
         optix::TextureSampler   inScatterSampler;
 
+        bool isRenderingEnabled = true;
+
         void InitVolume();
         void InitInScatter();
 
         template <class T>
-        void SetupVolumeVariables(optix::Handle<T>& scope) const;
+        void setupVolumeVariables(optix::Handle<T>& scope) const;
         template <class T>
-        void SetupInScatterVariables(optix::Handle<T>& scope) const;
+        void setupInScatterVariables(optix::Handle<T>& scope) const;
 
         optix::TextureSampler createSamplerForBuffer3D(const optix::Buffer& buffer);
     };

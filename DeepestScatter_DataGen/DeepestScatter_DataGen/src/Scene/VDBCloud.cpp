@@ -16,7 +16,33 @@ namespace DeepestScatter
     {
         InitVolume();
         InitInScatter();
-        SetupVariables(context);
+        setupVariables(context);
+    }
+
+    void VDBCloud::disableRendering()
+    {
+        std::cout << "NOTE: RENDERING IS NOT SUPPORTED!" << std::endl;
+        isRenderingEnabled = false;
+    }
+
+    optix::size_t3 VDBCloud::getResolution()
+    {
+        RTsize sizeX, sizeY, sizeZ;
+        densityBuffer->getSize(sizeX, sizeY, sizeZ);
+        return optix::make_size_t3(sizeX, sizeY, sizeZ);
+    }
+
+    float VDBCloud::getVoxelSize()
+    {
+        optix::size_t3 size = getResolution();
+        size_t max = std::max({size.x, size.y, size.z});
+
+        return settings.size / max;
+    }
+
+    float VDBCloud::getVoxelSizeInTermsOfFreePath()
+    {
+        return getVoxelSize() / settings.meanFreePath;
     }
 
     void VDBCloud::InitVolume()
@@ -30,6 +56,12 @@ namespace DeepestScatter
 
     void VDBCloud::InitInScatter()
     {
+        if (!isRenderingEnabled)
+        {
+            inScatterBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_BYTE, 1, 1, 1);
+            inScatterSampler = createSamplerForBuffer3D(inScatterBuffer);
+            return;
+        }
         RTsize sizeX, sizeY, sizeZ;
         densityBuffer->getSize(sizeX, sizeY, sizeZ);
 
@@ -38,7 +70,7 @@ namespace DeepestScatter
         inScatterBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_BYTE, sizeX, sizeY, sizeZ);
 
         optix::Program inScatter = resources->loadProgram("inScatter.cu", "inScatter");
-        SetupVolumeVariables(inScatter);
+        setupVolumeVariables(inScatter);
 
         inScatter["inScatterBuffer"]->setBuffer(inScatterBuffer);
         context->setRayGenerationProgram(0, inScatter);
@@ -54,14 +86,14 @@ namespace DeepestScatter
     }
 
     template <class T>
-    void VDBCloud::SetupVariables(optix::Handle<T>& scope) const
+    void VDBCloud::setupVariables(optix::Handle<T>& scope) const
     {
-        SetupVolumeVariables(scope);
-        SetupInScatterVariables(scope);
+        setupVolumeVariables(scope);
+        setupInScatterVariables(scope);
     }
 
     template<class T>
-    void VDBCloud::SetupVolumeVariables(optix::Handle<T>& scope) const
+    void VDBCloud::setupVolumeVariables(optix::Handle<T>& scope) const
     {
         float maxSize = std::max({ bboxSize.x, bboxSize.y, bboxSize .z });
         RTsize textureX, textureY, textureZ;
@@ -69,12 +101,13 @@ namespace DeepestScatter
 
         scope["bboxSize"]->setFloat(bboxSize.x / maxSize, bboxSize.y / maxSize, bboxSize.z / maxSize);
         scope["textureScale"]->setFloat(maxSize / textureX, maxSize / textureY, maxSize / textureZ);
+        scope["densityTextureId"]->setInt(densitySampler->getId());
         scope["density"]->setTextureSampler(densitySampler);
         scope["densityMultiplier"]->setFloat(settings.size / settings.meanFreePath);
     }
 
     template<class T>
-    void VDBCloud::SetupInScatterVariables(optix::Handle<T>& scope) const
+    void VDBCloud::setupInScatterVariables(optix::Handle<T>& scope) const
     {
         scope["inScatter"]->setTextureSampler(inScatterSampler);
     }

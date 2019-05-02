@@ -12,7 +12,7 @@ class DisneyBlock(torch.nn.Module):
         self.f1 = torch.nn.Linear(zD + oD, outD, bias=True)
         self.f2 = torch.nn.Linear(outD, outD, bias=True)
 
-        self.reLU = torch.nn.ReLU()
+        self.activation = torch.nn.ReLU()
 
     def forward(self, o, z):
         """
@@ -23,10 +23,10 @@ class DisneyBlock(torch.nn.Module):
         out = torch.cat((o, z), dim=1)
 
         out = self.f1(out)
-        out = self.reLU(out)
+        out = self.activation(out)
 
         out = self.f2(out)
         out = torch.add(out, o)
-        out = self.reLU(out)
+        out = self.activation(out)
 
         return out

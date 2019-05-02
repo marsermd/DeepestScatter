@@ -45,21 +45,21 @@ struct TableStruct {
 };
 void AddDescriptors();
 }  // namespace protobuf_Result_2eproto
-namespace Storage {
+namespace Persistance {
 class Result;
 class ResultDefaultTypeInternal;
 extern ResultDefaultTypeInternal _Result_default_instance_;
-}  // namespace Storage
+}  // namespace Persistance
 namespace google {
 namespace protobuf {
-template<> ::Storage::Result* Arena::CreateMaybeMessage<::Storage::Result>(Arena*);
+template<> ::Persistance::Result* Arena::CreateMaybeMessage<::Persistance::Result>(Arena*);
 }  // namespace protobuf
 }  // namespace google
-namespace Storage {
+namespace Persistance {
 
 // ===================================================================
 
-class Result : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Storage.Result) */ {
+class Result : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:Persistance.Result) */ {
  public:
   Result();
   virtual ~Result();
@@ -158,7 +158,7 @@ class Result : public ::google::protobuf::Message /* @@protoc_insertion_point(cl
   bool is_converged() const;
   void set_is_converged(bool value);
 
-  // @@protoc_insertion_point(class_scope:Storage.Result)
+  // @@protoc_insertion_point(class_scope:Persistance.Result)
  private:
 
   ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
@@ -183,13 +183,13 @@ inline void Result::clear_light_intensity() {
   light_intensity_ = 0;
 }
 inline float Result::light_intensity() const {
-  // @@protoc_insertion_point(field_get:Storage.Result.light_intensity)
+  // @@protoc_insertion_point(field_get:Persistance.Result.light_intensity)
   return light_intensity_;
 }
 inline void Result::set_light_intensity(float value) {
   
   light_intensity_ = value;
-  // @@protoc_insertion_point(field_set:Storage.Result.light_intensity)
+  // @@protoc_insertion_point(field_set:Persistance.Result.light_intensity)
 }
 
 // bool is_converged = 2;
@@ -197,13 +197,13 @@ inline void Result::clear_is_converged() {
   is_converged_ = false;
 }
 inline bool Result::is_converged() const {
-  // @@protoc_insertion_point(field_get:Storage.Result.is_converged)
+  // @@protoc_insertion_point(field_get:Persistance.Result.is_converged)
   return is_converged_;
 }
 inline void Result::set_is_converged(bool value) {
   
   is_converged_ = value;
-  // @@protoc_insertion_point(field_set:Storage.Result.is_converged)
+  // @@protoc_insertion_point(field_set:Persistance.Result.is_converged)
 }
 
 #ifdef __GNUC__
@@ -212,7 +212,7 @@ inline void Result::set_is_converged(bool value) {
 
 // @@protoc_insertion_point(namespace_scope)
 
-}  // namespace Storage
+}  // namespace Persistance
 
 // @@protoc_insertion_point(global_scope)
 

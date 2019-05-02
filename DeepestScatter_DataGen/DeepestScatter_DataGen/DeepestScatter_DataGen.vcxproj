@@ -16,6 +16,7 @@
     <ClCompile Include="src\ExecutionLoop\Tasks.cpp" />
     <ClCompile Include="src\Mie.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Model\Disney\Predictor.cpp" />
     <ClCompile Include="src\Scene\Camera.cpp" />
     <ClCompile Include="src\Scene\CloudPTRenderer.cpp" />
     <ClCompile Include="src\Scene\DisneyDescriptorCollector.cpp" />
@@ -150,6 +151,7 @@
     <ClInclude Include="src\installers.h" />
     <ClInclude Include="src\Mie.h" />
     <ClInclude Include="src\CUDA\rayData.cuh" />
+    <ClInclude Include="src\Model\Disney\Predictor.h" />
     <ClInclude Include="src\Scene\Camera.h" />
     <ClInclude Include="src\Scene\CloudPTRenderer.h" />
     <ClInclude Include="src\Scene\DisneyDescriptorCollector.h" />
@@ -219,19 +221,21 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>BOOST_DI_CFG_DIAGNOSTICS_LEVEL=2;OPENVDB_ABI_VERSION_NUMBER=5;OPENEXR_DLL;NOMINMAX;WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../DeepestScatter_Train/CppProtocols;src;$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BOOST_DI_CFG_DIAGNOSTICS_LEVEL=2;OPENVDB_ABI_VERSION_NUMBER=6;OPENEXR_DLL;NOMINMAX;WIN32;WIN64;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../DeepestScatter_Train/CppProtocols;src;$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;$(LIBTORCH_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MinimalRebuild>true</MinimalRebuild>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <FloatingPointModel>Strict</FloatingPointModel>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>CppProtocols.lib;Half.lib;lmdbd.lib;tbb_debug.lib;openvdb.lib;$(OPTIX_SDK_PATH)\lib64\optix.51.lib;$(OPTIX_SDK_PATH)\lib64\optixu.1.lib;$(CUDA_PATH)\lib\x64\nvrtc.lib;winmm.lib;cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories);$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>torch.lib;c10.lib;c10_cuda.lib;clog.lib;caffe2.lib;caffe2_detectron_ops_gpu.lib;caffe2_gpu.lib;cpuinfo.lib;libprotocd.lib;onnx.lib;onnx_proto.lib;onnxifi_dummy.lib;onnxifi_loader.lib;libprotobufd.lib;CppProtocols.lib;Half-2_3_d.lib;gflags_debug.lib;lmdbd.lib;tbb_debug.lib;openvdb.lib;$(OPTIX_SDK_PATH)\lib64\optix.51.lib;$(OPTIX_SDK_PATH)\lib64\optixu.1.lib;$(CUDA_PATH)\lib\x64\nvrtc.lib;winmm.lib;cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(LIBTORCH_PATH)\lib\Debug;%(AdditionalLibraryDirectories);$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"
@@ -259,22 +263,24 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <PreprocessorDefinitions>BOOST_DI_CFG_DIAGNOSTICS_LEVEL=2;OPENVDB_ABI_VERSION_NUMBER=5;OPENEXR_DLL;NOMINMAX;WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>../../DeepestScatter_Train/CppProtocols;src;$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>BOOST_DI_CFG_DIAGNOSTICS_LEVEL=2;OPENVDB_ABI_VERSION_NUMBER=6;OPENEXR_DLL;NOMINMAX;WIN32;WIN64;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>../../DeepestScatter_Train/CppProtocols;src;$(ILMBASE_ROOT)\include;$(TBB_ROOT)\include;$(OPENEXR_ROOT)\include;$(BOOST_ROOT);$(OPENVDB_ROOT)\include;$(CUDA_PATH)\include;$(OPTIX_SDK_PATH)\include;$(LIBTORCH_PATH)\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <ForcedIncludeFiles>
       </ForcedIncludeFiles>
       <AdditionalOptions>/bigobj %(AdditionalOptions)</AdditionalOptions>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <FloatingPointModel>Strict</FloatingPointModel>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Console</SubSystem>
-      <AdditionalDependencies>CppProtocols.lib;Half.lib;lmdb.lib;tbb.lib;openvdb.lib;$(OPTIX_SDK_PATH)\lib64\optix.51.lib;$(OPTIX_SDK_PATH)\lib64\optixu.1.lib;$(CUDA_PATH)\lib\x64\nvrtc.lib;winmm.lib;cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);%(AdditionalLibraryDirectories);$(TBB_ROOT)\lib\intel64\vc14;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>torch.lib;c10.lib;c10_cuda.lib;clog.lib;caffe2.lib;caffe2_detectron_ops_gpu.lib;caffe2_gpu.lib;libprotobuf.lib;CppProtocols.lib;Half-2_3.lib;gflags.lib;lmdb.lib;tbb.lib;openvdb.lib;$(OPTIX_SDK_PATH)\lib64\optix.51.lib;$(OPTIX_SDK_PATH)\lib64\optixu.1.lib;$(CUDA_PATH)\lib\x64\nvrtc.lib;winmm.lib;cudart.lib;kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(SolutionDir)$(Configuration);$(LIBTORCH_PATH)\lib\Release;%(AdditionalLibraryDirectories);$(TBB_ROOT)\lib\intel64\vc14;$(CudaToolkitLibDir)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>echo copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"

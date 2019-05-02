@@ -17,10 +17,10 @@ import Vector_pb2 as Vector__pb2
 
 DESCRIPTOR = _descriptor.FileDescriptor(
   name='DisneyDescriptor.proto',
-  package='Storage',
+  package='Persistance',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x16\x44isneyDescriptor.proto\x12\x07Storage\x1a\x0cVector.proto\" \n\x10\x44isneyDescriptor\x12\x0c\n\x04grid\x18\x01 \x01(\x0c\x62\x06proto3')
+  serialized_pb=_b('\n\x16\x44isneyDescriptor.proto\x12\x0bPersistance\x1a\x0cVector.proto\" \n\x10\x44isneyDescriptor\x12\x0c\n\x04grid\x18\x01 \x01(\x0c\x62\x06proto3')
   ,
   dependencies=[Vector__pb2.DESCRIPTOR,])
 
@@ -29,13 +29,13 @@ DESCRIPTOR = _descriptor.FileDescriptor(
 
 _DISNEYDESCRIPTOR = _descriptor.Descriptor(
   name='DisneyDescriptor',
-  full_name='Storage.DisneyDescriptor',
+  full_name='Persistance.DisneyDescriptor',
   filename=None,
   file=DESCRIPTOR,
   containing_type=None,
   fields=[
     _descriptor.FieldDescriptor(
-      name='grid', full_name='Storage.DisneyDescriptor.grid', index=0,
+      name='grid', full_name='Persistance.DisneyDescriptor.grid', index=0,
       number=1, type=12, cpp_type=9, label=1,
       has_default_value=False, default_value=_b(""),
       message_type=None, enum_type=None, containing_type=None,
@@ -53,8 +53,8 @@ _DISNEYDESCRIPTOR = _descriptor.Descriptor(
   extension_ranges=[],
   oneofs=[
   ],
-  serialized_start=49,
-  serialized_end=81,
+  serialized_start=53,
+  serialized_end=85,
 )
 
 DESCRIPTOR.message_types_by_name['DisneyDescriptor'] = _DISNEYDESCRIPTOR
@@ -63,7 +63,7 @@ _sym_db.RegisterFileDescriptor(DESCRIPTOR)
 DisneyDescriptor = _reflection.GeneratedProtocolMessageType('DisneyDescriptor', (_message.Message,), dict(
   DESCRIPTOR = _DISNEYDESCRIPTOR,
   __module__ = 'DisneyDescriptor_pb2'
-  # @@protoc_insertion_point(class_scope:Storage.DisneyDescriptor)
+  # @@protoc_insertion_point(class_scope:Persistance.DisneyDescriptor)
   ))
 _sym_db.RegisterMessage(DisneyDescriptor)
 

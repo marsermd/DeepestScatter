@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package Storage;
+package Persistance;
 
 message Vector3 {
 	float x = 1;

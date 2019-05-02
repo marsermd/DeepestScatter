@@ -1,4 +1,5 @@
 #include <optix_world.h>
+#include <optix.h>
 #include <optix_device.h>
 #include <optixu/optixu_math_namespace.h>
 #include <optixu/optixu_vector_types.h>
@@ -24,7 +25,8 @@ rtDeclareVariable(float3, lightColor, , );
 rtDeclareVariable(float3, skyIntensity, , );
 rtDeclareVariable(float3, groundIntensity, , );
 
-rtTextureSampler<uchar, 3, cudaReadModeNormalizedFloat> density;
+//rtTextureSampler<uchar, 3, cudaReadModeNormalizedFloat> density;
+rtDeclareVariable(int, densityTextureId, , );
 rtTextureSampler<uchar, 3, cudaReadModeNormalizedFloat> inScatter;
 rtTextureSampler<uchar, 1, cudaReadModeNormalizedFloat> mie;
 rtTextureSampler<uchar, 1, cudaReadModeNormalizedFloat> choppedMie;
@@ -53,7 +55,7 @@ rtDeclareVariable(float3, missColor, , );
 static __host__ __device__ __inline__ float sampleCloud(float3 pos)
 {
     pos = pos * textureScale;
-    return tex3D(density, pos.x, pos.y, pos.z);
+    return rtTex3D<float>(densityTextureId, pos.x, pos.y, pos.z);
 }
 
 static __host__ __device__ __inline__ float sampleInScatter(float3 pos)

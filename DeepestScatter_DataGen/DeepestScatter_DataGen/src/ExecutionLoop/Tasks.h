@@ -1,10 +1,9 @@
 ﻿#pragma once
 #include "Hypodermic/Hypodermic.h"
 #include "GuiExecutionLoop.h"
-#include "Scene/RadianceCollector.h"
-#include "Result.pb.h"
+#include "Util/Dataset/Dataset.h"
 
-namespace Storage
+namespace Persistance
 {
     class Result;
 }
