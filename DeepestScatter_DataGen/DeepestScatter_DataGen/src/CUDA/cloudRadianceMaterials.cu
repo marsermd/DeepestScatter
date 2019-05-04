@@ -113,3 +113,36 @@ RT_PROGRAM void multipleScatterSunRadiance()
     resultRadiance.result = radiance;
     resultRadiance.importance = 0;
 }
+
+/*
+* Only the direct light of the sun.
+*/
+RT_PROGRAM void singleScatterSunRadiance()
+{
+    float3 hitPoint = ray.origin + tHit * ray.direction;
+    hitPoint += 0.5f * bboxSize;
+
+    float3 radiance = make_float3(0);
+    float3 pos = hitPoint;
+
+    float3 direction = normalize(ray.direction);
+
+    resultRadiance.result = make_float3(0);
+
+    unsigned int seed = tea<4>(launchID.x * 4096 + launchID.y);
+
+    ScatteringEvent scatter = getNextScatteringEvent(seed, pos, direction);
+
+    if (!scatter.hasScattered || !isInBox(scatter.scatterPos))
+    {
+        // do nothing
+    }
+    else
+    {
+        // next event estimation
+        radiance += getInScattering(scatter, direction, false);
+    }
+
+    resultRadiance.result = radiance;
+    resultRadiance.importance = 0;
+}

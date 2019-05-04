@@ -15,13 +15,16 @@ from LmdbDataset import LmdbDatasets
 
 from tensorboardX import SummaryWriter
 
+def logEps(x):
+    return torch.log(x * 1e1 + 1)
+
 class LogModel(torch.nn.Module):
     def __init__(self, model):
         super(LogModel, self).__init__()
         self.model = model
 
     def forward(self, input):
-        return torch.log(model(input) + 1)
+        return logEps(model(input))
 
 def set_seed(seed: int):
     random.seed(seed)
@@ -89,7 +92,7 @@ if __name__ == '__main__':
             # Transfer to GPU
             z = z.to(device)
             labels = labels.to(device)
-            labels = torch.log(labels + 1)
+            labels = logEps(labels)
 
             def closure():
                 optimizer.zero_grad()

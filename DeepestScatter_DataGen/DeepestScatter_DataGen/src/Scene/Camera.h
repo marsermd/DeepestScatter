@@ -9,6 +9,9 @@
 #include "Util/Arcball.h"
 #include "SceneItem.h"
 
+//todo: froward-declare in cpp
+#include <torch/script.h>
+
 namespace DeepestScatter
 {
     class Resources;
@@ -49,8 +52,12 @@ namespace DeepestScatter
         void setupVariables(optix::Program& program);
 
         void render();
+        void renderRect(optix::uint2 start);
+
         void updatePosition();
-        
+
+        std::shared_ptr<torch::jit::script::Module> module;
+
         uint32_t width;
         uint32_t height;
 
@@ -66,11 +73,13 @@ namespace DeepestScatter
         optix::float3         cameraEye;
         optix::Matrix4x4      cameraRotate;
 
+        optix::Program clearRect;
         optix::Program clearScreen;
         optix::Program exception;
         optix::Program miss;
 
         optix::Program camera;
+        optix::Program updateFrameResult;
 
         float_t exposure = 1.0f;
         optix::Program reinhardFirstPass;
@@ -80,6 +89,9 @@ namespace DeepestScatter
         optix::Buffer  reinhardSumLuminanceColumn;
         optix::Buffer  reinhardAverageLuminance;
 
+        optix::Buffer  networkInputBuffer;
+        optix::Buffer  directRadianceBuffer;
+        optix::Buffer  frameResultBuffer;
         optix::Buffer  progressiveBuffer;
         optix::Buffer  varianceBuffer;
         optix::Buffer  screenBuffer;

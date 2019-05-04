@@ -29,6 +29,9 @@ namespace DeepestScatter
         material->setClosestHitProgram(
             ScatteringRayData::rayId,
             resources->loadProgram("cloudFirstScatterMaterial.cu", "firstScatterPosition"));
+        material->setClosestHitProgram(
+            DisneyDescriptorRayData::rayId,
+            resources->loadProgram("disneyDescriptorMaterial.cu", "sampleDisneyDescriptor"));
 
         geometryInstance = context->createGeometryInstance(geometry, &material, &material + 1);
         geometryGroup = context->createGeometryGroup();
@@ -42,10 +45,12 @@ namespace DeepestScatter
     {
         switch (renderSettings->mode)
         {
-        case Cloud::Rendering::Mode::Full:
+        case Cloud::Rendering::Mode::SunAndSkyAllScatter:
             return "totalRadiance";
         case Cloud::Rendering::Mode::SunMultipleScatter:
             return "multipleScatterSunRadiance";
+        case Cloud::Rendering::Mode::SunSingleScatter:
+            return "singleScatterSunRadiance";
         default:
             throw std::invalid_argument("Invalid Render Mode");
         }

@@ -66,11 +66,6 @@ namespace DeepestScatter
 
     void DisneyDescriptorCollector::setupVariables(optix::Program& scope)
     {
-        const float voxelSize = cloud->getVoxelSizeInTermsOfFreePath();
-        const float firstMipmapLevel = -std::log2f(voxelSize);
-        std::cout << "firstMipmapLevel" << firstMipmapLevel << std::endl;
-
-        scope["firstMipmapLevel"]->setFloat(firstMipmapLevel);
         scope["directionBuffer"]->setBuffer(directionBuffer);
         scope["positionBuffer"]->setBuffer(positionBuffer);
         scope["descriptors"]->setBuffer(descriptorsBuffer);

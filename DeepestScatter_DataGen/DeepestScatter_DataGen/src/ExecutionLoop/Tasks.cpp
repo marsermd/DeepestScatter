@@ -10,7 +10,7 @@ namespace DeepestScatter
     namespace di = Hypodermic;
 
     uint32_t width = 640u;
-    uint32_t height = 480u;
+    uint32_t height = 512u;
 
     std::queue<GuiExecutionLoop::LazyTask> Tasks::renderCloud(const std::string &cloudPath, float sizeM)
     {
@@ -31,7 +31,7 @@ namespace DeepestScatter
             //sceneSetup.mutable_light_direction()->set_z(0.11f);
 
             taskBuilder.addRegistrations(installFramework(width, height));
-            taskBuilder.addRegistrations(installSceneSetup(sceneSetup, ".", Cloud::Rendering::Mode::Full, Cloud::Model::Mipmaps::On));
+            taskBuilder.addRegistrations(installSceneSetup(sceneSetup, ".", Cloud::Rendering::Mode::SunAndSkyAllScatter, Cloud::Model::Mipmaps::On));
             taskBuilder.addRegistrations(installApp());
 
             auto container = taskBuilder.build();

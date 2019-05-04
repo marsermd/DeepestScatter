@@ -79,7 +79,7 @@ namespace DeepestScatter
         }
 
         std::cout << "Creating buffer of size " << sizeX << "x" << sizeY << "x" << sizeZ << std::endl;
-        buffer->setMipLevelCount(levelCount);
+        buffer->setMipLevelCount(levelCount + 1);
         buffer->setSize(sizeX, sizeY, sizeZ);
 
         {
@@ -107,7 +107,7 @@ namespace DeepestScatter
         if (createMipmaps)
         {
             size_t size = sizeX;
-            for (int level = 1; level < levelCount; level++)
+            for (int level = 1; level < levelCount + 1; level++)
             {
                 size /= 2;
 

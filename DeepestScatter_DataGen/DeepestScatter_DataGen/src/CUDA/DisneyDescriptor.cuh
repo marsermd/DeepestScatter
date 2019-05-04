@@ -10,15 +10,18 @@
 
 using namespace optix;
 
+#ifndef CLOUD_CUH
 rtDeclareVariable(float3, lightDirection, , );
 
 rtDeclareVariable(float, densityMultiplier, , );
 
 rtDeclareVariable(float3, bboxSize, , );
 rtDeclareVariable(float3, textureScale, , );
-rtDeclareVariable(float, firstMipmapLevel, , );
 
 rtDeclareVariable(int, densityTextureId, , );
+#endif
+
+rtDeclareVariable(float, voxelSizeInTermsOfFreePath, , );
 
 inline RT_HOSTDEVICE float3 make_float3(size_t3 st)
 {
@@ -51,7 +54,7 @@ namespace DeepestScatter
             // 0.5f so that [−1, −1, −1] and [1, 1, 3] are in two opposing corners
             float scale = 0.5f / densityMultiplier;
             // -1 because there are two sample points between 0 and 1.
-            float mipmapLevel = firstMipmapLevel - 1;
+            float mipmapLevel = -log2f(voxelSizeInTermsOfFreePath) - 1;
 
             for (size_t layerId = 0; layerId < DisneyDescriptor::LAYERS_CNT; layerId++)
             {

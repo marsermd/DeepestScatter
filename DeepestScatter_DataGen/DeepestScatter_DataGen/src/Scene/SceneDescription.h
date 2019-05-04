@@ -41,8 +41,9 @@ namespace DeepestScatter
 
             enum class Mode
             {
-                Full,
-                SunMultipleScatter
+                SunAndSkyAllScatter,
+                SunMultipleScatter,
+                SunSingleScatter
             };
 
             Rendering(SampleStep sampleStep, Mode mode)

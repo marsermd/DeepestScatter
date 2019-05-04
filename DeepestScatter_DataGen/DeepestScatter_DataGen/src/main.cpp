@@ -61,8 +61,9 @@ int main(int argc, char* argv[])
         {
             GuiExecutionLoop loop(argc, argv);
 
-            loop.run(Tasks::collect<Persistance::DisneyDescriptor>(databasePath, cloudRoot, Tasks::CollectMode::Reset));
-            //loop.run(std::move(Tasks::renderCloud(cloudPath, 1000)));
+            //loop.run(Tasks::collect<Persistance::DisneyDescriptor>(databasePath, cloudRoot, Tasks::CollectMode::Reset));
+            
+            loop.run(Tasks::renderCloud(cloudPath, 7000));
         }
         catch (const std::exception& e)
         {

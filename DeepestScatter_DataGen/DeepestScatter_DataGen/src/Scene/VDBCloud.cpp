@@ -25,14 +25,14 @@ namespace DeepestScatter
         isRenderingEnabled = false;
     }
 
-    optix::size_t3 VDBCloud::getResolution()
+    optix::size_t3 VDBCloud::getResolution() const
     {
         RTsize sizeX, sizeY, sizeZ;
         densityBuffer->getSize(sizeX, sizeY, sizeZ);
         return optix::make_size_t3(sizeX, sizeY, sizeZ);
     }
 
-    float VDBCloud::getVoxelSize()
+    float VDBCloud::getVoxelSize() const
     {
         optix::size_t3 size = getResolution();
         size_t max = std::max({size.x, size.y, size.z});
@@ -40,14 +40,14 @@ namespace DeepestScatter
         return settings.size / max;
     }
 
-    float VDBCloud::getVoxelSizeInTermsOfFreePath()
+    float VDBCloud::getVoxelSizeInTermsOfFreePath() const
     {
         return getVoxelSize() / settings.meanFreePath;
     }
 
     void VDBCloud::InitVolume()
     {
-        auto cloud = resources->loadVolumeBuffer(settings.vdbPath, (bool)settings.mipmapsOn);
+        auto cloud = resources->loadVolumeBuffer(settings.vdbPath, static_cast<bool>(settings.mipmapsOn));
         densityBuffer = std::get<optix::Buffer>(cloud);
         bboxSize = std::get<optix::float3>(cloud);
 
@@ -88,6 +88,8 @@ namespace DeepestScatter
     template <class T>
     void VDBCloud::setupVariables(optix::Handle<T>& scope) const
     {
+        scope["voxelSizeInTermsOfFreePath"]->setFloat(getVoxelSizeInTermsOfFreePath());
+
         setupVolumeVariables(scope);
         setupInScatterVariables(scope);
     }

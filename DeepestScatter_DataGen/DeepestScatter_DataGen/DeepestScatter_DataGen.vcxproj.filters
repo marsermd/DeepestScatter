@@ -90,6 +90,9 @@
     <ClCompile Include="src\Model\Disney\Predictor.cpp">
       <Filter>src\Model\Disney</Filter>
     </ClCompile>
+    <ClCompile Include="src\CUDA\disneyCamera.cu">
+      <Filter>src\CUDA</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\CUDA\inScatter.cu">
@@ -495,6 +498,9 @@
     </ClInclude>
     <ClInclude Include="src\Model\Disney\Predictor.h">
       <Filter>src\Model\Disney</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CUDA\disneyDescriptorMaterial.cu">
+      <Filter>src\CUDA</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

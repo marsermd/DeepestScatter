@@ -1,3 +1,6 @@
+#ifndef CLOUD_CUH
+#define CLOUD_CUH
+
 #include <optix_world.h>
 #include <optix.h>
 #include <optix_device.h>
@@ -176,3 +179,4 @@ static __device__ __inline__ const float3& getNewDirection(unsigned int& seed, c
 
     return normalize(newDirection);
 }
+#endif

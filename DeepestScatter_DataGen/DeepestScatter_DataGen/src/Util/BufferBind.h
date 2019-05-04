@@ -18,7 +18,7 @@ namespace DeepestScatter
         
         ~BufferBind();
 
-        gsl::span<T> getData();
+        gsl::span<T>& getData();
 
         const T& operator [](size_t pos) const;
         T& operator [](size_t pos);
@@ -56,8 +56,9 @@ namespace DeepestScatter
         buffer->unmap(level);
     }
 
+
     template <typename T>
-    gsl::span<T> BufferBind<T>::getData()
+    gsl::span<T>& BufferBind<T>::getData()
     {
         return optixOwned;
     }

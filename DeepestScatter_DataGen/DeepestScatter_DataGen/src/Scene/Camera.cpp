@@ -9,15 +9,26 @@
 #include "Util/Resources.h"
 #include "GL/freeglut.h"
 #include "Util/BufferBind.h"
+#include "CUDA/rayData.cuh"
+#include "SceneDescription.h"
 
 namespace DeepestScatter
 {
+    static constexpr optix::uint2 RECT_SIZE{ 128, 128 };
+
     void Camera::init()
     {
-        camera = resources->loadProgram("pinholeCamera.cu", "pinholeCamera");
+        const std::string modelPath = "../../DeepestScatter_Train/runs/1024_mipmap_long_logeps/checkpoint.pt";
+        module = torch::jit::load(modelPath);
+
+        const std::string programFile = "disneyCamera.cu";
+
+        camera = resources->loadProgram(programFile, "pinholeCamera");
         context->setRayGenerationProgram(0, camera);
 
-        clearScreen = resources->loadProgram("pinholeCamera.cu", "clearScreen");
+        updateFrameResult = resources->loadProgram(programFile, "updateFrameResult");
+        clearRect = resources->loadProgram(programFile, "clearRect");
+        clearScreen = resources->loadProgram(programFile, "clearScreen");
 
         cameraEye = optix::make_float3(2, -0.4f, 0);
         cameraLookat = optix::make_float3(0, 0, 0);
@@ -26,13 +37,20 @@ namespace DeepestScatter
         cameraRotate = optix::Matrix4x4::identity();
         updatePosition();
 
-        exception = resources->loadProgram("pinholeCamera.cu", "exception");
+        exception = resources->loadProgram(programFile, "exception");
         context->setExceptionProgram(0, exception);
         exception["errorColor"]->setFloat(123123123.123123123f, 0, 0);
 
-        miss = resources->loadProgram("pinholeCamera.cu", "miss");
+        miss = resources->loadProgram(programFile, "miss");
         context->setMissProgram(0, miss);
 
+        networkInputBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
+        networkInputBuffer->setElementSize(sizeof(Gpu::DisneyNetworkInput));
+
+        directRadianceBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
+        directRadianceBuffer->setElementSize(sizeof(IntersectionInfo));
+
+        frameResultBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_FLOAT4, width, height);
         progressiveBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_FLOAT4, width, height);
         varianceBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_FLOAT4, width, height);
         screenBuffer = context->createBuffer(RT_BUFFER_OUTPUT, RT_FORMAT_UNSIGNED_BYTE4, width, height);
@@ -45,7 +63,9 @@ namespace DeepestScatter
         reinhardAverageLuminance = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_FLOAT, 1);
 
         setupVariables(camera);
+        setupVariables(updateFrameResult);
         setupVariables(clearScreen);
+        setupVariables(clearRect);
         setupVariables(exception);
         setupVariables(miss);
         setupVariables(reinhardFirstPass);
@@ -68,7 +88,8 @@ namespace DeepestScatter
     {
         auto tmp = context->getRayGenerationProgram(0);
 
-        subframeId = 0;
+        //todo:reset subFrameId to 0
+        subframeId = (subframeId + 10) % 10;
         context->setRayGenerationProgram(0, clearScreen);
         context->launch(0, width, height);
 
@@ -121,6 +142,10 @@ namespace DeepestScatter
 
     void Camera::setupVariables(optix::Program& program)
     {
+        program["networkInputBuffer"]->setBuffer(networkInputBuffer);
+        program["directRadianceBuffer"]->setBuffer(directRadianceBuffer);
+        program["frameResultBuffer"]->setBuffer(frameResultBuffer);
+
         program["progressiveBuffer"]->setBuffer(progressiveBuffer);
         program["varianceBuffer"]->setBuffer(varianceBuffer);
 
@@ -139,11 +164,22 @@ namespace DeepestScatter
             context["subframeId"]->getUint(previousSubframe);
         }
 
-        for (int i = 0; i < 10; i++)
+        //todo: more subframes
+        for (int i = 0; i < 1; i++)
         {
             subframeId++;
             context["subframeId"]->setUint(subframeId);
-            context->setRayGenerationProgram(0, camera);
+            std::cout << "rendering subframe " << subframeId << std::endl;
+
+            for (uint x = 0; x < width; x+= RECT_SIZE.x)
+            {
+                for (uint y = 0; y < height; y += RECT_SIZE.y)
+                {
+                    renderRect(optix::make_uint2(x, y));
+                }
+            }
+
+            context->setRayGenerationProgram(0, updateFrameResult);
             context->validate();
             context->launch(0, width, height);
         }
@@ -158,8 +194,6 @@ namespace DeepestScatter
         context->setRayGenerationProgram(0, reinhardLastPass);
         context->launch(0, width, height);
 
-        context["subframeId"]->getUint(previousSubframe);
-
         GLenum glDataType = GL_UNSIGNED_BYTE;
         GLenum glFormat = GL_RGBA;
         glPixelStorei(GL_UNPACK_ALIGNMENT, 4);
@@ -167,6 +201,71 @@ namespace DeepestScatter
         {
             BufferBind<optix::uchar4> screen(screenBuffer);
             glDrawPixels(width, height, glFormat, glDataType, static_cast<GLvoid*>(&screen[0]));
+        }
+
+        //todo: remove
+        reset();
+    }
+
+    void Camera::renderRect(optix::uint2 start)
+    {
+        context->setRayGenerationProgram(0, clearRect);
+        context->launch(0, RECT_SIZE.x, RECT_SIZE.y);
+
+        context["rectOrigin"]->setUint(start);
+
+        context->setRayGenerationProgram(0, camera);
+        context->validate();
+        context->launch(0, RECT_SIZE.x, RECT_SIZE.y);
+
+        {
+            BufferBind<Gpu::DisneyNetworkInput> networkInput(networkInputBuffer);
+            BufferBind<IntersectionInfo> intersectionInfo(directRadianceBuffer);
+            BufferBind<optix::float4> screen(frameResultBuffer);
+
+            std::cout << screen[0].x << std::endl;
+
+            bool hasActiveDescriptors = std::any_of(
+                intersectionInfo.getData().begin(), intersectionInfo.getData().end(), [&](const auto& x) { return x.hasScattered; });
+
+            for (int i = 0; i < intersectionInfo.getData().size(); i++)
+            {
+                hasActiveDescriptors |= intersectionInfo[i].hasScattered;
+            }
+
+            if (!hasActiveDescriptors)
+            {
+                return;
+            }
+
+            std::vector<torch::jit::IValue> inputs;
+            inputs.emplace_back(torch::from_blob(&networkInput[0], {RECT_SIZE.x * RECT_SIZE.y, 10, 226 }).cuda());
+            at::Tensor predicted = module->forward(inputs).toTensor().cpu();
+            float* output = predicted.data<float>();
+
+            uint subframe;
+            context["subframeId"]->getUint(subframe);
+            std::cout << "radiance " << output[0] << std::endl;
+            uint id = 0;
+            for (uint y = start.y; y < start.y + RECT_SIZE.y; y++)
+            {
+                for (uint x = start.x; x < start.x + RECT_SIZE.x; x++)
+                {
+                    if (intersectionInfo[id].hasScattered)
+                    {
+                        if (subframe % 2 == 0)
+                        {
+                            screen[y * width + x] = optix::make_float4(output[id]);
+                        }
+                        else
+                        {
+                            screen[y * width + x] = optix::make_float4(intersectionInfo[id].radiance);
+                        }
+                    }
+
+                    id++;
+                }
+            }
         }
     }
 
