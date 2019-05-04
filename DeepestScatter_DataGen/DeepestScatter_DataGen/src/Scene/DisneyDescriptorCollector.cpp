@@ -58,6 +58,8 @@ namespace DeepestScatter
 
     void DisneyDescriptorCollector::collect()
     {
+        context->setPrintEnabled(true);
+        context->setPrintBufferSize(100e6);
         context->setRayGenerationProgram(0, collectProgram);
         context->launch(0, settings.batchSize);
 

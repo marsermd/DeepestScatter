@@ -28,37 +28,8 @@ RT_PROGRAM void sampleDisneyDescriptor()
     else
     {
         resultDescriptor.intersectionInfo.hasScattered = true;
-        //todo:resultDescriptor.intersectionInfo.radiance = getInScattering(scatter, direction, false);
-        setupDisneyDescriptor(resultDescriptor.descriptor, scatter.scatterPos, direction);
+        resultDescriptor.intersectionInfo.radiance = getInScattering(scatter, direction, false);
+        setupDisneyDescriptor(resultDescriptor.descriptor, scatter.scatterPos - 0.5f * bboxSize, direction);
     }
 
-    //todo:
-    int depth = 0;
-    while (isInBox(pos))
-    {
-        depth++;
-        if (depth == 1000)
-        {
-            break;
-        }
-
-        ScatteringEvent scatter = getNextScatteringEvent(seed, pos, direction);
-
-        if (!scatter.hasScattered || !isInBox(scatter.scatterPos))
-        {
-            break;
-        }
-        else
-        {
-            if (depth > 1)
-            {
-                // next event estimation
-                resultDescriptor.intersectionInfo.radiance += getInScattering(scatter, direction, true);
-            }
-
-            pos = scatter.scatterPos;
-
-            direction = getNewDirection(seed, direction);
-        }
-    }
 }

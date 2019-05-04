@@ -32,7 +32,7 @@ namespace DeepestScatter
         return optix::make_size_t3(sizeX, sizeY, sizeZ);
     }
 
-    float VDBCloud::getVoxelSize() const
+    float VDBCloud::getVoxelSizeInMeters() const
     {
         optix::size_t3 size = getResolution();
         size_t max = std::max({size.x, size.y, size.z});
@@ -42,7 +42,7 @@ namespace DeepestScatter
 
     float VDBCloud::getVoxelSizeInTermsOfFreePath() const
     {
-        return getVoxelSize() / settings.meanFreePath;
+        return getVoxelSizeInMeters() / settings.meanFreePath;
     }
 
     void VDBCloud::InitVolume()
@@ -89,6 +89,7 @@ namespace DeepestScatter
     void VDBCloud::setupVariables(optix::Handle<T>& scope) const
     {
         scope["voxelSizeInTermsOfFreePath"]->setFloat(getVoxelSizeInTermsOfFreePath());
+        scope["voxelSizeInMeters"]->setFloat(getVoxelSizeInMeters());
 
         setupVolumeVariables(scope);
         setupInScatterVariables(scope);
@@ -106,6 +107,7 @@ namespace DeepestScatter
         scope["densityTextureId"]->setInt(densitySampler->getId());
         scope["density"]->setTextureSampler(densitySampler);
         scope["densityMultiplier"]->setFloat(settings.size / settings.meanFreePath);
+        scope["cloudSizeInMeters"]->setFloat(settings.size);
     }
 
     template<class T>
@@ -126,7 +128,7 @@ namespace DeepestScatter
         sampler3D->setFilteringModes(
             RT_FILTER_LINEAR,
             RT_FILTER_LINEAR,
-            RT_FILTER_NONE
+            RT_FILTER_LINEAR
         );
 
         sampler3D->setIndexingMode(RT_TEXTURE_INDEX_NORMALIZED_COORDINATES);

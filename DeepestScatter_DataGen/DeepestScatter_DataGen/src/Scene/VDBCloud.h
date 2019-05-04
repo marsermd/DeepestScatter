@@ -25,7 +25,7 @@ namespace DeepestScatter
         void disableRendering();
 
         optix::size_t3 getResolution() const;
-        float getVoxelSize() const;
+        float getVoxelSizeInMeters() const;
         float getVoxelSizeInTermsOfFreePath() const;
 
     private:

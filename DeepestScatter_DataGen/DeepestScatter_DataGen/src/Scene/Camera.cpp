@@ -88,8 +88,7 @@ namespace DeepestScatter
     {
         auto tmp = context->getRayGenerationProgram(0);
 
-        //todo:reset subFrameId to 0
-        subframeId = (subframeId + 10) % 10;
+        subframeId = 0;
         context->setRayGenerationProgram(0, clearScreen);
         context->launch(0, width, height);
 
@@ -202,9 +201,6 @@ namespace DeepestScatter
             BufferBind<optix::uchar4> screen(screenBuffer);
             glDrawPixels(width, height, glFormat, glDataType, static_cast<GLvoid*>(&screen[0]));
         }
-
-        //todo: remove
-        reset();
     }
 
     void Camera::renderRect(optix::uint2 start)
@@ -253,14 +249,7 @@ namespace DeepestScatter
                 {
                     if (intersectionInfo[id].hasScattered)
                     {
-                        if (subframe % 2 == 0)
-                        {
-                            screen[y * width + x] = optix::make_float4(output[id]);
-                        }
-                        else
-                        {
-                            screen[y * width + x] = optix::make_float4(intersectionInfo[id].radiance);
-                        }
+                        screen[y * width + x] = optix::make_float4(output[id]) + optix::make_float4(intersectionInfo[id].radiance);
                     }
 
                     id++;

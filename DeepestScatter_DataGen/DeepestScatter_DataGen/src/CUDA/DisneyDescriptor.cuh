@@ -22,6 +22,8 @@ rtDeclareVariable(int, densityTextureId, , );
 #endif
 
 rtDeclareVariable(float, voxelSizeInTermsOfFreePath, , );
+rtDeclareVariable(float, voxelSizeInMeters, , );
+rtDeclareVariable(float, cloudSizeInMeters, , );
 
 inline RT_HOSTDEVICE float3 make_float3(size_t3 st)
 {
@@ -43,6 +45,15 @@ namespace DeepestScatter
 {
     namespace Gpu
     {
+        __device__ __inline__ float distanceToBox(float3 pos, float voxelSize)
+        {
+            float3 dist = fabs3(pos - bboxSize * 0.5f);
+            const float3 boxCorner = fmaxf(bboxSize * 0.5f - optix::make_float3(voxelSize) * 0.5f, optix::make_float3(0));
+            dist -= boxCorner;
+            dist = fmaxf(dist, make_float3(0));
+            return length(dist);
+        }
+
         __device__ __inline__ void setupDisneyDescriptor(DisneyDescriptor& descriptor, float3 worldPos, float3 viewDirection)
         {
             const float3 eZ = normalize(lightDirection);
@@ -61,6 +72,7 @@ namespace DeepestScatter
                 DisneyDescriptor::Layer& layer = descriptor.layers[layerId];
 
                 uint32_t sampleId = 0;
+                const float mipVoxelSize = powf(2, mipmapLevel) * voxelSizeInMeters / cloudSizeInMeters;
                 for (int z = -2; z <= 6; z++)
                 {
                     for (int y = -2; y <= 2; y++)
@@ -69,7 +81,12 @@ namespace DeepestScatter
                         {
                             float3 offset = (eX * x + eY * y + eZ * z) * scale;
                             const float3 pos = origin + offset;
-                            layer.density[sampleId] = make_uchar1(sampleCloud(pos, mipmapLevel) * 255.0f).x;
+                            float density = sampleCloud(pos, mipmapLevel);
+                            const float distance = distanceToBox(pos, mipVoxelSize);
+
+                            // If we are out of bbox's bounds, we have to linearly interpolate to 0
+                            density = lerp(density, 0, distance / mipVoxelSize);
+                            layer.density[sampleId] = make_uchar1(density * 255.0f).x;
                             sampleId++;
                         }
                     }
