@@ -13,7 +13,7 @@ namespace DeepestScatter
         LmdbExceptions::checkError(mdb_env_set_maxdbs(mdbEnv, 64u));
 
         LmdbExceptions::checkError(
-            mdb_env_open(mdbEnv, settings->path.c_str(), MDB_NOTLS | MDB_NOSUBDIR, 0)
+            mdb_env_open(mdbEnv, settings->path.c_str(), MDB_NOTLS | MDB_NOSUBDIR | MDB_WRITEMAP, 0)
         );
     }
 

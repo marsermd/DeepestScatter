@@ -2,6 +2,7 @@
 #include <optix_device.h>
 #include <optixu/optixu_math_namespace.h>
 #include "rayData.cuh"
+#include "random.cuh"
 
 using namespace optix;
 
@@ -30,6 +31,10 @@ RT_PROGRAM void pinholeCamera()
     size_t2 screen = progressiveBuffer.size();
 
     float2 d = make_float2(launchID + rectOrigin) / make_float2(screen) * 2.f - 1.f;
+
+    uint32_t seed = tea<3>(subframeId);
+    float2 jitter = (make_float2(rnd(seed), rnd(seed)) * 2 - 1) / make_float2(screen); // todo;
+    d += jitter;
 
     float3 origin = eye;
     float3 direction = normalize(d.x*U + d.y * V + W);

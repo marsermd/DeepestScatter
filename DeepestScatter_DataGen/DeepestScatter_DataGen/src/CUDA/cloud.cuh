@@ -75,11 +75,10 @@ struct ScatteringEvent
 };
 
 static __device__ __inline__ ScatteringEvent getNextScatteringEvent(
-    unsigned int& seed,
+    float opticalDistance,
     float3 pos, const float3& direction, bool stopAtScatterPos = true)
 {
     float3 stepAlongRay = direction * sampleStep;
-    float opticalDistance = rnd(seed);
 
     float transmittance = 1;
     bool hasScattered = false;
@@ -112,6 +111,14 @@ static __device__ __inline__ ScatteringEvent getNextScatteringEvent(
     }
 
     return { hasScattered, scatterPos, transmittance };
+}
+
+static __device__ __inline__ ScatteringEvent getNextScatteringEvent(
+    unsigned int& seed,
+    const float3& pos, const float3& direction, bool stopAtScatterPos = true)
+{
+    const float opticalDistance = rnd(seed);
+    return getNextScatteringEvent(opticalDistance, pos, direction, stopAtScatterPos);
 }
 
 static __device__ __inline__ const float3& sampleSky(const ScatteringEvent& scatter, const float3& direction)

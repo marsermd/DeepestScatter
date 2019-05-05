@@ -18,7 +18,7 @@ namespace DeepestScatter
 
     void Camera::init()
     {
-        const std::string modelPath = "../../DeepestScatter_Train/runs/1024_mipmap_long_logeps/checkpoint.pt";
+        const std::string modelPath = "../../DeepestScatter_Train/runs/1024_mipmap_correct_logeps/checkpoint.pt";
         module = torch::jit::load(modelPath);
 
         const std::string programFile = "disneyCamera.cu";

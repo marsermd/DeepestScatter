@@ -56,5 +56,6 @@ class DisneyModel(torch.nn.Module):
             torch.nn.ReLU(),
             torch.nn.Linear(self.BLOCK_DIMENSION, self.BLOCK_DIMENSION),
             torch.nn.ReLU(),
-            torch.nn.Linear(self.BLOCK_DIMENSION, 1)
+            torch.nn.Linear(self.BLOCK_DIMENSION, 1),
+            torch.nn.LeakyReLU()
         )

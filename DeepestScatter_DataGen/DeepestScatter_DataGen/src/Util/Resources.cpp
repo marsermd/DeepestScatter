@@ -161,6 +161,7 @@ namespace DeepestScatter
         cloudPath(cloudPath),
         floatSize(floatSize)
     {
+        std::cout << "Creating cache" << std::endl;
         const size_t mipLevelCount = buffer->getMipLevelCount();
 
         buffer->getSize(size.x, size.y, size.z);
@@ -178,6 +179,10 @@ namespace DeepestScatter
 
             cache.emplace_back(level);
         }
+    }
+
+    Resources::VolumeCache::~VolumeCache()
+    {
     }
 
     void Resources::VolumeCache::fillBuffer(optix::Buffer& buffer)

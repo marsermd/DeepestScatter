@@ -8,6 +8,7 @@
 
 rtDeclareVariable(DisneyDescriptorRayData, resultDescriptor, rtPayload, );
 rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
+
 RT_PROGRAM void sampleDisneyDescriptor()
 {
     float3 hitPoint = ray.origin + tHit * ray.direction;
@@ -15,11 +16,14 @@ RT_PROGRAM void sampleDisneyDescriptor()
 
     float3 pos = hitPoint;
 
-    float3 direction = normalize(ray.direction);
+    const float3 direction = normalize(ray.direction);
 
     unsigned int seed = tea<4>(launchID.x * 4096 + launchID.y);
 
-    ScatteringEvent scatter = getNextScatteringEvent(seed, pos, direction);
+    float jitter = rnd(seed) / 100;
+    float opticalDistance = (subframeId % 100) / 10.0f + jitter;
+
+    const ScatteringEvent scatter = getNextScatteringEvent(opticalDistance, pos, direction);
 
     if (!scatter.hasScattered || !isInBox(scatter.scatterPos))
     {

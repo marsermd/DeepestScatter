@@ -16,7 +16,10 @@ from LmdbDataset import LmdbDatasets
 from tensorboardX import SummaryWriter
 
 def logEps(x):
-    return torch.log(x * 1e1 + 1)
+    val = x * 1e1 + 1
+    # if value is between -1 and 0.01, log will still work.
+    val = torch.max(val, 0.0099 + val / 100)
+    return torch.log(val)
 
 class LogModel(torch.nn.Module):
     def __init__(self, model):

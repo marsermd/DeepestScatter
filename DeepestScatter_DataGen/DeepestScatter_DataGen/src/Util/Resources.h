@@ -33,6 +33,7 @@ namespace DeepestScatter
             const optix::float3 floatSize;
 
             VolumeCache(std::string path, optix::Buffer& buffer, optix::float3 floatSize);
+            ~VolumeCache();
 
             void fillBuffer(optix::Buffer& buffer);
         private:
