@@ -26,6 +26,9 @@ namespace DeepestScatter
         optix::Program loadProgram(const std::string& fileName, const std::string& programName);
 
     private:
+
+        void generateMipmaps(optix::Buffer buffer) const;
+
         class VolumeCache
         {
         public:
@@ -38,7 +41,7 @@ namespace DeepestScatter
             void fillBuffer(optix::Buffer& buffer);
         private:
             
-            optix::size_t3 size;
+            optix::size_t3 size{};
             std::vector<std::vector<uint8_t>> cache{};
         };
 

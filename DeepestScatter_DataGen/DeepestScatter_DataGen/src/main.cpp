@@ -63,7 +63,7 @@ int main(int argc, char* argv[])
 
             //loop.run(Tasks::collect<Persistance::DisneyDescriptor>(databasePath, cloudRoot, Tasks::CollectMode::Continue));
             
-            loop.run(Tasks::renderCloud(cloudPath, 15000));
+            loop.run(Tasks::renderCloud(cloudPath, 7000));
         }
         catch (const std::exception& e)
         {

@@ -21,10 +21,49 @@ namespace DeepestScatter
 {
     std::unique_ptr<Resources::VolumeCache> Resources::volumeCache = nullptr;
 
-    size_t getId(size_t x, size_t y, size_t z, size_t size)
+    class TextureView3D
     {
-        return z * size * size + y * size + x;
-    }
+    public:
+        TextureView3D(uint8_t* values, size_t sizeX, size_t sizeY, size_t sizeZ)
+            : values(values), sizeX(sizeX), sizeY(sizeY), sizeZ(sizeZ)
+        {
+        }
+
+        uint16_t get(size_t x, size_t y, size_t z) const
+        {
+            if (isOutOfRange(x, sizeX) ||
+                isOutOfRange(y, sizeY) ||
+                isOutOfRange(z, sizeZ))
+            {
+                return 0;
+            }
+            const size_t id = z * sizeX * sizeY + y * sizeX + x;
+            return values[id];
+        }
+
+        void set(size_t x, size_t y, size_t z, uint8_t value) const
+        {
+            if (isOutOfRange(x, sizeX) ||
+                isOutOfRange(y, sizeY) ||
+                isOutOfRange(z, sizeZ))
+            {
+                throw std::out_of_range("Out of texture range");
+            }
+            const size_t id = z * sizeX * sizeY + y * sizeX + x;
+            values[id] = value;
+        }
+
+    private:
+        uint8_t* values;
+        const size_t sizeX;
+        const size_t sizeY;
+        const size_t sizeZ;
+
+        static bool isOutOfRange(int32_t value, size_t size)
+        {
+            return value < 0 || value >= size;
+        }
+    };
 
     std::tuple<optix::Buffer, optix::float3> Resources::loadVolumeBuffer(const std::string &path, bool createMipmaps)
     {
@@ -53,10 +92,10 @@ namespace DeepestScatter
         const auto addOp = [](const LeafIterType& iter, openvdb::math::Extrema& ex) { ex.add(*iter); };
         openvdb::math::Extrema ex = openvdb::tools::extrema(grid->tree().cbeginValueOn(), addOp, /*threaded=*/true);
 
-        double maxDensity = ex.max();
+        const double maxDensity = ex.max();
 
         openvdb::CoordBBox boundingBox = grid->evalActiveVoxelBoundingBox();
-        boundingBox.expandBy(1);
+        boundingBox = boundingBox.expandBy(1);
         openvdb::Coord min = boundingBox.min();
         openvdb::Coord max = boundingBox.max() + openvdb::Coord(1, 1, 1);
         openvdb::Coord boundingSize = max - min;
@@ -74,12 +113,11 @@ namespace DeepestScatter
             {
                 levelCount++;
             }
-            sizeX = sizeY = sizeZ = 1ll << levelCount;
             std::cout << "And creating mipmaps... " << levelCount << std::endl;
         }
 
         std::cout << "Creating buffer of size " << sizeX << "x" << sizeY << "x" << sizeZ << std::endl;
-        buffer->setMipLevelCount(levelCount + 1);
+        buffer->setMipLevelCount(levelCount);
         buffer->setSize(sizeX, sizeY, sizeZ);
 
         {
@@ -106,36 +144,7 @@ namespace DeepestScatter
 
         if (createMipmaps)
         {
-            size_t size = sizeX;
-            for (int level = 1; level < levelCount + 1; level++)
-            {
-                size /= 2;
-
-                BufferBind<uint8_t> prevLevel(buffer, level - 1);
-                BufferBind<uint8_t> curLevel(buffer, level);
-
-                for (uint32_t z = 0; z < size; z++)
-                {
-                    for (uint32_t y = 0; y < size; y++)
-                    {
-                        for (uint32_t x = 0; x < size; x++)
-                        {
-                            uint16_t curValue =
-                                static_cast<uint16_t>(prevLevel[getId(x * 2, y * 2, z * 2, size * 2)]) +
-                                static_cast<uint16_t>(prevLevel[getId(x * 2, y * 2, z * 2 + 1, size * 2)]) +
-                                static_cast<uint16_t>(prevLevel[getId(x * 2, y * 2 + 1, z * 2, size * 2)]) +
-                                static_cast<uint16_t>(prevLevel[getId(x * 2, y * 2 + 1, z * 2 + 1, size * 2)]) +
-                                static_cast<uint16_t>(prevLevel[getId(x * 2 + 1, y * 2, z * 2, size * 2)]) +
-                                static_cast<uint16_t>(prevLevel[getId(x * 2 + 1, y * 2, z * 2 + 1, size * 2)]) +
-                                static_cast<uint16_t>(prevLevel[getId(x * 2 + 1, y * 2 + 1, z * 2, size * 2)]) +
-                                static_cast<uint16_t>(prevLevel[getId(x * 2 + 1, y * 2 + 1, z * 2 + 1, size * 2)]);
-                            curValue /= 8;
-                            curLevel[getId(x, y, z, size)] = gsl::narrow<uint8_t>(curValue);
-                        }
-                    }
-                }
-            }
-            assert(size == 1);
+            generateMipmaps(buffer);
         }
 
         optix::float3 floatSize = optix::make_float3(boundingSize.x(), boundingSize.y(), boundingSize.z());
@@ -155,6 +164,48 @@ namespace DeepestScatter
         std::cout << "Loading program: " << path << "::" << programName << std::endl;
 
         return context->createProgramFromPTXFile(path, programName);
+    }
+
+    void Resources::generateMipmaps(optix::Buffer buffer) const
+    {
+        const uint32_t levelCount = buffer->getMipLevelCount();
+
+        size_t sizeX, sizeY, sizeZ;
+        buffer->getSize(sizeX, sizeY, sizeZ);
+
+        for (uint32_t level = 1; level < levelCount; level++)
+        {
+            assert(sizeX != 1 || sizeY != 1 || sizeZ != 1);
+            BufferBind<uint8_t> prevLevel(buffer, level - 1);
+            BufferBind<uint8_t> curLevel(buffer, level);
+
+            TextureView3D prevView(&prevLevel[0], sizeX, sizeY, sizeZ);
+
+            buffer->getMipLevelSize(level, sizeX, sizeY, sizeZ);
+            TextureView3D curView(&curLevel[0], sizeX, sizeY, sizeZ);
+
+            for (uint32_t z = 0; z < sizeZ; z++)
+            {
+                for (uint32_t y = 0; y < sizeY; y++)
+                {
+                    for (uint32_t x = 0; x < sizeX; x++)
+                    {
+                        uint16_t curValue =
+                            prevView.get(x * 2, y * 2, z * 2) +
+                            prevView.get(x * 2, y * 2, z * 2 + 1) +
+                            prevView.get(x * 2, y * 2 + 1, z * 2) +
+                            prevView.get(x * 2, y * 2 + 1, z * 2 + 1) +
+                            prevView.get(x * 2 + 1, y * 2, z * 2) +
+                            prevView.get(x * 2 + 1, y * 2, z * 2 + 1) +
+                            prevView.get(x * 2 + 1, y * 2 + 1, z * 2) +
+                            prevView.get(x * 2 + 1, y * 2 + 1, z * 2 + 1);
+                        curValue /= 8;
+                        curView.set(x, y, z, gsl::narrow<uint8_t>(curValue));
+                    }
+                }
+            }
+        }
+        assert(sizeX == 1 && sizeY == 1 && sizeZ == 1);
     }
 
     Resources::VolumeCache::VolumeCache(std::string cloudPath, optix::Buffer& buffer, optix::float3 floatSize):
