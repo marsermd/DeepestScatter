@@ -24,12 +24,12 @@ namespace DeepestScatter
     class TextureView3D
     {
     public:
-        TextureView3D(uint8_t* values, size_t sizeX, size_t sizeY, size_t sizeZ)
+        inline TextureView3D(uint8_t* values, size_t sizeX, size_t sizeY, size_t sizeZ)
             : values(values), sizeX(sizeX), sizeY(sizeY), sizeZ(sizeZ)
         {
         }
 
-        uint16_t get(size_t x, size_t y, size_t z) const
+        inline uint16_t get(size_t x, size_t y, size_t z) const
         {
             if (isOutOfRange(x, sizeX) ||
                 isOutOfRange(y, sizeY) ||
@@ -41,7 +41,7 @@ namespace DeepestScatter
             return values[id];
         }
 
-        void set(size_t x, size_t y, size_t z, uint8_t value) const
+        inline void set(size_t x, size_t y, size_t z, uint8_t value) const
         {
             if (isOutOfRange(x, sizeX) ||
                 isOutOfRange(y, sizeY) ||
@@ -59,7 +59,7 @@ namespace DeepestScatter
         const size_t sizeY;
         const size_t sizeZ;
 
-        static bool isOutOfRange(int32_t value, size_t size)
+        inline static bool isOutOfRange(int32_t value, size_t size)
         {
             return value < 0 || value >= size;
         }

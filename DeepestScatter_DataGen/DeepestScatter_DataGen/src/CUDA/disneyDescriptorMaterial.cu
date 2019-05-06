@@ -21,7 +21,7 @@ RT_PROGRAM void sampleDisneyDescriptor()
     unsigned int seed = tea<4>(launchID.x * 4096 + launchID.y);
 
     float jitter = rnd(seed) / 100;
-    float opticalDistance = (subframeId % 100) / 10.0f + jitter;
+    float opticalDistance = (subframeId % 100) / 100.0f + jitter;
 
     const ScatteringEvent scatter = getNextScatteringEvent(opticalDistance, pos, direction);
 
