@@ -89,6 +89,8 @@ namespace DeepestScatter
         optix::Buffer  reinhardSumLuminanceColumn;
         optix::Buffer  reinhardAverageLuminance;
 
+        std::vector<torch::jit::IValue> networkInputs;
+
         optix::Buffer  networkInputBuffer;
         optix::Buffer  directRadianceBuffer;
         optix::Buffer  frameResultBuffer;

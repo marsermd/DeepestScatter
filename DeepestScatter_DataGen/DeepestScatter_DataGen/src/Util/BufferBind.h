@@ -12,9 +12,7 @@ namespace DeepestScatter
     class BufferBind
     {
     public:
-        explicit BufferBind(
-            optix::Buffer buffer, 
-            unsigned int level = 0, unsigned int map_flags = RT_BUFFER_MAP_READ_WRITE);
+        explicit BufferBind(optix::Buffer buffer, unsigned int level = 0);
         
         ~BufferBind();
 
@@ -32,12 +30,12 @@ namespace DeepestScatter
 
     
     template<typename T>
-    BufferBind<T>::BufferBind(optix::Buffer buffer, unsigned int level, unsigned int map_flags):
+    BufferBind<T>::BufferBind(optix::Buffer buffer, unsigned int level):
         buffer(buffer),
         level(level)
     {
         assert(sizeof(T) == buffer->getElementSize());
-        auto rawArray = static_cast<T*>(buffer->map(level, map_flags));
+        auto rawArray = static_cast<T*>(buffer->map(level));
 
         RTsize totalSize = 1;
         RTsize sizes[3];

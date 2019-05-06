@@ -65,9 +65,9 @@ RT_PROGRAM void updateFrameResult()
 
 RT_PROGRAM void clearRect()
 {
-    networkInputBuffer[launchID].clear();
-    directRadianceBuffer[launchID].radiance = make_float3(0);
-    directRadianceBuffer[launchID].hasScattered = false;
+    //networkInputBuffer[launchID].clear();
+    //directRadianceBuffer[launchID].radiance = make_float3(0);
+    //directRadianceBuffer[launchID].hasScattered = false;
 }
 
 RT_PROGRAM void clearScreen()

@@ -18,8 +18,9 @@ namespace DeepestScatter
 
     void Camera::init()
     {
-        const std::string modelPath = "../../DeepestScatter_Train/runs/1024_mipmap_correct_logeps/checkpoint.pt";
+        const std::string modelPath = "../../DeepestScatter_Train/runs/1024_mipmap_correct_logeps_long/checkpoint.pt";
         module = torch::jit::load(modelPath);
+        module->eval();
 
         const std::string programFile = "disneyCamera.cu";
 
@@ -44,8 +45,13 @@ namespace DeepestScatter
         miss = resources->loadProgram(programFile, "miss");
         context->setMissProgram(0, miss);
 
-        networkInputBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
+        auto options = torch::TensorOptions().device(torch::kCUDA, -1).requires_grad(false);
+        auto tensor = torch::zeros({ RECT_SIZE.x * RECT_SIZE.y, 10, 226 }, options);
+        networkInputs.emplace_back(tensor);
+
+        networkInputBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
         networkInputBuffer->setElementSize(sizeof(Gpu::DisneyNetworkInput));
+        networkInputBuffer->setDevicePointer(context->getEnabledDevices()[0], tensor.data_ptr());
 
         directRadianceBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
         directRadianceBuffer->setElementSize(sizeof(IntersectionInfo));
@@ -205,9 +211,6 @@ namespace DeepestScatter
 
     void Camera::renderRect(optix::uint2 start)
     {
-        context->setRayGenerationProgram(0, clearRect);
-        context->launch(0, RECT_SIZE.x, RECT_SIZE.y);
-
         context["rectOrigin"]->setUint(start);
 
         context->setRayGenerationProgram(0, camera);
@@ -234,9 +237,8 @@ namespace DeepestScatter
                 return;
             }
 
-            std::vector<torch::jit::IValue> inputs;
-            inputs.emplace_back(torch::from_blob(&networkInput[0], {RECT_SIZE.x * RECT_SIZE.y, 10, 226 }).cuda());
-            at::Tensor predicted = module->forward(inputs).toTensor().cpu();
+            at::Tensor predicted = module->forward(networkInputs).toTensor();
+            predicted = predicted.cpu();
             float* output = predicted.data<float>();
 
             uint subframe;
