@@ -11,7 +11,7 @@ This is an enchancement on paper by Disney Research [Deep Scattering](http://drz
 
 *Ground Truth*
 - [x] Naive implementation of path tracer that only takes into account [Beer-Lambert law](https://en.wikipedia.org/wiki/Beer%E2%80%93Lambert_law) and direct scattering 
-  <img src="https://github.com/marsermd/DeepestScatter/raw/master/images/naive_cloud_cube_rendering.png" width="200"/>
+  <img src="/images/naive_cloud_cube_rendering.png" width="200"/>
 - [x] Interactive visualisation of results
 - [x] Naive implementation that also takes into account [Lorenz-Mie](https://en.wikipedia.org/wiki/Mie_scattering) phase function.
 - [x] Implement multiple scattering using Monte-Carlo method
@@ -19,7 +19,7 @@ This is an enchancement on paper by Disney Research [Deep Scattering](http://drz
 - [x] Implement custom progressive path
 - [x] Implement Reinhard tone mapping
 - [x] Implement next event estimation   
-  <img src="https://github.com/marsermd/DeepestScatter/raw/master/images/multiple_scattering_1.png" width="500"/>   
+  <img src="/images/multiple_scattering_1.png" width="500"/>   
 
 
 *Dataset*
@@ -29,11 +29,14 @@ This is an enchancement on paper by Disney Research [Deep Scattering](http://drz
 - [x] Separate the dataset for training, test, validation with total size of 15\`000\`000; leave a few clouds out of those sets for visual evaluation
 
 *Training*
-- [ ] Build a model in keras as described in the original paper
-- [ ] Train the model
-- [ ] Inefficient pathtracer implementation in python that takes advantage of the trained network
-- [ ] Generate visual comparison
-- [ ] Compare to the original results
+- [x] Build a model in pytorch as described in the original paper
+- [x] Train the model
+- [x] Implement an efficient neural-based renderer in c++
+- [ ] Compare to the original results   
+  <p float="left">
+  <img src="/images/neural_rendering_7000_meters.png" width="45%" />
+  <img src="/images/neural_rendering_12000_meters.png" width="45%" /> 
+</p>
 
 *Research*
 Experiments with different architectures.
