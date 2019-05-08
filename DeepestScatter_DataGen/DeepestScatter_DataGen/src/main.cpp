@@ -13,10 +13,9 @@
 #include "Util/Dataset/Dataset.h"
 
 #pragma warning (push, 0)
-#include "SceneSetup.pb.h"
 #include "Result.pb.h"
 #include "ExecutionLoop/Tasks.h"
-#include "DisneyDescriptor.pb.h"
+#include "BakedDescriptor.pb.h"
 #pragma warning (pop)
 
 namespace di = Hypodermic;
@@ -61,9 +60,9 @@ int main(int argc, char* argv[])
         {
             GuiExecutionLoop loop(argc, argv);
 
-            //loop.run(Tasks::collect<Persistance::DisneyDescriptor>(databasePath, cloudRoot, Tasks::CollectMode::Continue));
+            loop.run(Tasks::collect<Persistance::BakedDescriptor>(databasePath, cloudRoot, Tasks::CollectMode::Continue));
             
-            loop.run(Tasks::renderCloud(cloudPath, 3000));
+            //loop.run(Tasks::renderCloud(cloudPath, 3000));
         }
         catch (const std::exception& e)
         {

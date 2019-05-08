@@ -16,7 +16,7 @@ from LmdbDataset import LmdbDatasets
 from tensorboardX import SummaryWriter
 
 def logEps(x):
-    val = x * 1e1 + 1
+    val = x * 1e3 + 1
     # if value is between -1 and 0.01, log will still work.
     val = torch.max(val, 0.0099 + val / 100)
     return torch.log(val)
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     logModel.to(device)
 
     criterion = torch.nn.MSELoss().to(device)
-    lr = 1.e-3
+    lr = 3.e-4
     optimizer = optim.Adam(logModel.parameters(), lr, amsgrad=True)
 
     for epoch in range(maxEpochs):

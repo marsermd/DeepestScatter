@@ -6,6 +6,7 @@
     <ClCompile Include="Vector.pb.cc" />
     <ClCompile Include="ScatterSample.pb.cc" />
     <ClCompile Include="DisneyDescriptor.pb.cc" />
+    <ClCompile Include="BakedDescriptor.pb.cc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Result.pb.h" />
@@ -13,5 +14,6 @@
     <ClInclude Include="Vector.pb.h" />
     <ClInclude Include="ScatterSample.pb.h" />
     <ClInclude Include="DisneyDescriptor.pb.h" />
+    <ClInclude Include="BakedDescriptor.pb.h" />
   </ItemGroup>
 </Project>

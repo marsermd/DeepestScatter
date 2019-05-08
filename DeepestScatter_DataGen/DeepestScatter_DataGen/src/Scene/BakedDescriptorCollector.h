@@ -1,30 +1,28 @@
-﻿#pragma once
+#pragma once
 
 #include <optixu/optixpp_namespace.h>
 #include <utility>
 #include <memory>
-#include <unordered_set>
 
 #include "Scene/SceneItem.h"
 #include "Util/Dataset/Dataset.h"
 #include "Util/Dataset/BatchSettings.h"
-#include "CUDA/PointRadianceTask.h"
-#include <boost/detail/container_fwd.hpp>
 #include "VDBCloud.h"
 
 namespace DeepestScatter
 {
     class Resources;
 
-    class DisneyDescriptorCollector : public SceneItem
+    class BakedDescriptorCollector : public SceneItem
     {
     public:
-        DisneyDescriptorCollector(
+        BakedDescriptorCollector(
             std::shared_ptr<optix::Context> context,
             std::shared_ptr<Resources> resources,
             std::shared_ptr<Dataset> dataset,
             std::shared_ptr<BatchSettings> settings,
-            std::shared_ptr<VDBCloud> cloud) :
+            std::shared_ptr<VDBCloud> cloud,
+            std::shared_ptr<Cloud::Model> cloudModel) :
             context(*context.get()),
             resources(std::move(resources)),
             dataset(std::move(dataset)),

@@ -81,17 +81,17 @@
     <ClCompile Include="src\Scene\DisneyDescriptorCollector.cpp">
       <Filter>src\Scene</Filter>
     </ClCompile>
-    <ClCompile Include="installers.cpp">
-      <Filter>src</Filter>
-    </ClCompile>
     <ClCompile Include="src\ExecutionLoop\Tasks.cpp">
       <Filter>src\ExecutionLoop</Filter>
     </ClCompile>
     <ClCompile Include="src\Model\Disney\Predictor.cpp">
       <Filter>src\Model\Disney</Filter>
     </ClCompile>
-    <ClCompile Include="src\CUDA\disneyCamera.cu">
-      <Filter>src\CUDA</Filter>
+    <ClCompile Include="src\installers.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\BakedDescriptorCollector.cpp">
+      <Filter>src\Scene</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,6 +122,8 @@
     <CudaCompile Include="src\CUDA\pointEmissionCamera.cu">
       <Filter>src\CUDA</Filter>
     </CudaCompile>
+    <CudaCompile Include="src\CUDA\disneyCamera.cu" />
+    <CudaCompile Include="src\CUDA\disneyDescriptorMaterial.cu" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CUDA\rayData.cuh">
@@ -499,8 +501,8 @@
     <ClInclude Include="src\Model\Disney\Predictor.h">
       <Filter>src\Model\Disney</Filter>
     </ClInclude>
-    <ClInclude Include="src\CUDA\disneyDescriptorMaterial.cu">
-      <Filter>src\CUDA</Filter>
+    <ClInclude Include="src\Scene\BakedDescriptorCollector.h">
+      <Filter>src\Scene</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

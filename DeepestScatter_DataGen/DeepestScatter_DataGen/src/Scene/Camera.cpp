@@ -18,7 +18,7 @@ namespace DeepestScatter
 
     void Camera::init()
     {
-        const std::string modelPath = "../../DeepestScatter_Train/runs/1024_mipmap_correct_logeps_long/checkpoint.pt";
+        const std::string modelPath = "../../DeepestScatter_Train/runs/1024_mipmap_correct_logeps_1e3/checkpoint.pt";
         module = torch::jit::load(modelPath);
         module->eval();
 

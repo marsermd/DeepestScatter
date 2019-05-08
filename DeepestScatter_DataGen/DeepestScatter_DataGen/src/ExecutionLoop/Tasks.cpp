@@ -4,6 +4,8 @@
 #include "DisneyDescriptor.pb.h"
 #include "Scene/RadianceCollector.h"
 #include "Scene/DisneyDescriptorCollector.h"
+#include "BakedDescriptor.pb.h"
+#include "Scene/BakedDescriptorCollector.h"
 
 namespace DeepestScatter
 {
@@ -97,5 +99,11 @@ namespace DeepestScatter
     void Tasks::addCollector<Persistance::DisneyDescriptor>(Hypodermic::ContainerBuilder& builder)
     {
         builder.registerType<DisneyDescriptorCollector>().as<SceneItem>().asSelf().singleInstance();
+    }
+
+    template<>
+    void Tasks::addCollector<Persistance::BakedDescriptor>(Hypodermic::ContainerBuilder& builder)
+    {
+        builder.registerType<BakedDescriptorCollector>().as<SceneItem>().asSelf().singleInstance();
     }
 }

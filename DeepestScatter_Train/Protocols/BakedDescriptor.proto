@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package Persistance;
+
+import "Vector.proto";
+
+message BakedDescriptor {
+	// w * z * y * x == 10 * 9 * 5 * 5 grid
+	bytes grid = 1;
+
+    Vector3 position = 2;
+    Vector3 direction = 3;
+}

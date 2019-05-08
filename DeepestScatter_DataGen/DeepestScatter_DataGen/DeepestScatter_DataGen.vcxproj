@@ -11,15 +11,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="installers.cpp" />
     <CudaCompile Include="src\CUDA\disneyCamera.cu">
       <FileType>Document</FileType>
     </CudaCompile>
     <ClCompile Include="src\ExecutionLoop\GuiExecutionLoop.cpp" />
     <ClCompile Include="src\ExecutionLoop\Tasks.cpp" />
+    <ClCompile Include="src\installers.cpp" />
     <ClCompile Include="src\Mie.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Model\Disney\Predictor.cpp" />
+    <ClCompile Include="src\Scene\BakedDescriptorCollector.cpp" />
     <ClCompile Include="src\Scene\Camera.cpp" />
     <ClCompile Include="src\Scene\CloudPTRenderer.cpp" />
     <ClCompile Include="src\Scene\DisneyDescriptorCollector.cpp" />
@@ -158,6 +159,7 @@
     <ClInclude Include="src\Mie.h" />
     <ClInclude Include="src\CUDA\rayData.cuh" />
     <ClInclude Include="src\Model\Disney\Predictor.h" />
+    <ClInclude Include="src\Scene\BakedDescriptorCollector.h" />
     <ClInclude Include="src\Scene\Camera.h" />
     <ClInclude Include="src\Scene\CloudPTRenderer.h" />
     <ClInclude Include="src\Scene\DisneyDescriptorCollector.h" />

@@ -5,6 +5,7 @@ import os
 from PythonProtocols.SceneSetup_pb2 import SceneSetup
 from PythonProtocols.ScatterSample_pb2 import ScatterSample
 from PythonProtocols.DisneyDescriptor_pb2 import DisneyDescriptor
+from PythonProtocols.BakedDescriptor_pb2 import BakedDescriptor
 from PythonProtocols.Result_pb2 import Result
 
 
@@ -29,15 +30,18 @@ class LmdbDataset:
         )
         self.descriptorToDb = {}
         self.nextIds = {}
-        self.scenes_db = self.__addDb(SceneSetup, create=create)
-        self.scatter_db = self.__addDb(ScatterSample, create=create)
-        self.scatter_db = self.__addDb(DisneyDescriptor, create=create)
-        self.results_db = self.__addDb(Result, create=create)
+
+        self.__addDb(SceneSetup, create=create)
+        self.__addDb(ScatterSample, create=create)
+        self.__addDb(DisneyDescriptor, create=create)
+        self.__addDb(BakedDescriptor, create=create)
+        self.__addDb(Result, create=create)
 
     def __addDb(self, protocol, create):
-        db = self.env.open_db(protocol.DESCRIPTOR.name.encode('ascii'), integerkey=True, create=create)
-        self.descriptorToDb[protocol.DESCRIPTOR.name] = db
-        self.nextIds[protocol.DESCRIPTOR.name] = 0
+        name = protocol.DESCRIPTOR.name
+        db = self.env.open_db(name.encode('ascii'), integerkey=True, create=create)
+        self.descriptorToDb[name] = db
+        self.nextIds[name] = 0
         return db
 
     def append(self, value):
@@ -66,7 +70,9 @@ class LmdbDataset:
 
     def __getNameAndDb(self, protocolType):
         name = protocolType.DESCRIPTOR.name
-        db = self.env.open_db(name.encode('ascii'), integerkey=True, create=False)
+        db = self.descriptorToDb[name]
+        if db == None:
+            db = self.__addDb(protocolType, False)
         return (name, db)
 
     def __getstate__(self):
