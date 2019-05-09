@@ -6,9 +6,9 @@
 
 #include "Scene/Sun.h"
 #include "Scene/VDBCloud.h"
-#include "Scene/CloudPTRenderer.h"
+#include "Scene/CloudMaterial.h"
 #include "Scene/ScatterSampleCollector.h"
-#include "Scene/Camera.h"
+#include "Scene/Cameras/Camera.h"
 
 #include "Scene/Scene.h"
 #include "Scene/RadianceCollector.h"
@@ -31,7 +31,7 @@ namespace DeepestScatter
 
         addSceneItem<Sun>(builder);
         addSceneItem<VDBCloud>(builder);
-        addSceneItem<CloudPTRenderer>(builder);
+        addSceneItem<CloudMaterial>(builder);
         addSceneItem<Camera>(builder);
 
         return builder;

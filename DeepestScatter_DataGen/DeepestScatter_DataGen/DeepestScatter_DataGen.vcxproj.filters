@@ -22,11 +22,8 @@
     <Filter Include="src\Hypodermic">
       <UniqueIdentifier>{c1691ded-046b-47cb-8f4c-959b31c67364}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\Model">
-      <UniqueIdentifier>{b4317810-4634-493a-9fa3-051f335fc382}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\Model\Disney">
-      <UniqueIdentifier>{195cac2c-f3fb-448a-ad5f-a6701a19b5dd}</UniqueIdentifier>
+    <Filter Include="src\Scene\Cameras">
+      <UniqueIdentifier>{ae1a5564-b0e0-49e0-b577-70e0217694e2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -41,12 +38,6 @@
     </ClCompile>
     <ClCompile Include="src\Util\sutil.cpp">
       <Filter>src\Uitl</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\Camera.cpp">
-      <Filter>src\Scene</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Scene\CloudPTRenderer.cpp">
-      <Filter>src\Scene</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\RadianceCollector.cpp">
       <Filter>src\Scene</Filter>
@@ -84,14 +75,20 @@
     <ClCompile Include="src\ExecutionLoop\Tasks.cpp">
       <Filter>src\ExecutionLoop</Filter>
     </ClCompile>
-    <ClCompile Include="src\Model\Disney\Predictor.cpp">
-      <Filter>src\Model\Disney</Filter>
-    </ClCompile>
     <ClCompile Include="src\installers.cpp">
       <Filter>src</Filter>
     </ClCompile>
     <ClCompile Include="src\Scene\BakedDescriptorCollector.cpp">
       <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Cameras\Camera.cpp">
+      <Filter>src\Scene\Cameras</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\CloudMaterial.cpp">
+      <Filter>src\Scene</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Scene\Cameras\DisneyRenderer.cpp">
+      <Filter>src\Scene\Cameras</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -122,8 +119,15 @@
     <CudaCompile Include="src\CUDA\pointEmissionCamera.cu">
       <Filter>src\CUDA</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\CUDA\disneyCamera.cu" />
-    <CudaCompile Include="src\CUDA\disneyDescriptorMaterial.cu" />
+    <CudaCompile Include="src\CUDA\disneyCamera.cu">
+      <Filter>src\CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CUDA\disneyDescriptorMaterial.cu">
+      <Filter>src\CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CUDA\progressive.cu">
+      <Filter>src\CUDA</Filter>
+    </CudaCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\CUDA\rayData.cuh">
@@ -159,14 +163,8 @@
     <ClInclude Include="src\CUDA\cloud.cuh">
       <Filter>src\CUDA</Filter>
     </ClInclude>
-    <ClInclude Include="src\Scene\Camera.h">
-      <Filter>src\Scene</Filter>
-    </ClInclude>
     <ClInclude Include="src\Util\BufferBind.h">
       <Filter>src\Uitl</Filter>
-    </ClInclude>
-    <ClInclude Include="src\Scene\CloudPTRenderer.h">
-      <Filter>src\Scene</Filter>
     </ClInclude>
     <ClInclude Include="src\Scene\RadianceCollector.h">
       <Filter>src\Scene</Filter>
@@ -498,11 +496,20 @@
     <ClInclude Include="src\ExecutionLoop\Tasks.h">
       <Filter>src\ExecutionLoop</Filter>
     </ClInclude>
-    <ClInclude Include="src\Model\Disney\Predictor.h">
-      <Filter>src\Model\Disney</Filter>
-    </ClInclude>
     <ClInclude Include="src\Scene\BakedDescriptorCollector.h">
       <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Cameras\Camera.h">
+      <Filter>src\Scene\Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\CloudMaterial.h">
+      <Filter>src\Scene</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Cameras\DisneyRenderer.h">
+      <Filter>src\Scene\Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Cameras\ARenderer.h">
+      <Filter>src\Scene\Cameras</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

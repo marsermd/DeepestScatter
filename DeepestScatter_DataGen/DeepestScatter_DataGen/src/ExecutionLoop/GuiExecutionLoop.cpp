@@ -14,7 +14,7 @@
 #include "Util/sutil.h"
 
 #include "Scene/Scene.h"
-#include "Scene/Camera.h"
+#include "Scene/Cameras/Camera.h"
 #include "Util/Dataset/Dataset.h"
 
 namespace DeepestScatter

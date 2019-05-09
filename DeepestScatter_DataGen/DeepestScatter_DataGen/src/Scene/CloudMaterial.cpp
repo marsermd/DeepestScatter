@@ -1,4 +1,4 @@
-#include "CloudPTRenderer.h"
+#include "CloudMaterial.h"
 #include "Util/Resources.h"
 
 #include "CUDA/rayData.cuh"
@@ -6,7 +6,7 @@
 
 namespace DeepestScatter
 {
-    CloudPTRenderer::CloudPTRenderer(Settings settings, std::shared_ptr<optix::Context> context, std::shared_ptr<Resources> resources)
+    CloudMaterial::CloudMaterial(Settings settings, std::shared_ptr<optix::Context> context, std::shared_ptr<Resources> resources)
         : context(*context.get()),
           resources(std::move(resources)),
           renderSettings(settings)
@@ -14,7 +14,7 @@ namespace DeepestScatter
         this->context["sampleStep"]->setFloat(settings->sampleStep);
     }
 
-    void CloudPTRenderer::init()
+    void CloudMaterial::init()
     {
         geometry = context->createGeometry();
         geometry->setBoundingBoxProgram(resources->loadProgram("cloudBBox.cu", "bounds"));
@@ -41,7 +41,7 @@ namespace DeepestScatter
         context["objectRoot"]->set(geometryGroup);
     }
 
-    std::string CloudPTRenderer::getRenderProgramName() const
+    std::string CloudMaterial::getRenderProgramName() const
     {
         switch (renderSettings->mode)
         {

@@ -3,17 +3,13 @@
 #include <cstdlib>
 #include <string>
 #include <iostream>
-#include <memory>
 
 #include "Util/sutil.h"
 
-#include "Scene/Camera.h"
-#include "installers.h"
 #include "ExecutionLoop/GuiExecutionLoop.h"
 #include "Util/Dataset/Dataset.h"
 
 #pragma warning (push, 0)
-#include "Result.pb.h"
 #include "ExecutionLoop/Tasks.h"
 #include "BakedDescriptor.pb.h"
 #pragma warning (pop)

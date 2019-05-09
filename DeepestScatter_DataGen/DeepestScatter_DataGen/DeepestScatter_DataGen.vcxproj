@@ -19,10 +19,10 @@
     <ClCompile Include="src\installers.cpp" />
     <ClCompile Include="src\Mie.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\Model\Disney\Predictor.cpp" />
     <ClCompile Include="src\Scene\BakedDescriptorCollector.cpp" />
-    <ClCompile Include="src\Scene\Camera.cpp" />
-    <ClCompile Include="src\Scene\CloudPTRenderer.cpp" />
+    <ClCompile Include="src\Scene\Cameras\Camera.cpp" />
+    <ClCompile Include="src\Scene\Cameras\DisneyRenderer.cpp" />
+    <ClCompile Include="src\Scene\CloudMaterial.cpp" />
     <ClCompile Include="src\Scene\DisneyDescriptorCollector.cpp" />
     <ClCompile Include="src\Scene\RadianceCollector.cpp" />
     <ClCompile Include="src\Scene\Scene.cpp" />
@@ -44,6 +44,7 @@
     <CudaCompile Include="src\CUDA\pointGeneratorCamera.cu" />
     <CudaCompile Include="src\CUDA\inScatter.cu" />
     <CudaCompile Include="src\CUDA\pinholeCamera.cu" />
+    <CudaCompile Include="src\CUDA\progressive.cu" />
     <CudaCompile Include="src\CUDA\reinhard.cu" />
   </ItemGroup>
   <ItemGroup>
@@ -158,10 +159,11 @@
     <ClInclude Include="src\installers.h" />
     <ClInclude Include="src\Mie.h" />
     <ClInclude Include="src\CUDA\rayData.cuh" />
-    <ClInclude Include="src\Model\Disney\Predictor.h" />
     <ClInclude Include="src\Scene\BakedDescriptorCollector.h" />
-    <ClInclude Include="src\Scene\Camera.h" />
-    <ClInclude Include="src\Scene\CloudPTRenderer.h" />
+    <ClInclude Include="src\Scene\Cameras\ARenderer.h" />
+    <ClInclude Include="src\Scene\Cameras\Camera.h" />
+    <ClInclude Include="src\Scene\Cameras\DisneyRenderer.h" />
+    <ClInclude Include="src\Scene\CloudMaterial.h" />
     <ClInclude Include="src\Scene\DisneyDescriptorCollector.h" />
     <ClInclude Include="src\Scene\RadianceCollector.h" />
     <ClInclude Include="src\Scene\Scene.h" />

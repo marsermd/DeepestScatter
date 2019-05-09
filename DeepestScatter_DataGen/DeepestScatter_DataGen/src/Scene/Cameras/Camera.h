@@ -7,10 +7,9 @@
 
 #include "Util/Resources.h"
 #include "Util/Arcball.h"
-#include "SceneItem.h"
 
-//todo: froward-declare in cpp
-#include <torch/script.h>
+#include "Scene/SceneItem.h"
+#include "ARenderer.h"
 
 namespace DeepestScatter
 {
@@ -28,12 +27,19 @@ namespace DeepestScatter
             uint32_t height;
         };
 
-        Camera(std::shared_ptr<Settings> settings, std::shared_ptr<optix::Context> context, std::shared_ptr<Resources> resources) :
+        Camera(
+            std::shared_ptr<Settings> settings, 
+            std::shared_ptr<optix::Context> context,
+            std::shared_ptr<Resources> resources,
+            std::shared_ptr<ARenderer> renderer) :
             width(settings->width), height(settings->height),
             context(*context.get()),
-            resources(std::move(resources))
+            resources(std::move(resources)),
+            renderer(std::move(renderer))
         {
         }
+
+        virtual ~Camera() noexcept = default;
 
         void init() override;
         void update() override;
@@ -52,33 +58,28 @@ namespace DeepestScatter
         void setupVariables(optix::Program& program);
 
         void render();
-        void renderRect(optix::uint2 start);
 
         void updatePosition();
-
-        std::shared_ptr<torch::jit::script::Module> module;
 
         uint32_t width;
         uint32_t height;
 
         optix::Context context;
         std::shared_ptr<Resources> resources;
+        std::shared_ptr<ARenderer> renderer;
 
         sutil::Arcball arcball;
 
         uint32_t subframeId = 0;
 
-        optix::float3         cameraUp;
-        optix::float3         cameraLookat;
-        optix::float3         cameraEye;
-        optix::Matrix4x4      cameraRotate;
+        optix::float3         cameraUp{};
+        optix::float3         cameraLookat{};
+        optix::float3         cameraEye{};
+        optix::Matrix4x4      cameraRotate{};
 
-        optix::Program clearRect;
         optix::Program clearScreen;
         optix::Program exception;
         optix::Program miss;
-
-        optix::Program camera;
         optix::Program updateFrameResult;
 
         float_t exposure = 1.0f;
@@ -89,10 +90,6 @@ namespace DeepestScatter
         optix::Buffer  reinhardSumLuminanceColumn;
         optix::Buffer  reinhardAverageLuminance;
 
-        std::vector<torch::jit::IValue> networkInputs;
-
-        optix::Buffer  networkInputBuffer;
-        optix::Buffer  directRadianceBuffer;
         optix::Buffer  frameResultBuffer;
         optix::Buffer  progressiveBuffer;
         optix::Buffer  varianceBuffer;

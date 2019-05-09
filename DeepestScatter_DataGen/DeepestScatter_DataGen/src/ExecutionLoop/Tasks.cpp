@@ -6,6 +6,8 @@
 #include "Scene/DisneyDescriptorCollector.h"
 #include "BakedDescriptor.pb.h"
 #include "Scene/BakedDescriptorCollector.h"
+#include "Scene/Cameras/Camera.h"
+#include "Scene/Cameras/DisneyRenderer.h"
 
 namespace DeepestScatter
 {
@@ -35,6 +37,7 @@ namespace DeepestScatter
             taskBuilder.addRegistrations(installFramework(width, height));
             taskBuilder.addRegistrations(installSceneSetup(sceneSetup, ".", Cloud::Rendering::Mode::SunAndSkyAllScatter, Cloud::Model::Mipmaps::On));
             taskBuilder.addRegistrations(installApp());
+            taskBuilder.registerType<DisneyRenderer>().as<ARenderer>().singleInstance();
 
             auto container = taskBuilder.build();
 

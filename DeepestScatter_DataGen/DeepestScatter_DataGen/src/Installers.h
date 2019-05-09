@@ -6,7 +6,7 @@
 #include "SceneSetup.pb.h"
 #pragma warning (pop)
 
-#include "Scene/CloudPTRenderer.h"
+#include "Scene/CloudMaterial.h"
 
 namespace DeepestScatter
 {

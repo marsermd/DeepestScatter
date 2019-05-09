@@ -7,11 +7,12 @@
 #include <queue>
 
 #include "Hypodermic/Hypodermic.h"
-#include "Scene/Scene.h"
-#include "Scene/Camera.h"
 
 namespace DeepestScatter
 {
+    class Camera;
+    class Scene;
+
     class GuiExecutionLoop : public ExecutionLoop
     {
     public:

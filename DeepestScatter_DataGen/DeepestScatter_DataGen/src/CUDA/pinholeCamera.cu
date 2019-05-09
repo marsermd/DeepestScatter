@@ -6,8 +6,7 @@
 using namespace optix;
 
 rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
-rtBuffer<float4, 2>   progressiveBuffer;
-rtBuffer<float4, 2>   varianceBuffer;
+rtBuffer<float4, 2> frameResultBuffer;
 
 rtDeclareVariable(float3, eye, , );
 rtDeclareVariable(float3, U, , );
@@ -15,14 +14,13 @@ rtDeclareVariable(float3, V, , );
 rtDeclareVariable(float3, W, , );
 
 rtDeclareVariable(rtObject, objectRoot, , );
-rtDeclareVariable(float3, errorColor, , );
 
 rtDeclareVariable(float, sceneEPS, , );
 rtDeclareVariable(unsigned int, subframeId, , );
 
 RT_PROGRAM void pinholeCamera()
 {
-    size_t2 screen = progressiveBuffer.size();
+    size_t2 screen = frameResultBuffer.size();
 
     float2 d = make_float2(launchID) / make_float2(screen) * 2.f - 1.f;
 
@@ -36,25 +34,7 @@ RT_PROGRAM void pinholeCamera()
 
     rtTrace(objectRoot, ray, prd); 
 
-    float4 newResult = make_float4(prd.result, 1);
-    float newWeight = 1.0f / (float)subframeId;
-
-    float4 previousMean = progressiveBuffer[launchID];
-    float4 newMean = progressiveBuffer[launchID] + (newResult - previousMean) * newWeight;
-    progressiveBuffer[launchID] = newMean;
-
-    varianceBuffer[launchID] = varianceBuffer[launchID] + (newResult - previousMean) * (newResult - newMean);
-}
-
-RT_PROGRAM void clearScreen()
-{
-    progressiveBuffer[launchID] = make_float4(0, 0, 0, 0);
-    varianceBuffer[launchID] = make_float4(0, 0, 0, 0);
-}
-
-RT_PROGRAM void exception()
-{
-    progressiveBuffer[launchID] = make_float4(errorColor, 1);
+    frameResultBuffer[launchID] = make_float4(prd.result, 1);
 }
 
 rtDeclareVariable(Ray, ray, rtCurrentRay, );

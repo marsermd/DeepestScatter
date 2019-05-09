@@ -1,7 +1,5 @@
 #include "Camera.h"
 
-#include "optix_math.h"
-
 #pragma warning(push, 0)
 #include "Util/sutil.h"
 #pragma warning(pop)
@@ -10,26 +8,23 @@
 #include "GL/freeglut.h"
 #include "Util/BufferBind.h"
 #include "CUDA/rayData.cuh"
-#include "SceneDescription.h"
 
 namespace DeepestScatter
 {
-    static constexpr optix::uint2 RECT_SIZE{ 128, 128 };
-
     void Camera::init()
     {
-        const std::string modelPath = "../../DeepestScatter_Train/runs/1024_mipmap_correct_logeps_1e3/checkpoint.pt";
-        module = torch::jit::load(modelPath);
-        module->eval();
+        renderer->init();
 
-        const std::string programFile = "disneyCamera.cu";
+        const std::string progressiveFile = "progressive.cu";
+        updateFrameResult = resources->loadProgram(progressiveFile, "updateFrameResult");
+        clearScreen = resources->loadProgram(progressiveFile, "clearScreen");
+        exception = resources->loadProgram(progressiveFile, "exception");
+        miss = resources->loadProgram(progressiveFile, "miss");
 
-        camera = resources->loadProgram(programFile, "pinholeCamera");
-        context->setRayGenerationProgram(0, camera);
+        context->setExceptionProgram(0, exception);
+        context->setMissProgram(0, miss);
 
-        updateFrameResult = resources->loadProgram(programFile, "updateFrameResult");
-        clearRect = resources->loadProgram(programFile, "clearRect");
-        clearScreen = resources->loadProgram(programFile, "clearScreen");
+        exception["errorColor"]->setFloat(123123123.123123123f, 0, 0);
 
         cameraEye = optix::make_float3(2, -0.4f, 0);
         cameraLookat = optix::make_float3(0, 0, 0);
@@ -38,23 +33,6 @@ namespace DeepestScatter
         cameraRotate = optix::Matrix4x4::identity();
         updatePosition();
 
-        exception = resources->loadProgram(programFile, "exception");
-        context->setExceptionProgram(0, exception);
-        exception["errorColor"]->setFloat(123123123.123123123f, 0, 0);
-
-        miss = resources->loadProgram(programFile, "miss");
-        context->setMissProgram(0, miss);
-
-        auto options = torch::TensorOptions().device(torch::kCUDA, -1).requires_grad(false);
-        auto tensor = torch::zeros({ RECT_SIZE.x * RECT_SIZE.y, 10, 226 }, options);
-        networkInputs.emplace_back(tensor);
-
-        networkInputBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
-        networkInputBuffer->setElementSize(sizeof(Gpu::DisneyNetworkInput));
-        networkInputBuffer->setDevicePointer(context->getEnabledDevices()[0], tensor.data_ptr());
-
-        directRadianceBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
-        directRadianceBuffer->setElementSize(sizeof(IntersectionInfo));
 
         frameResultBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_FLOAT4, width, height);
         progressiveBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_FLOAT4, width, height);
@@ -68,10 +46,8 @@ namespace DeepestScatter
         reinhardSumLuminanceColumn = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_FLOAT, width);
         reinhardAverageLuminance = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_FLOAT, 1);
 
-        setupVariables(camera);
         setupVariables(updateFrameResult);
         setupVariables(clearScreen);
-        setupVariables(clearRect);
         setupVariables(exception);
         setupVariables(miss);
         setupVariables(reinhardFirstPass);
@@ -139,6 +115,7 @@ namespace DeepestScatter
 
         cameraRotate = optix::Matrix4x4::identity();
 
+        optix::Program camera = renderer->getCamera();
         camera["eye"]->setFloat(cameraEye);
         camera["U"]->setFloat(u);
         camera["V"]->setFloat(v);
@@ -146,11 +123,8 @@ namespace DeepestScatter
     }
 
     void Camera::setupVariables(optix::Program& program)
-    {
-        program["networkInputBuffer"]->setBuffer(networkInputBuffer);
-        program["directRadianceBuffer"]->setBuffer(directRadianceBuffer);
+    {        
         program["frameResultBuffer"]->setBuffer(frameResultBuffer);
-
         program["progressiveBuffer"]->setBuffer(progressiveBuffer);
         program["varianceBuffer"]->setBuffer(varianceBuffer);
 
@@ -169,20 +143,14 @@ namespace DeepestScatter
             context["subframeId"]->getUint(previousSubframe);
         }
 
-        //todo: more subframes
+        //todo: configurable subframe count
         for (int i = 0; i < 1; i++)
         {
             subframeId++;
             context["subframeId"]->setUint(subframeId);
             std::cout << "rendering subframe " << subframeId << std::endl;
 
-            for (uint x = 0; x < width; x+= RECT_SIZE.x)
-            {
-                for (uint y = 0; y < height; y += RECT_SIZE.y)
-                {
-                    renderRect(optix::make_uint2(x, y));
-                }
-            }
+            renderer->render(frameResultBuffer);
 
             context->setRayGenerationProgram(0, updateFrameResult);
             context->validate();
@@ -206,57 +174,6 @@ namespace DeepestScatter
         {
             BufferBind<optix::uchar4> screen(screenBuffer);
             glDrawPixels(width, height, glFormat, glDataType, static_cast<GLvoid*>(&screen[0]));
-        }
-    }
-
-    void Camera::renderRect(optix::uint2 start)
-    {
-        context["rectOrigin"]->setUint(start);
-
-        context->setRayGenerationProgram(0, camera);
-        context->validate();
-        context->launch(0, RECT_SIZE.x, RECT_SIZE.y);
-
-        {
-            BufferBind<Gpu::DisneyNetworkInput> networkInput(networkInputBuffer);
-            BufferBind<IntersectionInfo> intersectionInfo(directRadianceBuffer);
-            BufferBind<optix::float4> screen(frameResultBuffer);
-
-            std::cout << screen[0].x << std::endl;
-
-            bool hasActiveDescriptors = std::any_of(
-                intersectionInfo.getData().begin(), intersectionInfo.getData().end(), [&](const auto& x) { return x.hasScattered; });
-
-            for (int i = 0; i < intersectionInfo.getData().size(); i++)
-            {
-                hasActiveDescriptors |= intersectionInfo[i].hasScattered;
-            }
-
-            if (!hasActiveDescriptors)
-            {
-                return;
-            }
-
-            at::Tensor predicted = module->forward(networkInputs).toTensor();
-            predicted = predicted.cpu();
-            float* output = predicted.data<float>();
-
-            uint subframe;
-            context["subframeId"]->getUint(subframe);
-            std::cout << "radiance " << output[0] << std::endl;
-            uint id = 0;
-            for (uint y = start.y; y < start.y + RECT_SIZE.y; y++)
-            {
-                for (uint x = start.x; x < start.x + RECT_SIZE.x; x++)
-                {
-                    if (intersectionInfo[id].hasScattered)
-                    {
-                        screen[y * width + x] = optix::make_float4(output[id]) + optix::make_float4(intersectionInfo[id].radiance);
-                    }
-
-                    id++;
-                }
-            }
         }
     }
 
