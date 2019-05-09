@@ -16,7 +16,7 @@ class BaseDataset(data.Dataset):
     def __init__(self, lmdbDataset, mainProtocolType):
         self.lmdbDataset = lmdbDataset
         self.length = self.lmdbDataset.getCountOf(mainProtocolType)
-        self.__cache = {}
+        self.cache = {}
 
     def __len__(self):
         return self.length
@@ -24,7 +24,7 @@ class BaseDataset(data.Dataset):
     def __getitem__(self, index):
         self.__sampleId = index
         self.__sceneId = index // BATCH_SIZE
-        self.__cache = {}
+        self.cache = {}
         return self.__doGetItem__()
 
     @abstractmethod
@@ -50,9 +50,18 @@ class BaseDataset(data.Dataset):
         if id is None:
             id = self.__sampleId
 
-        if protocolType in self.__cache.keys():
-            return self.__cache[protocolType]
+        if protocolType in self.cache.keys():
+            return self.cache[protocolType]
 
         res = self.lmdbDataset.get(protocolType, id)
-        self.__cache[protocolType] = res
+        self.cache[protocolType] = res
         return res
+
+    def __getstate__(self):
+        odict = self.__dict__.copy() # copy the dict since we change it
+        del odict['cache']         # remove cache entry, since protobuf objects can't be pickled
+        return odict
+
+    def __setstate__(self, dict):
+        self.__dict__.update(dict)   # update attributes
+        self.cache = {}            # reset cache

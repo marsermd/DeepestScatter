@@ -61,10 +61,7 @@ class Trainer:
             shutil.copyfile(filename, 'runs/model_best.pth.tar')
 
     def exportModel(self, model, args):
-        if isinstance(args, torch.Tensor):
-            tracedModel = torch.jit.trace(model, args)
-        else:
-            tracedModel = torch.jit.trace(model, *args)
+        tracedModel = torch.jit.trace(model, args)
         tracedModel.save(f'runs/{type(model).__name__}.pt')
 
     @abstractmethod

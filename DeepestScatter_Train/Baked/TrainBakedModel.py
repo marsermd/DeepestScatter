@@ -26,7 +26,7 @@ class BakedTrainer(Trainer):
 
         dataloader = data.DataLoader(dataset, batch_size=1, shuffle=False)
         args, labels = next(iter(dataloader))
-        bakedDescriptor, omega, alpha, offset = [x.to(self.device) for x in args]
+        bakedDescriptor, disneyDescriptor, omega, alpha, offset = [x.to(self.device) for x in args]
 
         lightProbe = lightProbeModel(bakedDescriptor)
         lightProbe = torch.cat(
@@ -38,13 +38,13 @@ class BakedTrainer(Trainer):
             ),
             dim=1
         )
-        out = rendererModel(lightProbe)
+        out = rendererModel(lightProbe, disneyDescriptor)
 
         print(labels)
         print(out)
 
         self.exportModel(lightProbeModel, bakedDescriptor)
-        self.exportModel(rendererModel, lightProbe)
+        self.exportModel(rendererModel, (lightProbe, disneyDescriptor))
 
 
 

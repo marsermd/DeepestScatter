@@ -6,16 +6,18 @@ from ProbeRenderModel import ProbeRedererModel
 
 class BakedModel(torch.nn.Module):
     LIGHT_PROBE_DIMENSION = 200
+    LIGHT_PROBE_DIMENSION_WITH_META = LIGHT_PROBE_DIMENSION + 5
 
     def __init__(self):
         super(BakedModel, self).__init__()
 
         self.lightProbe = LightProbeModel(self.LIGHT_PROBE_DIMENSION)
-        self.renderer = ProbeRedererModel(self.LIGHT_PROBE_DIMENSION)
+        self.renderer = ProbeRedererModel(self.LIGHT_PROBE_DIMENSION_WITH_META)
 
-    def forward(self, lightProbeDescriptor, omega, alpha, offset):
+    def forward(self, lightProbeDescriptor, disneyDescriptor, omega, alpha, offset):
         """
         :param lightProbeDescriptor: hierarchical descriptor for baking the light
+        :param disneyDescriptor: hierarchical descriptor for runtime rendering
         :param omega: angle between the light and view direction
         :param alpha: angle between the view oriented box and a "forward" oriented box
         :param offset: a 3d vector, representing the offset between the lightProbe and the given point.
@@ -35,6 +37,6 @@ class BakedModel(torch.nn.Module):
             dim=1
         )
 
-        out = self.renderer(lightProbe)
+        out = self.renderer(lightProbe, disneyDescriptor)
 
         return out
