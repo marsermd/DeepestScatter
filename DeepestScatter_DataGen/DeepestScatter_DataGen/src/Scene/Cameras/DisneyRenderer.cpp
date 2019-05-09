@@ -69,19 +69,13 @@ namespace DeepestScatter
         context->launch(0, RECT_SIZE.x, RECT_SIZE.y);
 
         {
-            BufferBind<Gpu::DisneyNetworkInput> networkInput(networkInputBuffer);
             BufferBind<IntersectionInfo> intersectionInfo(directRadianceBuffer);
             BufferBind<optix::float4> screen(frameResultBuffer);
 
             std::cout << screen[0].x << std::endl;
 
-            bool hasActiveDescriptors = std::any_of(
+            const bool hasActiveDescriptors = std::any_of(
                 intersectionInfo.getData().begin(), intersectionInfo.getData().end(), [&](const auto& x) { return x.hasScattered; });
-
-            for (int i = 0; i < intersectionInfo.getData().size(); i++)
-            {
-                hasActiveDescriptors |= intersectionInfo[i].hasScattered;
-            }
 
             if (!hasActiveDescriptors)
             {
