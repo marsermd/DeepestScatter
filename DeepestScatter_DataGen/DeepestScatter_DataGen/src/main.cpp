@@ -60,9 +60,9 @@ int main(int argc, char* argv[])
         {
             GuiExecutionLoop loop(argc, argv);
 
-            loop.run(Tasks::collect<Persistance::BakedDescriptor>(databasePath, cloudRoot, Tasks::CollectMode::Continue));
+            //loop.run(Tasks::collect<Persistance::BakedDescriptor>(databasePath, cloudRoot, Tasks::CollectMode::Continue));
             
-            //loop.run(Tasks::renderCloud(cloudPath, 3000));
+            loop.run(Tasks::renderCloud(cloudPath, 3000));
         }
         catch (const std::exception& e)
         {

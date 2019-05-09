@@ -4,7 +4,7 @@ class DisneyBlock(torch.nn.Module):
     def __init__(self, oD, zD, outD):
         """
         :param oD: Dimension of output of the previous block
-        :param zD: Dimension of one layer of hierarchical descriptor concatenated with an angle between light and view directions
+        :param zD: Dimension of one layer of hierarchical descriptor
         :param outD: Dimension of ouput of current block
         """
         super(DisneyBlock, self).__init__()
@@ -17,7 +17,7 @@ class DisneyBlock(torch.nn.Module):
     def forward(self, o, z):
         """
         :param o: output of the previous block
-        :param z: one layer of hierarchical descriptor concatenated with an angle between light and view directions
+        :param z: one layer of hierarchical descriptor
         :param out: ouput of current block
         """
         out = torch.cat((o, z), dim=1)

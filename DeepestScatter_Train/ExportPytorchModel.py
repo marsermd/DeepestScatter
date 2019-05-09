@@ -2,7 +2,6 @@ import onnx
 from caffe2.python import workspace
 from caffe2.python.onnx.backend import Caffe2Backend
 from torch.utils import data
-import numpy as np
 import glob
 import os
 

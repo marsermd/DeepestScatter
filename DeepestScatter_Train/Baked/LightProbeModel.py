@@ -2,28 +2,31 @@ import torch
 
 from DisneyBlock import DisneyBlock
 
-class DisneyModel(torch.nn.Module):
+
+class LightProbeModel(torch.nn.Module):
     BLOCK_DIMENSION = 200
     BLOCK_COUNT = 10
     DESCRIPTOR_LAYER_DIMENSION = 5 * 5 * 9
-    DESCRIPTOR_LAYER_WITH_ANGLE_DIMENSION = DESCRIPTOR_LAYER_DIMENSION + 1
 
-    FULLY_CONNECTED_COUNT = 3
+    def __init__(self, outputDimenstion):
+        """
+        :param outputDimenstion: length of 1d vector, which will be representing the light probe
+        """
+        super(LightProbeModel, self).__init__()
 
-    def __init__(self):
-        super(DisneyModel, self).__init__()
+        self.outputDimenstion = outputDimenstion
+
         self.blocks = self.__createBlocks()
         self.fullyConnected = self.__createFullyConnected()
 
     def forward(self, zLayers):
         """
-        :param zLayers: hierarchical descriptor as a 2D tensor, with 1D layers,
-         with an angle between light and view direction appended to each layer.
-        :return estimated radiance, given that light has radiance of 1e6
+        :param zLayers: hierarchical descriptor as a 2D tensor, with 1D layers
+        :return representation of the light for this descriptor. I.e. a lightprobe.
         """
 
         assert(zLayers.size()[1] == self.BLOCK_COUNT)
-        assert(zLayers.size()[2] == self.DESCRIPTOR_LAYER_WITH_ANGLE_DIMENSION)
+        assert(zLayers.size()[2] == self.DESCRIPTOR_LAYER_DIMENSION)
 
         out = self.__blocksForward(zLayers)
         out = self.fullyConnected(out)
@@ -46,7 +49,7 @@ class DisneyModel(torch.nn.Module):
     def __createBlock(self):
         return DisneyBlock(
             self.BLOCK_DIMENSION,
-            self.DESCRIPTOR_LAYER_WITH_ANGLE_DIMENSION,
+            self.DESCRIPTOR_LAYER_DIMENSION,
             self.BLOCK_DIMENSION
         )
 
@@ -56,6 +59,6 @@ class DisneyModel(torch.nn.Module):
             torch.nn.ReLU(),
             torch.nn.Linear(self.BLOCK_DIMENSION, self.BLOCK_DIMENSION),
             torch.nn.ReLU(),
-            torch.nn.Linear(self.BLOCK_DIMENSION, 1),
-            torch.nn.LeakyReLU()
+            torch.nn.Linear(self.BLOCK_DIMENSION, self.outputDimenstion),
+            torch.nn.ReLU()
         )
