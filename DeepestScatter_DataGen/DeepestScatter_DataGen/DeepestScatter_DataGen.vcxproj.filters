@@ -90,6 +90,9 @@
     <ClCompile Include="src\Scene\Cameras\DisneyRenderer.cpp">
       <Filter>src\Scene\Cameras</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\Cameras\BakedRenderer.cpp">
+      <Filter>src\Scene\Cameras</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\CUDA\inScatter.cu">
@@ -126,6 +129,15 @@
       <Filter>src\CUDA</Filter>
     </CudaCompile>
     <CudaCompile Include="src\CUDA\progressive.cu">
+      <Filter>src\CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CUDA\lightProbe.cu">
+      <Filter>src\CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CUDA\bakedCamera.cu">
+      <Filter>src\CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CUDA\lightProbeMaterial.cu">
       <Filter>src\CUDA</Filter>
     </CudaCompile>
   </ItemGroup>
@@ -510,6 +522,12 @@
     </ClInclude>
     <ClInclude Include="src\Scene\Cameras\ARenderer.h">
       <Filter>src\Scene\Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Cameras\BakedRenderer.h">
+      <Filter>src\Scene\Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CUDA\LightProbe.h">
+      <Filter>src\CUDA</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

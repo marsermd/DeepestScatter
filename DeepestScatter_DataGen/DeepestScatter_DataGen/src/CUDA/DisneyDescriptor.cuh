@@ -85,7 +85,8 @@ namespace DeepestScatter
                             const float distance = distanceToBox(pos, mipVoxelSize);
 
                             // If we are out of bbox's bounds, we have to linearly interpolate to 0
-                            density = lerp(density, 0, distance / mipVoxelSize);
+                            float t = saturate(distance / mipVoxelSize);
+                            density = lerp(density, 0, t);
                             layer.density[sampleId] = make_uchar1(density * 255.0f).x;
                             sampleId++;
                         }

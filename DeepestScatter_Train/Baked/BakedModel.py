@@ -1,7 +1,7 @@
 import torch
 
 from LightProbeModel import LightProbeModel
-from ProbeRenderModel import ProbeRedererModel
+from ProbeRenderModel import ProbeRendererModel
 
 
 class BakedModel(torch.nn.Module):
@@ -12,7 +12,7 @@ class BakedModel(torch.nn.Module):
         super(BakedModel, self).__init__()
 
         self.lightProbe = LightProbeModel(self.LIGHT_PROBE_DIMENSION)
-        self.renderer = ProbeRedererModel(self.LIGHT_PROBE_DIMENSION_WITH_META)
+        self.renderer = ProbeRendererModel(self.LIGHT_PROBE_DIMENSION_WITH_META)
 
     def forward(self, lightProbeDescriptor, disneyDescriptor, omega, alpha, offset):
         """
@@ -37,6 +37,6 @@ class BakedModel(torch.nn.Module):
             dim=1
         )
 
-        out = self.renderer(lightProbe, disneyDescriptor)
+        out = self.renderer(lightProbe)
 
         return out

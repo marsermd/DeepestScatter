@@ -50,9 +50,9 @@ namespace DeepestScatter
         size_t width, height;
         frameResultBuffer->getSize(width, height);
 
-        for (size_t x = 0; x < width; x += RECT_SIZE.x)
+        for (uint32_t x = 0; x < width; x += RECT_SIZE.x)
         {
-            for (size_t y = 0; y < height; y += RECT_SIZE.y)
+            for (uint32_t y = 0; y < height; y += RECT_SIZE.y)
             {
                 renderRect(optix::make_uint2(x, y), frameResultBuffer);
             }

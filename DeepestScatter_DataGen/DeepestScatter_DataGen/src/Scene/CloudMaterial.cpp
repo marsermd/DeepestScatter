@@ -32,6 +32,9 @@ namespace DeepestScatter
         material->setClosestHitProgram(
             DisneyDescriptorRayData::rayId,
             resources->loadProgram("disneyDescriptorMaterial.cu", "sampleDisneyDescriptor"));
+        material->setClosestHitProgram(
+            LightProbeRayData::rayId,
+            resources->loadProgram("lightProbeMaterial.cu", "sampleLightProbe"));
 
         geometryInstance = context->createGeometryInstance(geometry, &material, &material + 1);
         geometryGroup = context->createGeometryGroup();

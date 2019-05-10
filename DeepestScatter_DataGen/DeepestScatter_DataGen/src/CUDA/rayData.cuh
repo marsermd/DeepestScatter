@@ -2,6 +2,7 @@
 
 #include <optixu/optixu_math_namespace.h>
 #include "DisneyDescriptor.h"
+#include "LightProbe.h"
 
 #define DECLARE_RAY_ID(id) static const optix::uint rayId = id;
 
@@ -32,8 +33,16 @@ struct IntersectionInfo
 
 struct DisneyDescriptorRayData
 {
-    DECLARE_RAY_ID(1u)
+    DECLARE_RAY_ID(2u)
 
     DeepestScatter::Gpu::DisneyDescriptor descriptor;
+    IntersectionInfo intersectionInfo;
+};
+
+struct LightProbeRayData
+{
+    DECLARE_RAY_ID(3u)
+
+    DeepestScatter::Gpu::LightProbeRendererInput lightProbe;
     IntersectionInfo intersectionInfo;
 };

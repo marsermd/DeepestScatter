@@ -8,13 +8,14 @@
 #include "Scene/BakedDescriptorCollector.h"
 #include "Scene/Cameras/Camera.h"
 #include "Scene/Cameras/DisneyRenderer.h"
+#include "Scene/Cameras/BakedRenderer.h"
 
 namespace DeepestScatter
 {
     namespace di = Hypodermic;
 
-    uint32_t width = 640u;
-    uint32_t height = 512u;
+    uint32_t width = 1024u;
+    uint32_t height = 768u;
 
     std::queue<GuiExecutionLoop::LazyTask> Tasks::renderCloud(const std::string &cloudPath, float sizeM)
     {
@@ -37,7 +38,7 @@ namespace DeepestScatter
             taskBuilder.addRegistrations(installFramework(width, height));
             taskBuilder.addRegistrations(installSceneSetup(sceneSetup, ".", Cloud::Rendering::Mode::SunAndSkyAllScatter, Cloud::Model::Mipmaps::On));
             taskBuilder.addRegistrations(installApp());
-            taskBuilder.registerType<DisneyRenderer>().as<ARenderer>().singleInstance();
+            taskBuilder.registerType<BakedRenderer>().as<ARenderer>().singleInstance();
 
             auto container = taskBuilder.build();
 

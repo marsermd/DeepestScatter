@@ -19,8 +19,6 @@ using namespace DeepestScatter;
 
 void printUsageAndExit(const char* argv0);
 
-
-
 int main(int argc, char* argv[])
 {
     di::Behavior::configureRuntimeRegistration(false);
@@ -58,7 +56,7 @@ int main(int argc, char* argv[])
 
             //loop.run(Tasks::collect<Persistance::BakedDescriptor>(databasePath, cloudRoot, Tasks::CollectMode::Continue));
             
-            loop.run(Tasks::renderCloud(cloudPath, 3000));
+            loop.run(Tasks::renderCloud(cloudPath, 7000));
         }
         catch (const std::exception& e)
         {

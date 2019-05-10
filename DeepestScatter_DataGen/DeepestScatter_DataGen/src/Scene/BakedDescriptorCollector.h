@@ -21,13 +21,11 @@ namespace DeepestScatter
             std::shared_ptr<Resources> resources,
             std::shared_ptr<Dataset> dataset,
             std::shared_ptr<BatchSettings> settings,
-            std::shared_ptr<VDBCloud> cloud,
-            std::shared_ptr<Cloud::Model> cloudModel) :
+            std::shared_ptr<VDBCloud> cloud) :
             context(*context.get()),
             resources(std::move(resources)),
             dataset(std::move(dataset)),
-            settings(*settings.get()),
-            cloud(cloud)
+            settings(*settings.get())
         {
             cloud->disableRendering();
         }
@@ -44,7 +42,6 @@ namespace DeepestScatter
         optix::Context context;
         std::shared_ptr<Resources> resources;
         std::shared_ptr<Dataset> dataset;
-        std::shared_ptr<VDBCloud> cloud;
 
         BatchSettings settings;
 

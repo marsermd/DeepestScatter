@@ -26,7 +26,7 @@ namespace DeepestScatter
 
         exception["errorColor"]->setFloat(123123123.123123123f, 0, 0);
 
-        cameraEye = optix::make_float3(2, -0.4f, 0);
+        cameraEye = optix::make_float3(2.5f, -0.4f, 0);
         cameraLookat = optix::make_float3(0, 0, 0);
         cameraUp = optix::make_float3(0, 1, 0);
 

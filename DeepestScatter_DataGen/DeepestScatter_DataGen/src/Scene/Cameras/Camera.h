@@ -1,7 +1,5 @@
 #pragma once
 
-#include <optixu/optixpp_namespace.h>
-
 #include <memory>
 #include <utility>
 

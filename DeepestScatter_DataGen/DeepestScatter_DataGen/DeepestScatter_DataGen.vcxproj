@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <CudaCompile Include="src\CUDA\bakedCamera.cu" />
     <CudaCompile Include="src\CUDA\disneyCamera.cu">
       <FileType>Document</FileType>
     </CudaCompile>
@@ -20,6 +21,7 @@
     <ClCompile Include="src\Mie.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Scene\BakedDescriptorCollector.cpp" />
+    <ClCompile Include="src\Scene\Cameras\BakedRenderer.cpp" />
     <ClCompile Include="src\Scene\Cameras\Camera.cpp" />
     <ClCompile Include="src\Scene\Cameras\DisneyRenderer.cpp" />
     <ClCompile Include="src\Scene\CloudMaterial.cpp" />
@@ -41,6 +43,8 @@
     <CudaCompile Include="src\CUDA\cloudFirstScatterMaterial.cu" />
     <CudaCompile Include="src\CUDA\cloudRadianceMaterials.cu" />
     <CudaCompile Include="src\CUDA\disneyDescriptorCollector.cu" />
+    <CudaCompile Include="src\CUDA\lightProbe.cu" />
+    <CudaCompile Include="src\CUDA\lightProbeMaterial.cu" />
     <CudaCompile Include="src\CUDA\pointGeneratorCamera.cu" />
     <CudaCompile Include="src\CUDA\inScatter.cu" />
     <CudaCompile Include="src\CUDA\pinholeCamera.cu" />
@@ -54,6 +58,7 @@
     <CudaCompile Include="src\CUDA\disneyDescriptorMaterial.cu">
       <FileType>Document</FileType>
     </CudaCompile>
+    <ClInclude Include="src\CUDA\LightProbe.h" />
     <ClInclude Include="src\CUDA\optixExtraMath.cuh" />
     <CudaCompile Include="src\CUDA\pointEmissionCamera.cu">
       <FileType>Document</FileType>
@@ -161,6 +166,7 @@
     <ClInclude Include="src\CUDA\rayData.cuh" />
     <ClInclude Include="src\Scene\BakedDescriptorCollector.h" />
     <ClInclude Include="src\Scene\Cameras\ARenderer.h" />
+    <ClInclude Include="src\Scene\Cameras\BakedRenderer.h" />
     <ClInclude Include="src\Scene\Cameras\Camera.h" />
     <ClInclude Include="src\Scene\Cameras\DisneyRenderer.h" />
     <ClInclude Include="src\Scene\CloudMaterial.h" />

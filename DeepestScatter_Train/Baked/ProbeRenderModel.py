@@ -3,7 +3,7 @@ import torch
 from DisneyBlock import DisneyBlock
 
 
-class ProbeRedererModel(torch.nn.Module):
+class ProbeRendererModel(torch.nn.Module):
     DESCRIPTOR_LAYER_DIMENSION = 5 * 5 * 9
     DESCRIPTOR_LAYER_WITH_META_DIMENSION = DESCRIPTOR_LAYER_DIMENSION + 5
 
@@ -11,24 +11,24 @@ class ProbeRedererModel(torch.nn.Module):
         """
         :param lightProbeDimension: length of 1d vector, which will be representing the light probe
         """
-        super(ProbeRedererModel, self).__init__()
+        super(ProbeRendererModel, self).__init__()
 
         self.inputDimension = lightProbeDimension
 
-        self.blocks = self.__createBlocks()
+        #self.blocks = self.__createBlocks()
         self.fullyConnected = self.__createFullyConnected()
 
-    def forward(self, lightProbe, disneyDescriptor):
+    def forward(self, lightProbe):
         """
         :param lightProbe: light probe with an two angles and one offset vector
         :return: ouput of current block
         """
 
         out = lightProbe
-        for i, block in enumerate(self.blocks):
-            out = block(out, disneyDescriptor.narrow(1, i, 1).squeeze(1))
+        # for i, block in enumerate(self.blocks):
+        #         #     out = block(out, disneyDescriptor.narrow(1, i, 1).squeeze(1))
 
-        return self.fullyConnected(lightProbe)
+        return self.fullyConnected(out)
 
     def __createBlocks(self):
         return torch.nn.ModuleList([

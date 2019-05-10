@@ -70,7 +70,7 @@ class BakedDataset(BaseDataset):
             projectionOn(offset, x2),
             projectionOn(offset, y2),
             projectionOn(offset, z2),
-        ])
+        ]) * scene.cloud_size_m
 
         return torch.tensor(alpha, dtype=torch.float32), torch.tensor(offset, dtype=torch.float32)
 
