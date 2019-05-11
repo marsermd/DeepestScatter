@@ -20,6 +20,6 @@ RT_PROGRAM void collect()
     const float3 direction = make_float3(0, 0, 1);
 
     DisneyDescriptor descriptor;
-    setupDisneyDescriptor(descriptor, origin, direction);
+    setupHierarchicalDescriptor<DisneyDescriptor, uint8_t>(descriptor, origin, direction);
     descriptors[launchID].fill(descriptor);
 }

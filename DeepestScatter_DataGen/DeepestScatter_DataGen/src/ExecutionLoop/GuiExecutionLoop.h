@@ -35,8 +35,8 @@ namespace DeepestScatter
 
         static GuiExecutionLoop* instance;
 
-        uint32_t width = 640u;
-        uint32_t height = 480u;
+        uint32_t width = 1024u;
+        uint32_t height = 768u;
 
         // Mouse state
         optix::int2    mousePrevPos = optix::make_int2(0, 0);

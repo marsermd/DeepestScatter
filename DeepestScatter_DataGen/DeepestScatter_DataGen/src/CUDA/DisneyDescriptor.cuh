@@ -54,7 +54,22 @@ namespace DeepestScatter
             return length(dist);
         }
 
-        __device__ __inline__ void setupDisneyDescriptor(DisneyDescriptor& descriptor, float3 worldPos, float3 viewDirection)
+        template<typename T>
+        T TFromFloat(float f);
+
+        template<>
+        __device__ __inline__ float TFromFloat<float>(float f)
+        {
+            return f;
+        }
+        template<>
+        __device__ __inline__ uint8_t TFromFloat<uint8_t>(float f)
+        {
+            return f * 255.0f;
+        }
+
+        template<typename TDescriptor, typename TElement>
+        __device__ __inline__ void setupHierarchicalDescriptor(TDescriptor& descriptor, float3 worldPos, float3 viewDirection)
         {
             const float3 eZ = normalize(lightDirection);
             const float3 eX = normalize(cross(lightDirection, viewDirection));
@@ -67,10 +82,8 @@ namespace DeepestScatter
             // -1 because there are two sample points between 0 and 1.
             float mipmapLevel = -log2f(voxelSizeInTermsOfFreePath) - 1;
 
-            for (size_t layerId = 0; layerId < DisneyDescriptor::LAYERS_CNT; layerId++)
+            for (size_t layerId = 0; layerId < TDescriptor::LAYERS_CNT; layerId++)
             {
-                DisneyDescriptor::Layer& layer = descriptor.layers[layerId];
-
                 uint32_t sampleId = 0;
                 const float mipVoxelSize = powf(2, mipmapLevel) * voxelSizeInMeters / cloudSizeInMeters;
                 for (int z = -2; z <= 6; z++)
@@ -87,7 +100,7 @@ namespace DeepestScatter
                             // If we are out of bbox's bounds, we have to linearly interpolate to 0
                             float t = saturate(distance / mipVoxelSize);
                             density = lerp(density, 0, t);
-                            layer.density[sampleId] = make_uchar1(density * 255.0f).x;
+                            descriptor.layers[layerId].density[sampleId] = TFromFloat<TElement>(density);
                             sampleId++;
                         }
                     }

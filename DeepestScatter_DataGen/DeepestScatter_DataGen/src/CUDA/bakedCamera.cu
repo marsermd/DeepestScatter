@@ -9,7 +9,8 @@ using namespace optix;
 using namespace DeepestScatter::Gpu;
 
 rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
-rtBuffer<LightProbeRendererInput, 2> rendererInputBuffer;
+rtBuffer<LightProbeRendererInput, 2> lightProbeInputBuffer;
+rtBuffer<BakedRendererDescriptor, 2> descriptorInputBuffer;
 rtBuffer<IntersectionInfo, 2> directRadianceBuffer;
 rtBuffer<float4, 2> frameResultBuffer;
 
@@ -41,20 +42,12 @@ RT_PROGRAM void pinholeCamera()
     float3 direction = normalize(d.x*U + d.y * V + W);
 
     LightProbeRayData prd;
-    prd.intersectionInfo.hasScattered = false;
-    prd.intersectionInfo.radiance = make_float3(0);
+    prd.intersectionInfo = &directRadianceBuffer[launchID];
+    prd.lightProbe = &lightProbeInputBuffer[launchID];
+    prd.descriptor = &descriptorInputBuffer[launchID];
+    prd.intersectionInfo->hasScattered = false;
+    prd.intersectionInfo->radiance = make_float3(0);
 
     optix::Ray ray(origin, direction, prd.rayId, sceneEPS);
     rtTrace(objectRoot, ray, prd);
-
-    rendererInputBuffer[launchID] = prd.lightProbe;
-    directRadianceBuffer[launchID] = prd.intersectionInfo;
-}
-
-RT_PROGRAM void clearRect()
-{
-    //todo: proably uncomment these. Right now it jut makes performance worse.
-    //networkInputBuffer[launchID].clear();
-    //directRadianceBuffer[launchID].radiance = make_float3(0);
-    //directRadianceBuffer[launchID].hasScattered = false;
 }

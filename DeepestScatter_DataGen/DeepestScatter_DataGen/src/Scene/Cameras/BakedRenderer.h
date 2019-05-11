@@ -65,7 +65,8 @@ namespace DeepestScatter
 
         optix::Buffer bakedLightProbes;
 
-        optix::Buffer rendererInputBuffer;
+        optix::Buffer lightProbeInputBuffer;
+        optix::Buffer descriptorInputBuffer;
         optix::Buffer directRadianceBuffer;
     };
 }

@@ -39,16 +39,18 @@ RT_PROGRAM void pinholeCamera()
     float3 direction = normalize(d.x*U + d.y * V + W);
 
     DisneyDescriptorRayData prd;
-    prd.descriptor = DeepestScatter::Gpu::DisneyDescriptor();
+    prd.descriptor = &networkInputBuffer[launchID];
     prd.intersectionInfo.hasScattered = false;
     prd.intersectionInfo.radiance = make_float3(0);
 
     optix::Ray ray(origin, direction, prd.rayId, sceneEPS);
     rtTrace(objectRoot, ray, prd);
 
-    float angle = acos(dot(lightDirection, direction));
-
-    networkInputBuffer[launchID].fill(prd.descriptor, angle);
+    const float angle = acos(dot(lightDirection, direction));
+    for (int i = 0; i < DeepestScatter::Gpu::DisneyDescriptor::LAYERS_CNT; i++)
+    {
+        prd.descriptor->layers[i].angle = angle;
+    }
     directRadianceBuffer[launchID] = prd.intersectionInfo;
 }
 

@@ -5,6 +5,7 @@
 #include "rayData.cuh"
 #include <optix_device.h>
 #include "LightProbe.h"
+#include "DisneyDescriptor.cuh"
 
 using namespace DeepestScatter::Gpu;
 
@@ -12,7 +13,6 @@ rtDeclareVariable(LightProbeRayData, rayData, rtPayload, );
 rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
 
 rtBuffer<LightProbe, 3> bakedLightProbes;
-rtDeclareVariable(float, cloudSizeInMeters, , );
 
 static __host__ __device__ __inline__ uint getId(float x, float step)
 {
@@ -47,12 +47,12 @@ RT_PROGRAM void sampleLightProbe()
 
     if (!scatter.hasScattered || !isInBox(scatter.scatterPos))
     {
-        rayData.intersectionInfo.hasScattered = false;
+        rayData.intersectionInfo->hasScattered = false;
     }
     else
     {
-        rayData.intersectionInfo.hasScattered = true;
-        rayData.intersectionInfo.radiance = getInScattering(scatter, direction, false);
+        rayData.intersectionInfo->hasScattered = true;
+        rayData.intersectionInfo->radiance = getInScattering(scatter, direction, false);
 
         const float3 eZ1 = normalize(lightDirection);
         const float3 eX1 = normalize(cross(lightDirection, direction));
@@ -61,11 +61,11 @@ RT_PROGRAM void sampleLightProbe()
         const float3 eZ2 = normalize(lightDirection);
         const float3 eX2 = normalize(cross(lightDirection, make_float3(0, 0, 1)));
         const float3 eY2 = cross(eX2, eZ2);
-        rayData.lightProbe.omega = acos(dot(lightDirection, direction));
-        rayData.lightProbe.alpha = acos(dot(eY1, eY2));
+        rayData.lightProbe->omega = acos(dot(lightDirection, direction));
+        rayData.lightProbe->alpha = acos(dot(eY1, eY2));
 
         uint3 lightProbeId = getId(scatter.scatterPos, 75);
-        rayData.lightProbe.lightProbe = bakedLightProbes[lightProbeId];
+        rayData.lightProbe->lightProbe = bakedLightProbes[lightProbeId];
 
         float3 lightProbePos = make_float3(
             lightProbeId.x / 75.f,
@@ -75,11 +75,19 @@ RT_PROGRAM void sampleLightProbe()
 
         float3 offset = (scatter.scatterPos - lightProbePos) * cloudSizeInMeters;
 
-        rayData.lightProbe.offset = make_float3(
+        rayData.lightProbe->offset = make_float3(
             dot(offset, eX2),
             dot(offset, eY2),
             dot(offset, eZ2)
         );
+
+        setupHierarchicalDescriptor<BakedRendererDescriptor::Descriptor, float> (rayData.descriptor->descriptor, scatter.scatterPos - 0.5f * bboxSize, direction);
+        for (size_t layer = 0; layer < rayData.descriptor->descriptor.LAYERS_CNT; layer++)
+        {
+            rayData.descriptor->descriptor.layers[layer].meta.alpha = rayData.lightProbe->alpha;
+            rayData.descriptor->descriptor.layers[layer].meta.omega = rayData.lightProbe->omega;
+            rayData.descriptor->descriptor.layers[layer].meta.offset = rayData.lightProbe->offset;
+        }
     }
 
 }

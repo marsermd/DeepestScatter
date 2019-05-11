@@ -7,7 +7,7 @@
 namespace DeepestScatter
 {
     static constexpr optix::uint2 RECT_SIZE{ 128, 128 };
-    static const std::string modelDirectory = "../../DeepestScatter_Train/runs/1024_naive_wrongOffset_long/";
+    static const std::string modelDirectory = "../../DeepestScatter_Train/runs/May11_16-14-18_DESKTOP-D5QPR6V/";
 
     optix::Program BakedRenderer::getCamera()
     {
@@ -16,22 +16,31 @@ namespace DeepestScatter
 
     void BakedRenderer::init()
     {
+        context->setPrintEnabled(true);
+
         const std::string renderModelPath = modelDirectory + "ProbeRendererModel.pt";
         renderModel = torch::jit::load(renderModelPath);
         renderModel->eval();
-
-        bakedLightProbes = Baker(context, resources).bake();
 
         const std::string cameraFile = "bakedCamera.cu";
         camera = resources->loadProgram(cameraFile, "pinholeCamera");
 
         const auto options = torch::TensorOptions().device(torch::kCUDA, -1).requires_grad(false);
-        auto tensor = torch::zeros({ RECT_SIZE.x * RECT_SIZE.y, 205 }, options);
-        rendererInputs.emplace_back(tensor);
+        auto lightProbeInput = torch::zeros({ RECT_SIZE.x * RECT_SIZE.y, 205 }, options);
+        rendererInputs.emplace_back(lightProbeInput);
 
-        rendererInputBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
-        rendererInputBuffer->setElementSize(sizeof(Gpu::LightProbeRendererInput));
-        rendererInputBuffer->setDevicePointer(context->getEnabledDevices()[0], tensor.data_ptr());
+        lightProbeInputBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
+        lightProbeInputBuffer->setElementSize(sizeof(Gpu::LightProbeRendererInput));
+        lightProbeInputBuffer->setDevicePointer(context->getEnabledDevices()[0], lightProbeInput.data_ptr());
+
+        auto descriptorInput = torch::zeros({ RECT_SIZE.x * RECT_SIZE.y, 2, 230 }, options);
+        rendererInputs.emplace_back(descriptorInput);
+        descriptorInputBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
+        descriptorInputBuffer->setElementSize(sizeof(Gpu::BakedRendererDescriptor));
+        descriptorInputBuffer->setDevicePointer(context->getEnabledDevices()[0], descriptorInput.data_ptr());
+
+        bakedLightProbes = Baker(context, resources).bake();
+        context["bakedLightProbes"]->setBuffer(bakedLightProbes);
 
         directRadianceBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
         directRadianceBuffer->setElementSize(sizeof(IntersectionInfo));
@@ -51,8 +60,6 @@ namespace DeepestScatter
 
         result = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, 76, 76, 76);
         result->setElementSize(sizeof(Gpu::LightProbe));
-        //todo: clean up
-        context["bakedLightProbes"]->setBuffer(result);
 
         const auto options = torch::TensorOptions().device(torch::kCUDA, -1).requires_grad(false);
         auto tensor = torch::zeros({ 76 * 76, 10, 225 }, options);
@@ -101,7 +108,8 @@ namespace DeepestScatter
 
     void BakedRenderer::setupVariables(optix::Program& program)
     {
-        program["rendererInputBuffer"]->setBuffer(rendererInputBuffer);
+        program["lightProbeInputBuffer"]->setBuffer(lightProbeInputBuffer);
+        program["descriptorInputBuffer"]->setBuffer(descriptorInputBuffer);
         program["directRadianceBuffer"]->setBuffer(directRadianceBuffer);
     }
 
@@ -151,6 +159,7 @@ namespace DeepestScatter
 
             size_t width, height;
             frameResultBuffer->getSize(width, height);
+            std::cout << output[0] << std::endl;
 
             size_t rectPixelId = 0;
             for (size_t y = start.y; y < start.y + RECT_SIZE.y; y++)

@@ -6,6 +6,8 @@
 #include <optix_device.h>
 #include "DisneyDescriptor.cuh"
 
+using namespace DeepestScatter::Gpu;
+
 rtDeclareVariable(DisneyDescriptorRayData, resultDescriptor, rtPayload, );
 rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
 
@@ -34,7 +36,8 @@ RT_PROGRAM void sampleDisneyDescriptor()
     {
         resultDescriptor.intersectionInfo.hasScattered = true;
         resultDescriptor.intersectionInfo.radiance = getInScattering(scatter, direction, false);
-        setupDisneyDescriptor(resultDescriptor.descriptor, scatter.scatterPos - 0.5f * bboxSize, direction);
+        setupHierarchicalDescriptor<DisneyNetworkInput, float>(
+            *resultDescriptor.descriptor, scatter.scatterPos - 0.5f * bboxSize, direction);
     }
 
 }

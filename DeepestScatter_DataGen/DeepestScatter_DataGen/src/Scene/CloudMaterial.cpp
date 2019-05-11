@@ -36,6 +36,10 @@ namespace DeepestScatter
             LightProbeRayData::rayId,
             resources->loadProgram("lightProbeMaterial.cu", "sampleLightProbe"));
 
+        optix::Buffer bakedLightProbesPlaceHolder = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_USER, 1, 1, 1);
+        bakedLightProbesPlaceHolder->setElementSize(sizeof(Gpu::LightProbe));
+        context["bakedLightProbes"]->setBuffer(bakedLightProbesPlaceHolder);
+
         geometryInstance = context->createGeometryInstance(geometry, &material, &material + 1);
         geometryGroup = context->createGeometryGroup();
         geometryGroup->addChild(geometryInstance);

@@ -25,7 +25,7 @@ RT_PROGRAM void collect()
     const float3 direction = directionBuffer[launchID];
 
     DisneyDescriptor& descriptor = descriptors[launchID];
-    setupDisneyDescriptor(descriptor, origin, direction);
+    setupHierarchicalDescriptor<DisneyDescriptor, uint8_t>(descriptor, origin, direction);
 }
 
 RT_PROGRAM void clear()
