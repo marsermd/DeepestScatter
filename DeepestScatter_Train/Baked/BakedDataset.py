@@ -19,9 +19,9 @@ class BakedDataset(BaseDataset):
         disneyDescriptor = torch.cat(
             (
                 self.__getDisneyDescriptor(),
-                omega.repeat(2, 1),
-                alpha.repeat(2, 1),
-                offset.repeat(2, 1)
+                omega.repeat(9, 1),
+                alpha.repeat(9, 1),
+                offset.repeat(9, 1)
             ), dim=1)
 
         return (bakedDescriptor, disneyDescriptor, omega, alpha, offset), light
@@ -42,7 +42,7 @@ class BakedDataset(BaseDataset):
         # Grid values are stored as bytes. Let's convert them to 0-1 range
         descriptor = torch.tensor(list(descriptor.grid), dtype=torch.float32) / 256
         # Shape the grid according to the layers
-        descriptor = descriptor.view((10, -1)).narrow(0, 0, 2)
+        descriptor = descriptor.view((10, -1)).narrow(0, 0, 9)
 
         return descriptor
 

@@ -38,13 +38,13 @@ class BakedTrainer(Trainer):
             ),
             dim=1
         )
-        out = rendererModel(lightProbe)
+        out = rendererModel(lightProbe, disneyDescriptor)
 
         print(labels)
         print(out)
 
         self.exportModel(lightProbeModel, bakedDescriptor)
-        self.exportModel(rendererModel, lightProbe)
+        self.exportModel(rendererModel, (lightProbe, disneyDescriptor))
 
 
 

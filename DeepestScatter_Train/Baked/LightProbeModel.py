@@ -5,7 +5,7 @@ from DisneyBlock import DisneyBlock
 
 class LightProbeModel(torch.nn.Module):
     BLOCK_DIMENSION = 200
-    BLOCK_COUNT = 10
+    BLOCK_COUNT = 1
     DESCRIPTOR_LAYER_DIMENSION = 5 * 5 * 9
 
     def __init__(self, outputDimenstion):
@@ -25,7 +25,6 @@ class LightProbeModel(torch.nn.Module):
         :return representation of the light for this descriptor. I.e. a lightprobe.
         """
 
-        assert(zLayers.size()[1] == self.BLOCK_COUNT)
         assert(zLayers.size()[2] == self.DESCRIPTOR_LAYER_DIMENSION)
 
         out = self.__blocksForward(zLayers)
@@ -38,7 +37,7 @@ class LightProbeModel(torch.nn.Module):
 
         out = torch.zeros((batchSize, self.BLOCK_DIMENSION))
         for i, block in enumerate(self.blocks):
-            out = block(out, zLayers.narrow(1, i, 1).squeeze(1))
+            out = block(out, zLayers.narrow(1, self.BLOCK_COUNT - i - 1, 1).squeeze(1))
         return out
 
     def __createBlocks(self):

@@ -37,6 +37,6 @@ class BakedModel(torch.nn.Module):
             dim=1
         )
 
-        out = self.renderer(lightProbe)
+        out = self.renderer(lightProbe, disneyDescriptor)
 
         return out
