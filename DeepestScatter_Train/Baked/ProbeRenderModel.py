@@ -5,15 +5,16 @@ from DisneyBlock import DisneyBlock
 
 class ProbeRendererModel(torch.nn.Module):
     DESCRIPTOR_LAYER_DIMENSION = 5 * 5 * 9
-    DESCRIPTOR_LAYER_WITH_META_DIMENSION = DESCRIPTOR_LAYER_DIMENSION + 5
+    DESCRIPTOR_LAYER_WITH_META_DIMENSION = DESCRIPTOR_LAYER_DIMENSION + 2
 
-    def __init__(self, lightProbeDimension):
+    def __init__(self, lightProbeDimension, blockCount):
         """
         :param lightProbeDimension: length of 1d vector, which will be representing the light probe
         """
         super(ProbeRendererModel, self).__init__()
 
         self.inputDimension = lightProbeDimension
+        self.blockCount = blockCount
 
         self.blocks = self.__createBlocks()
         self.fullyConnected = self.__createFullyConnected()
@@ -32,17 +33,7 @@ class ProbeRendererModel(torch.nn.Module):
         return self.fullyConnected(torch.cat((out, lightProbe), 1))
 
     def __createBlocks(self):
-        return torch.nn.ModuleList([
-            self.__createBlock(),
-            self.__createBlock(),
-            self.__createBlock(),
-            self.__createBlock(),
-            self.__createBlock(),
-            self.__createBlock(),
-            self.__createBlock(),
-            self.__createBlock(),
-            self.__createBlock(),
-        ])
+        return torch.nn.ModuleList([self.__createBlock() for i in range(self.blockCount)])
 
     def __createBlock(self):
         return DisneyBlock(

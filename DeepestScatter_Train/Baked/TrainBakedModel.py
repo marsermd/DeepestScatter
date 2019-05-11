@@ -7,15 +7,17 @@ from Trainer import Trainer
 
 
 class BakedTrainer(Trainer):
+    BAKED_LAYERS = 7
+    REALTIME_LAYERS = 4
 
     def __init__(self):
         super(BakedTrainer, self).__init__()
 
     def createDataset(self, lmdbDataset):
-        return BakedDataset(lmdbDataset)
+        return BakedDataset(lmdbDataset, self.BAKED_LAYERS, self.REALTIME_LAYERS)
 
     def createModel(self):
-        return BakedModel()
+        return BakedModel(self.BAKED_LAYERS, self.REALTIME_LAYERS)
 
     def save(self, model, dataset):
         torch.set_printoptions(precision=10)
@@ -26,15 +28,14 @@ class BakedTrainer(Trainer):
 
         dataloader = data.DataLoader(dataset, batch_size=1, shuffle=False)
         args, labels = next(iter(dataloader))
-        bakedDescriptor, disneyDescriptor, omega, alpha, offset = [x.to(self.device) for x in args]
+        bakedDescriptor, disneyDescriptor, omega, alpha = [x.to(self.device) for x in args]
 
         lightProbe = lightProbeModel(bakedDescriptor)
         lightProbe = torch.cat(
             (
                 lightProbe,
                 omega.unsqueeze(1),
-                alpha.unsqueeze(1),
-                offset
+                alpha.unsqueeze(1)
             ),
             dim=1
         )

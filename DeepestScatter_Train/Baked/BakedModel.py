@@ -6,15 +6,15 @@ from ProbeRenderModel import ProbeRendererModel
 
 class BakedModel(torch.nn.Module):
     LIGHT_PROBE_DIMENSION = 200
-    LIGHT_PROBE_DIMENSION_WITH_META = LIGHT_PROBE_DIMENSION + 5
+    LIGHT_PROBE_DIMENSION_WITH_META = LIGHT_PROBE_DIMENSION + 2
 
-    def __init__(self):
+    def __init__(self, bakedLayers, realtimeLayers):
         super(BakedModel, self).__init__()
 
-        self.lightProbe = LightProbeModel(self.LIGHT_PROBE_DIMENSION)
-        self.renderer = ProbeRendererModel(self.LIGHT_PROBE_DIMENSION_WITH_META)
+        self.lightProbe = LightProbeModel(self.LIGHT_PROBE_DIMENSION, bakedLayers)
+        self.renderer = ProbeRendererModel(self.LIGHT_PROBE_DIMENSION_WITH_META, realtimeLayers)
 
-    def forward(self, lightProbeDescriptor, disneyDescriptor, omega, alpha, offset):
+    def forward(self, lightProbeDescriptor, disneyDescriptor, omega, alpha):
         """
         :param lightProbeDescriptor: hierarchical descriptor for baking the light
         :param disneyDescriptor: hierarchical descriptor for runtime rendering
@@ -31,8 +31,7 @@ class BakedModel(torch.nn.Module):
             (
                 lightProbe,
                 omega.unsqueeze(1),
-                alpha.unsqueeze(1),
-                offset
+                alpha.unsqueeze(1)
             ),
             dim=1
         )

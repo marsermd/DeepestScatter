@@ -7,24 +7,26 @@ from Vector import angleBetween, npVector, descriptorBasis, projectionOn
 
 
 class BakedDataset(BaseDataset):
-    def __init__(self, lmdbDataset):
+
+    def __init__(self, lmdbDataset, bakedLayers, realtimeLayers):
+        self.bakedLayers = bakedLayers
+        self.realtimeLayers = realtimeLayers
         super(BakedDataset, self).__init__(lmdbDataset, BakedDescriptor)
 
     def __doGetItem__(self):
         bakedDescriptor = self.__getBakedDescriptor()
         omega = self.__getViewLightAngle()
-        alpha, offset = self.__getDescriptorDifferences()
+        alpha = self.__getDescriptorAngle()
         light = self.__getLightIntensity()
 
         disneyDescriptor = torch.cat(
             (
                 self.__getDisneyDescriptor(),
-                omega.repeat(9, 1),
-                alpha.repeat(9, 1),
-                offset.repeat(9, 1)
+                omega.repeat(self.realtimeLayers, 1),
+                alpha.repeat(self.realtimeLayers, 1)
             ), dim=1)
 
-        return (bakedDescriptor, disneyDescriptor, omega, alpha, offset), light
+        return (bakedDescriptor, disneyDescriptor, omega, alpha), light
 
     def __getBakedDescriptor(self):
         descriptor = self.getBakedDescriptor()
@@ -32,7 +34,7 @@ class BakedDataset(BaseDataset):
         # Grid values are stored as bytes. Let's convert them to 0-1 range
         descriptor = torch.tensor(list(descriptor.grid), dtype=torch.float32) / 256
         # Shape the grid according to the layers
-        descriptor = descriptor.view((10, -1))
+        descriptor = descriptor.view((10, -1)).narrow(0, 0, self.bakedLayers)
 
         return descriptor
 
@@ -42,7 +44,7 @@ class BakedDataset(BaseDataset):
         # Grid values are stored as bytes. Let's convert them to 0-1 range
         descriptor = torch.tensor(list(descriptor.grid), dtype=torch.float32) / 256
         # Shape the grid according to the layers
-        descriptor = descriptor.view((10, -1)).narrow(0, 0, 9)
+        descriptor = descriptor.view((10, -1)).narrow(0, 0, self.realtimeLayers)
 
         return descriptor
 
@@ -53,7 +55,7 @@ class BakedDataset(BaseDataset):
         angle = angleBetween(npVector(scene.light_direction), npVector(sample.view_direction))
         return torch.tensor(angle, dtype=torch.float32)
 
-    def __getDescriptorDifferences(self):
+    def __getDescriptorAngle(self):
         scene = self.getScene()
         sample = self.getScatterSample()
         descriptor = self.getBakedDescriptor()
@@ -65,14 +67,7 @@ class BakedDataset(BaseDataset):
 
         alpha = angleBetween(y1, y2)
 
-        offset = npVector(sample.point) - npVector(descriptor.position)
-        offset = np.array([
-            projectionOn(offset, x2),
-            projectionOn(offset, y2),
-            projectionOn(offset, z2),
-        ]) * scene.cloud_size_m
-
-        return torch.tensor(alpha, dtype=torch.float32), torch.tensor(offset, dtype=torch.float32)
+        return torch.tensor(alpha, dtype=torch.float32)
 
 
     def __getLightIntensity(self):

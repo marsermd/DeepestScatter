@@ -8,7 +8,8 @@ namespace DeepestScatter
         class LightProbe
         {
         public:
-            float data[200];
+            static const size_t LENGTH = 200;
+            float data[LENGTH];
         };
 
         class LightProbeRendererInput
@@ -18,7 +19,6 @@ namespace DeepestScatter
 
             float omega;
             float alpha;
-            optix::float3 offset;
         };
     }
 }

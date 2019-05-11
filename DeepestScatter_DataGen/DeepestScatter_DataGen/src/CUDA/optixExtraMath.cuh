@@ -65,6 +65,10 @@ inline __host__ __device__ float3 floor3 ( float3 a )
 {
 	return make_float3 ( floorf(a.x), floorf(a.y), floorf(a.z) );
 }
+inline __host__ __device__ float3 round3(float3 a)
+{
+    return make_float3(roundf(a.x), roundf(a.y), roundf(a.z));
+}
 inline __host__ __device__ int3 iabs3 ( int3 a )
 {
 	return make_int3 ( abs(a.x), abs(a.y), abs(a.z) );

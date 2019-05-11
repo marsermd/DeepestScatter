@@ -97,9 +97,8 @@ namespace DeepestScatter
             class Meta
             {
             public:
-                float alpha;
                 float omega;
-                optix::float3 offset;
+                float alpha;
             };
 
             class Descriptor
@@ -122,7 +121,7 @@ namespace DeepestScatter
                     Meta meta;
                 };
 
-                const static size_t LAYERS_CNT = 9;
+                const static size_t LAYERS_CNT = 4;
 
                 /**
                  * Each layer's support is 2x bigger than the previous.

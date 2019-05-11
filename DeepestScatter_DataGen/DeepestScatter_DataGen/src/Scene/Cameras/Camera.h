@@ -80,7 +80,7 @@ namespace DeepestScatter
         optix::Program miss;
         optix::Program updateFrameResult;
 
-        float_t exposure = 1.0f;
+        float_t exposure = 0.4f;
         optix::Program reinhardFirstPass;
         optix::Program reinhardSecondPass;
         optix::Program reinhardLastPass;
