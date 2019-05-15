@@ -71,7 +71,7 @@ static __host__ __device__ __inline__ float4 barycentric(const float3& a, const 
 
     float3 vbc = c - b;
     float3 vbd = d - b;
-    // ScTP computes the scalar triple product
+
     float va6 = ScTP(vbp, vbd, vbc);
     float vb6 = ScTP(vap, vac, vad);
     float vc6 = ScTP(vap, vad, vab);
@@ -100,20 +100,6 @@ static __host__ __device__ __inline__ void lerp(
     float* lc = bakedLightProbes[id + c].data;
     float* ld = bakedLightProbes[id + d].data;
 
-    //uint3 debug[] = {
-    //    id + a,
-    //    id + b,
-    //    id + c,
-    //    id + d
-    //};
-    //for (size_t i = 0; i < 16; i++)
-    //{
-    //    if (reinterpret_cast<uint32_t*>(debug)[i] > 35)
-    //    {
-    //        rtPrintf("lol %u", reinterpret_cast<uint32_t*>(debug)[i]);
-    //    }
-    //}
-
     for (size_t i = 0; i < result.LENGTH; i++)
     {
         result.data[i] =
@@ -130,7 +116,7 @@ static __host__ __device__ __inline__ void interpolateLightProbe(LightProbe& res
     constexpr float sqrDistanceToPlane = 1 / 3;
 
     float3 local;
-    uint3 id = floorId(v, 75, local);
+    uint3 id = floorId(v, LightProbe::RESOLUTION, local);
 
     uint3 a;
     uint3 b;
@@ -216,7 +202,7 @@ RT_PROGRAM void sampleLightProbe()
     {
         rayData.intersectionInfo->hasScattered = true;
         rayData.intersectionInfo->radiance = getInScattering(scatter, direction, false);
-
+        
         const float3 eZ1 = normalize(lightDirection);
         const float3 eX1 = normalize(cross(lightDirection, direction));
         const float3 eY1 = cross(eX1, eZ1);
@@ -227,10 +213,11 @@ RT_PROGRAM void sampleLightProbe()
 
         rayData.lightProbe->omega = acos(dot(lightDirection, direction));
         rayData.lightProbe->alpha = acos(dot(eY1, eY2));
-
+        
         interpolateLightProbe(rayData.lightProbe->lightProbe, scatter.scatterPos);
+        
+        setupHierarchicalDescriptor<BakedRendererDescriptor::Descriptor, float>(rayData.descriptor->descriptor, scatter.scatterPos - 0.5f * bboxSize, direction);
 
-        setupHierarchicalDescriptor<BakedRendererDescriptor::Descriptor, float> (rayData.descriptor->descriptor, scatter.scatterPos - 0.5f * bboxSize, direction);
         for (size_t layer = 0; layer < rayData.descriptor->descriptor.LAYERS_CNT; layer++)
         {
             rayData.descriptor->descriptor.layers[layer].meta.omega = rayData.lightProbe->omega;

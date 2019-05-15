@@ -121,6 +121,7 @@ namespace DeepestScatter
                     Meta meta;
                 };
 
+                //TODO:
                 const static size_t LAYERS_CNT = 4;
 
                 /**

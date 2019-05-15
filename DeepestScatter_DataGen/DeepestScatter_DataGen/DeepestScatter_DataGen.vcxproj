@@ -315,6 +315,9 @@ copy "$(CudaToolkitBinDir)\cudart*.dll" "$(OutDir)"</Command>
       <Defines>CUDA=1</Defines>
       <AdditionalDeps>
       </AdditionalDeps>
+      <TypeInfo>false</TypeInfo>
+      <InterleaveSourceInPTX>false</InterleaveSourceInPTX>
+      <Optimization>O2</Optimization>
     </CudaCompile>
     <ProjectReference>
       <LinkLibraryDependencies>false</LinkLibraryDependencies>

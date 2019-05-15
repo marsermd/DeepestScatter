@@ -61,13 +61,14 @@ namespace DeepestScatter
         const std::string bakeFile = "lightProbe.cu";
         collect = resources->loadProgram(bakeFile, "collect");
 
-        result = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, 76, 76, 76);
+        size_t probeCount = Gpu::LightProbe::PROBE_COUNT;
+        result = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, probeCount, probeCount, probeCount);
         result->setElementSize(sizeof(Gpu::LightProbe));
 
         const auto options = torch::TensorOptions().device(torch::kCUDA, -1).requires_grad(false);
-        auto tensor = torch::zeros({ 76 * 76, 10, 225 }, options);
+        auto tensor = torch::zeros({ static_cast<int>(probeCount * probeCount), 10, 225 }, options);
         lightProbeInputs.emplace_back(tensor);
-        descriptors = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_USER, 76, 76);
+        descriptors = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_USER, probeCount, probeCount);
         descriptors->setElementSize(sizeof(Gpu::LightMapNetworkInput));
         descriptors->setDevicePointer(context->getEnabledDevices()[0], tensor.data_ptr());
 
@@ -76,7 +77,7 @@ namespace DeepestScatter
 
     optix::Buffer BakedRenderer::Baker::bake()
     {
-        for (uint32_t i = 0; i <= 75; i++)
+        for (uint32_t i = 0; i <= Gpu::LightProbe::RESOLUTION; i++)
         {
             bakeAtZ(i);
         }
@@ -90,9 +91,10 @@ namespace DeepestScatter
 
         context->setRayGenerationProgram(0, collect);
         context->validate();
-        context->launch(0, 76, 76);
+        size_t probeCount = Gpu::LightProbe::PROBE_COUNT;
+        context->launch(0, probeCount, probeCount);
 
-        const size_t rectArea = 76 * 76;
+        const size_t rectArea = probeCount * probeCount;
         const size_t rectSize = rectArea * sizeof(Gpu::LightProbe);
 
         {

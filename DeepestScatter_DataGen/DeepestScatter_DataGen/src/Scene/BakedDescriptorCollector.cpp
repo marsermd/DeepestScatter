@@ -8,6 +8,7 @@
 #include "ScatterSample.pb.h"
 #include "BakedDescriptor.pb.h"
 #include "SceneSetup.pb.h"
+#include "CUDA/LightProbe.h"
 
 namespace DeepestScatter
 {
@@ -37,8 +38,8 @@ namespace DeepestScatter
             BufferBind<optix::float3> positions(positionBuffer);
             BufferBind<optix::float3> directions(directionBuffer);
 
-            // 1.0f / 75.0f because we will place the baked points in a grid of 75x75x75
-            const float step = 1.0 / 75;
+            // 1.0f / Gpu::LightProbe::RESOLUTION because we will place the baked points in a grid of RESOLUTIONxRESOLUTIONxRESOLUTION
+            const float step = 1.0 / Gpu::LightProbe::RESOLUTION;
 
             for (int i = 0; i < settings.batchSize; i++)
             {

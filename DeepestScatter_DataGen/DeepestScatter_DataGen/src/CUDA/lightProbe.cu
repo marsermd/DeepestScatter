@@ -2,6 +2,7 @@
 #include <optix_device.h>
 #include <optixu/optixu_math_namespace.h>
 #include "DisneyDescriptor.cuh"
+#include "LightProbe.h"
 
 using namespace optix;
 using namespace DeepestScatter::Gpu;
@@ -14,7 +15,7 @@ rtBuffer<LightMapNetworkInput, 2> descriptors;
 RT_PROGRAM void collect()
 {
     float3 origin = make_float3(launchID.x, launchID.y, posZ);
-    origin /= 75;
+    origin /= LightProbe::RESOLUTION;
     origin -= bboxSize * 0.5f;
 
     const float3 direction = make_float3(0, 0, 1);
