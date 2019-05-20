@@ -60,6 +60,7 @@ const ::google::protobuf::uint32 TableStruct::offsets[] GOOGLE_PROTOBUF_ATTRIBUT
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Persistance::BakedDescriptor, grid_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Persistance::BakedDescriptor, position_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Persistance::BakedDescriptor, direction_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(::Persistance::BakedDescriptor, power_),
 };
 static const ::google::protobuf::internal::MigrationSchema schemas[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
   { 0, -1, sizeof(::Persistance::BakedDescriptor)},
@@ -91,13 +92,13 @@ void AddDescriptorsImpl() {
   InitDefaults();
   static const char descriptor[] GOOGLE_PROTOBUF_ATTRIBUTE_SECTION_VARIABLE(protodesc_cold) = {
       "\n\025BakedDescriptor.proto\022\013Persistance\032\014Ve"
-      "ctor.proto\"p\n\017BakedDescriptor\022\014\n\004grid\030\001 "
+      "ctor.proto\"\177\n\017BakedDescriptor\022\014\n\004grid\030\001 "
       "\001(\014\022&\n\010position\030\002 \001(\0132\024.Persistance.Vect"
       "or3\022\'\n\tdirection\030\003 \001(\0132\024.Persistance.Vec"
-      "tor3b\006proto3"
+      "tor3\022\r\n\005power\030\004 \001(\002b\006proto3"
   };
   ::google::protobuf::DescriptorPool::InternalAddGeneratedFile(
-      descriptor, 172);
+      descriptor, 187);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "BakedDescriptor.proto", &protobuf_RegisterTypes);
   ::protobuf_Vector_2eproto::AddDescriptors();
@@ -140,6 +141,7 @@ void BakedDescriptor::clear_direction() {
 const int BakedDescriptor::kGridFieldNumber;
 const int BakedDescriptor::kPositionFieldNumber;
 const int BakedDescriptor::kDirectionFieldNumber;
+const int BakedDescriptor::kPowerFieldNumber;
 #endif  // !defined(_MSC_VER) || _MSC_VER >= 1900
 
 BakedDescriptor::BakedDescriptor()
@@ -167,14 +169,15 @@ BakedDescriptor::BakedDescriptor(const BakedDescriptor& from)
   } else {
     direction_ = NULL;
   }
+  power_ = from.power_;
   // @@protoc_insertion_point(copy_constructor:Persistance.BakedDescriptor)
 }
 
 void BakedDescriptor::SharedCtor() {
   grid_.UnsafeSetDefault(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
   ::memset(&position_, 0, static_cast<size_t>(
-      reinterpret_cast<char*>(&direction_) -
-      reinterpret_cast<char*>(&position_)) + sizeof(direction_));
+      reinterpret_cast<char*>(&power_) -
+      reinterpret_cast<char*>(&position_)) + sizeof(power_));
 }
 
 BakedDescriptor::~BakedDescriptor() {
@@ -217,6 +220,7 @@ void BakedDescriptor::Clear() {
     delete direction_;
   }
   direction_ = NULL;
+  power_ = 0;
   _internal_metadata_.Clear();
 }
 
@@ -260,6 +264,20 @@ bool BakedDescriptor::MergePartialFromCodedStream(
             static_cast< ::google::protobuf::uint8>(26u /* 26 & 0xFF */)) {
           DO_(::google::protobuf::internal::WireFormatLite::ReadMessage(
                input, mutable_direction()));
+        } else {
+          goto handle_unusual;
+        }
+        break;
+      }
+
+      // float power = 4;
+      case 4: {
+        if (static_cast< ::google::protobuf::uint8>(tag) ==
+            static_cast< ::google::protobuf::uint8>(37u /* 37 & 0xFF */)) {
+
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   float, ::google::protobuf::internal::WireFormatLite::TYPE_FLOAT>(
+                 input, &power_)));
         } else {
           goto handle_unusual;
         }
@@ -310,6 +328,11 @@ void BakedDescriptor::SerializeWithCachedSizes(
       3, this->_internal_direction(), output);
   }
 
+  // float power = 4;
+  if (this->power() != 0) {
+    ::google::protobuf::internal::WireFormatLite::WriteFloat(4, this->power(), output);
+  }
+
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         (::google::protobuf::internal::GetProto3PreserveUnknownsDefault()   ? _internal_metadata_.unknown_fields()   : _internal_metadata_.default_instance()), output);
@@ -343,6 +366,11 @@ void BakedDescriptor::SerializeWithCachedSizes(
     target = ::google::protobuf::internal::WireFormatLite::
       InternalWriteMessageToArray(
         3, this->_internal_direction(), deterministic, target);
+  }
+
+  // float power = 4;
+  if (this->power() != 0) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteFloatToArray(4, this->power(), target);
   }
 
   if ((_internal_metadata_.have_unknown_fields() &&  ::google::protobuf::internal::GetProto3PreserveUnknownsDefault())) {
@@ -383,6 +411,11 @@ size_t BakedDescriptor::ByteSizeLong() const {
         *direction_);
   }
 
+  // float power = 4;
+  if (this->power() != 0) {
+    total_size += 1 + 4;
+  }
+
   int cached_size = ::google::protobuf::internal::ToCachedSize(total_size);
   SetCachedSize(cached_size);
   return total_size;
@@ -420,6 +453,9 @@ void BakedDescriptor::MergeFrom(const BakedDescriptor& from) {
   if (from.has_direction()) {
     mutable_direction()->::Persistance::Vector3::MergeFrom(from.direction());
   }
+  if (from.power() != 0) {
+    set_power(from.power());
+  }
 }
 
 void BakedDescriptor::CopyFrom(const ::google::protobuf::Message& from) {
@@ -450,6 +486,7 @@ void BakedDescriptor::InternalSwap(BakedDescriptor* other) {
     GetArenaNoVirtual());
   swap(position_, other->position_);
   swap(direction_, other->direction_);
+  swap(power_, other->power_);
   _internal_metadata_.Swap(&other->_internal_metadata_);
 }
 

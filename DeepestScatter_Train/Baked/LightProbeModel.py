@@ -5,6 +5,7 @@ from DisneyBlock import DisneyBlock
 
 class LightProbeModel(torch.nn.Module):
     BLOCK_DIMENSION = 200
+    LAYER_DIMENSION = 400
     DESCRIPTOR_LAYER_DIMENSION = 5 * 5 * 9
 
     def __init__(self, outputDimenstion, blockCount):
@@ -54,10 +55,12 @@ class LightProbeModel(torch.nn.Module):
 
     def __createFullyConnected(self):
         return torch.nn.Sequential(
-            torch.nn.Linear(self.BLOCK_DIMENSION, self.BLOCK_DIMENSION),
+            torch.nn.Linear(self.BLOCK_DIMENSION, self.LAYER_DIMENSION),
             torch.nn.ReLU(),
-            torch.nn.Linear(self.BLOCK_DIMENSION, self.BLOCK_DIMENSION),
+            torch.nn.Linear(self.LAYER_DIMENSION, self.LAYER_DIMENSION),
             torch.nn.ReLU(),
-            torch.nn.Linear(self.BLOCK_DIMENSION, self.outputDimenstion),
+            torch.nn.Linear(self.LAYER_DIMENSION, self.LAYER_DIMENSION),
+            torch.nn.ReLU(),
+            torch.nn.Linear(self.LAYER_DIMENSION, self.outputDimenstion),
             torch.nn.ReLU()
         )

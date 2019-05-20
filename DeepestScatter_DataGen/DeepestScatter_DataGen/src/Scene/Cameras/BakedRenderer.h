@@ -4,6 +4,7 @@
 
 #pragma warning(push, 0)
 #include <torch/script.h>
+#include <optix_sizet.h>
 #pragma warning(pop)
 
 namespace DeepestScatter
@@ -32,7 +33,7 @@ namespace DeepestScatter
         class Baker
         {
         public:
-            Baker(optix::Context context, std::shared_ptr<Resources> resources);
+            Baker(optix::Context context, std::shared_ptr<Resources> resources, optix::size_t3 probeCount);
 
             optix::Buffer bake();
         
@@ -41,6 +42,7 @@ namespace DeepestScatter
 
             optix::Context context;
             std::shared_ptr<Resources> resources;
+            optix::size_t3 probeCount;
 
             std::shared_ptr<torch::jit::script::Module> lightProbeModel;
             std::vector<torch::jit::IValue> lightProbeInputs;
@@ -63,6 +65,7 @@ namespace DeepestScatter
 
         std::vector<torch::jit::IValue> rendererInputs;
 
+        optix::size_t3 lightProbeCount;
         optix::Buffer bakedLightProbes;
 
         optix::Buffer lightProbeInputBuffer;

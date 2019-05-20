@@ -116,10 +116,13 @@ namespace DeepestScatter
         cameraRotate = optix::Matrix4x4::identity();
 
         optix::Program camera = renderer->getCamera();
-        camera["eye"]->setFloat(cameraEye);
-        camera["U"]->setFloat(u);
-        camera["V"]->setFloat(v);
-        camera["W"]->setFloat(w);
+        if (camera.get() != nullptr)
+        {
+            camera["eye"]->setFloat(cameraEye);
+            camera["U"]->setFloat(u);
+            camera["V"]->setFloat(v);
+            camera["W"]->setFloat(w);
+        }
     }
 
     void Camera::setupVariables(optix::Program& program)

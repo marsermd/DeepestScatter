@@ -3,11 +3,12 @@
 #include "Util/Resources.h"
 #include "Util/BufferBind.h"
 #include "CUDA/rayData.cuh"
+#include "Util/optixExtraMath.h"
 
 namespace DeepestScatter
 {
     static constexpr optix::uint2 RECT_SIZE{ 128, 128 };
-    static const std::string modelDirectory = "../../DeepestScatter_Train/runs/May11_22-56-08_DESKTOP-D5QPR6V/";
+    static const std::string modelDirectory = "../../DeepestScatter_Train/runs/BakedModel/1024_joint_noInterpolation_7_4/";
 
     optix::Program BakedRenderer::getCamera()
     {
@@ -42,7 +43,10 @@ namespace DeepestScatter
 
         descriptorInputBuffer->setDevicePointer(context->getEnabledDevices()[0], descriptorInput.data_ptr());
 
-        bakedLightProbes = Baker(context, resources).bake();
+        const optix::float3 cloudSizeInMeanFreePath = context["bboxSize"]->getFloat3() * context["densityMultiplier"]->getFloat();
+        lightProbeCount = fceil3_sz(cloudSizeInMeanFreePath / Gpu::LightProbe::STEP_IN_MEAN_FREE_PATH) + optix::make_size_t3(1);
+
+        bakedLightProbes = Baker(context, resources, lightProbeCount).bake();
         context["bakedLightProbes"]->setBuffer(bakedLightProbes);
 
         directRadianceBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
@@ -51,24 +55,23 @@ namespace DeepestScatter
         setupVariables(camera);
     }
 
-    BakedRenderer::Baker::Baker(optix::Context context, std::shared_ptr<Resources> resources):
-        context(context), resources(resources)
+    BakedRenderer::Baker::Baker(optix::Context context, std::shared_ptr<Resources> resources, optix::size_t3 probeCount):
+        context(context), resources(resources), probeCount(probeCount)
     {
         const std::string lightProbeModelPath = modelDirectory + "LightProbeModel.pt";
         lightProbeModel = torch::jit::load(lightProbeModelPath);
         lightProbeModel->eval();
 
-        const std::string bakeFile = "lightProbe.cu";
+        const std::string bakeFile = "lightProbeBaker.cu";
         collect = resources->loadProgram(bakeFile, "collect");
 
-        size_t probeCount = Gpu::LightProbe::PROBE_COUNT;
-        result = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, probeCount, probeCount, probeCount);
+        result = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, probeCount.x, probeCount.y, probeCount.z);
         result->setElementSize(sizeof(Gpu::LightProbe));
 
         const auto options = torch::TensorOptions().device(torch::kCUDA, -1).requires_grad(false);
-        auto tensor = torch::zeros({ static_cast<int>(probeCount * probeCount), 10, 225 }, options);
+        auto tensor = torch::zeros({ static_cast<int>(probeCount.x * probeCount.y), 10, 225 }, options);
         lightProbeInputs.emplace_back(tensor);
-        descriptors = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_USER, probeCount, probeCount);
+        descriptors = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_USER, probeCount.x, probeCount.y);
         descriptors->setElementSize(sizeof(Gpu::LightMapNetworkInput));
         descriptors->setDevicePointer(context->getEnabledDevices()[0], tensor.data_ptr());
 
@@ -77,7 +80,8 @@ namespace DeepestScatter
 
     optix::Buffer BakedRenderer::Baker::bake()
     {
-        for (uint32_t i = 0; i <= Gpu::LightProbe::RESOLUTION; i++)
+        std::cout << "Baking Light Probes... " << probeCount.x << " " << probeCount.y << " " << probeCount.z << std::endl;
+        for (uint32_t i = 0; i < probeCount.z; i++)
         {
             bakeAtZ(i);
         }
@@ -91,10 +95,9 @@ namespace DeepestScatter
 
         context->setRayGenerationProgram(0, collect);
         context->validate();
-        size_t probeCount = Gpu::LightProbe::PROBE_COUNT;
-        context->launch(0, probeCount, probeCount);
+        context->launch(0, probeCount.x, probeCount.y);
 
-        const size_t rectArea = probeCount * probeCount;
+        const size_t rectArea = probeCount.x * probeCount.y;
         const size_t rectSize = rectArea * sizeof(Gpu::LightProbe);
 
         {

@@ -185,6 +185,12 @@ class BakedDescriptor : public ::google::protobuf::Message /* @@protoc_insertion
   ::Persistance::Vector3* mutable_direction();
   void set_allocated_direction(::Persistance::Vector3* direction);
 
+  // float power = 4;
+  void clear_power();
+  static const int kPowerFieldNumber = 4;
+  float power() const;
+  void set_power(float value);
+
   // @@protoc_insertion_point(class_scope:Persistance.BakedDescriptor)
  private:
 
@@ -192,6 +198,7 @@ class BakedDescriptor : public ::google::protobuf::Message /* @@protoc_insertion
   ::google::protobuf::internal::ArenaStringPtr grid_;
   ::Persistance::Vector3* position_;
   ::Persistance::Vector3* direction_;
+  float power_;
   mutable ::google::protobuf::internal::CachedSize _cached_size_;
   friend struct ::protobuf_BakedDescriptor_2eproto::TableStruct;
 };
@@ -353,6 +360,20 @@ inline void BakedDescriptor::set_allocated_direction(::Persistance::Vector3* dir
   }
   direction_ = direction;
   // @@protoc_insertion_point(field_set_allocated:Persistance.BakedDescriptor.direction)
+}
+
+// float power = 4;
+inline void BakedDescriptor::clear_power() {
+  power_ = 0;
+}
+inline float BakedDescriptor::power() const {
+  // @@protoc_insertion_point(field_get:Persistance.BakedDescriptor.power)
+  return power_;
+}
+inline void BakedDescriptor::set_power(float value) {
+  
+  power_ = value;
+  // @@protoc_insertion_point(field_set:Persistance.BakedDescriptor.power)
 }
 
 #ifdef __GNUC__

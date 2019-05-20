@@ -14,8 +14,7 @@ rtBuffer<LightMapNetworkInput, 2> descriptors;
 
 RT_PROGRAM void collect()
 {
-    float3 origin = make_float3(launchID.x, launchID.y, posZ);
-    origin /= LightProbe::RESOLUTION;
+    float3 origin = make_float3(launchID.x, launchID.y, posZ) * LightProbe::STEP_IN_MEAN_FREE_PATH / densityMultiplier;
     origin -= bboxSize * 0.5f;
 
     const float3 direction = make_float3(0, 0, 1);

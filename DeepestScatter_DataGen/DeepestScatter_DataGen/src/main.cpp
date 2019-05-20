@@ -12,6 +12,8 @@
 #pragma warning (push, 0)
 #include "ExecutionLoop/Tasks.h"
 #include "BakedDescriptor.pb.h"
+#include "BakedInterpolationSet.pb.h"
+#include "DisneyDescriptor.pb.h"
 #pragma warning (pop)
 
 namespace di = Hypodermic;
@@ -30,7 +32,7 @@ int main(int argc, char* argv[])
             printUsageAndExit(argv[0]);
         }
         const std::string cloudPath = argv[1];
-        const std::string databasePath = "../../Data/Dataset/Train.lmdb";
+        const std::string databasePath = "D://Dataset/Train.lmdb";
         const std::string cloudRoot = "../../Data/Clouds_Train";
 
         for (int i = 2; i < argc; i++)
@@ -54,8 +56,8 @@ int main(int argc, char* argv[])
         {
             GuiExecutionLoop loop(argc, argv);
 
-            //loop.run(Tasks::collect<Persistance::BakedDescriptor>(databasePath, cloudRoot, Tasks::CollectMode::Continue));
-            
+            //loop.run(Tasks::collect<Persistance::BakedInterpolationSet>(databasePath, cloudRoot, Tasks::CollectMode::Reset));
+
             loop.run(Tasks::renderCloud(cloudPath, 7000));
         }
         catch (const std::exception& e)

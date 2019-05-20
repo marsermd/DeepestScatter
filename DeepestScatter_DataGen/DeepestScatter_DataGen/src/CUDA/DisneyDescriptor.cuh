@@ -28,9 +28,9 @@ rtDeclareVariable(float, cloudSizeInMeters, , );
 inline RT_HOSTDEVICE float3 make_float3(size_t3 st)
 {
     float3 ret;
-    ret.x = gsl::narrow_cast<float>(st.x);
-    ret.y = gsl::narrow_cast<float>(st.y);
-    ret.z = gsl::narrow_cast<float>(st.z);
+    ret.x = float(st.x);
+    ret.y = float(st.y);
+    ret.z = float(st.z);
     return ret;
 }
 
@@ -71,8 +71,8 @@ namespace DeepestScatter
         template<typename TDescriptor, typename TElement>
         __device__ __inline__ void setupHierarchicalDescriptor(TDescriptor& descriptor, float3 worldPos, float3 viewDirection)
         {
-            const float3 eZ = normalize(lightDirection);
-            const float3 eX = normalize(cross(lightDirection, viewDirection));
+            const float3 eZ = normalize(-lightDirection);
+            const float3 eX = normalize(cross(eZ, viewDirection));
             const float3 eY = cross(eX, eZ);
 
             const float3 origin = worldPos + 0.5f * bboxSize;

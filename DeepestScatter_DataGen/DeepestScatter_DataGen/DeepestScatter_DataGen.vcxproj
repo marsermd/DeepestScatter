@@ -24,6 +24,7 @@
     <ClCompile Include="src\Scene\Cameras\BakedRenderer.cpp" />
     <ClCompile Include="src\Scene\Cameras\Camera.cpp" />
     <ClCompile Include="src\Scene\Cameras\DisneyRenderer.cpp" />
+    <ClCompile Include="src\Scene\Cameras\EmptyRenderer.cpp" />
     <ClCompile Include="src\Scene\CloudMaterial.cpp" />
     <ClCompile Include="src\Scene\DisneyDescriptorCollector.cpp" />
     <ClCompile Include="src\Scene\RadianceCollector.cpp" />
@@ -43,7 +44,8 @@
     <CudaCompile Include="src\CUDA\cloudFirstScatterMaterial.cu" />
     <CudaCompile Include="src\CUDA\cloudRadianceMaterials.cu" />
     <CudaCompile Include="src\CUDA\disneyDescriptorCollector.cu" />
-    <CudaCompile Include="src\CUDA\lightProbe.cu" />
+    <CudaCompile Include="src\CUDA\lightProbeBaker.cu" />
+    <CudaCompile Include="src\CUDA\lightProbeCollector.cu" />
     <CudaCompile Include="src\CUDA\lightProbeMaterial.cu" />
     <CudaCompile Include="src\CUDA\pointGeneratorCamera.cu" />
     <CudaCompile Include="src\CUDA\inScatter.cu" />
@@ -58,6 +60,7 @@
     <CudaCompile Include="src\CUDA\disneyDescriptorMaterial.cu">
       <FileType>Document</FileType>
     </CudaCompile>
+    <ClInclude Include="src\CUDA\LightProbe.cuh" />
     <ClInclude Include="src\CUDA\LightProbe.h" />
     <ClInclude Include="src\CUDA\optixExtraMath.cuh" />
     <CudaCompile Include="src\CUDA\pointEmissionCamera.cu">
@@ -169,6 +172,7 @@
     <ClInclude Include="src\Scene\Cameras\BakedRenderer.h" />
     <ClInclude Include="src\Scene\Cameras\Camera.h" />
     <ClInclude Include="src\Scene\Cameras\DisneyRenderer.h" />
+    <ClInclude Include="src\Scene\Cameras\EmptyRenderer.h" />
     <ClInclude Include="src\Scene\CloudMaterial.h" />
     <ClInclude Include="src\Scene\DisneyDescriptorCollector.h" />
     <ClInclude Include="src\Scene\RadianceCollector.h" />
@@ -184,6 +188,7 @@
     <ClInclude Include="src\Util\Dataset\Dataset.h" />
     <ClInclude Include="src\Util\Dataset\LmdbExceptions.h" />
     <ClInclude Include="src\Util\Dataset\Transaction.h" />
+    <ClInclude Include="src\Util\optixExtraMath.h" />
     <ClInclude Include="src\Util\Resources.h" />
     <ClInclude Include="src\Util\sutil.h" />
     <ClInclude Include="src\Util\sutilapi.h" />

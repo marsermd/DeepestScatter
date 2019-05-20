@@ -93,6 +93,9 @@
     <ClCompile Include="src\Scene\Cameras\BakedRenderer.cpp">
       <Filter>src\Scene\Cameras</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\Cameras\EmptyRenderer.cpp">
+      <Filter>src\Scene\Cameras</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\CUDA\inScatter.cu">
@@ -131,13 +134,16 @@
     <CudaCompile Include="src\CUDA\progressive.cu">
       <Filter>src\CUDA</Filter>
     </CudaCompile>
-    <CudaCompile Include="src\CUDA\lightProbe.cu">
-      <Filter>src\CUDA</Filter>
-    </CudaCompile>
     <CudaCompile Include="src\CUDA\bakedCamera.cu">
       <Filter>src\CUDA</Filter>
     </CudaCompile>
     <CudaCompile Include="src\CUDA\lightProbeMaterial.cu">
+      <Filter>src\CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CUDA\lightProbeBaker.cu">
+      <Filter>src\CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CUDA\lightProbeCollector.cu">
       <Filter>src\CUDA</Filter>
     </CudaCompile>
   </ItemGroup>
@@ -527,6 +533,15 @@
       <Filter>src\Scene\Cameras</Filter>
     </ClInclude>
     <ClInclude Include="src\CUDA\LightProbe.h">
+      <Filter>src\CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Cameras\EmptyRenderer.h">
+      <Filter>src\Scene\Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Util\optixExtraMath.h">
+      <Filter>src\Uitl</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CUDA\LightProbe.cuh">
       <Filter>src\CUDA</Filter>
     </ClInclude>
   </ItemGroup>

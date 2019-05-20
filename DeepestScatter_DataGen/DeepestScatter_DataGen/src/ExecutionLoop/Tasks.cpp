@@ -4,11 +4,12 @@
 #include "DisneyDescriptor.pb.h"
 #include "Scene/RadianceCollector.h"
 #include "Scene/DisneyDescriptorCollector.h"
-#include "BakedDescriptor.pb.h"
 #include "Scene/BakedDescriptorCollector.h"
 #include "Scene/Cameras/Camera.h"
 #include "Scene/Cameras/DisneyRenderer.h"
 #include "Scene/Cameras/BakedRenderer.h"
+#include "Scene/Cameras/EmptyRenderer.h"
+#include "BakedInterpolationSet.pb.h"
 
 namespace DeepestScatter
 {
@@ -38,7 +39,7 @@ namespace DeepestScatter
             taskBuilder.addRegistrations(installFramework(width, height));
             taskBuilder.addRegistrations(installSceneSetup(sceneSetup, ".", Cloud::Rendering::Mode::SunAndSkyAllScatter, Cloud::Model::Mipmaps::On));
             taskBuilder.addRegistrations(installApp());
-            taskBuilder.registerType<BakedRenderer>().as<ARenderer>().singleInstance();
+            taskBuilder.registerType<DisneyRenderer>().as<ARenderer>().singleInstance();
 
             auto container = taskBuilder.build();
 
@@ -78,6 +79,7 @@ namespace DeepestScatter
                 taskBuilder.addRegistrations(installApp());
                 taskBuilder.registerInstance(std::make_shared<BatchSettings>(i * 2048, 2048));
                 taskBuilder.addRegistrations(collector);
+                taskBuilder.registerType<EmptyRenderer>().as<ARenderer>().singleInstance();
 
                 auto container = taskBuilder.buildNestedContainerFrom(*rootContainer.get());
 
@@ -106,7 +108,7 @@ namespace DeepestScatter
     }
 
     template<>
-    void Tasks::addCollector<Persistance::BakedDescriptor>(Hypodermic::ContainerBuilder& builder)
+    void Tasks::addCollector<Persistance::BakedInterpolationSet>(Hypodermic::ContainerBuilder& builder)
     {
         builder.registerType<BakedDescriptorCollector>().as<SceneItem>().asSelf().singleInstance();
     }

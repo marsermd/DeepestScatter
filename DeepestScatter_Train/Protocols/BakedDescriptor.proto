@@ -10,4 +10,5 @@ message BakedDescriptor {
 
     Vector3 position = 2;
     Vector3 direction = 3;
+    float power = 4;
 }

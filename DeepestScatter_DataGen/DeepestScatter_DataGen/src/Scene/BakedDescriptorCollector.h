@@ -50,6 +50,6 @@ namespace DeepestScatter
 
         optix::Buffer positionBuffer;
         optix::Buffer directionBuffer;
-        optix::Buffer descriptorsBuffer;
+        optix::Buffer bakedInterpolationsBuffer;
     };
 }

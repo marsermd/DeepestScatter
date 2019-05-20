@@ -4,6 +4,7 @@ from abc import abstractmethod
 from torch.utils import data
 
 from BakedDescriptor_pb2 import BakedDescriptor
+from BakedInterpolationSet_pb2 import BakedInterpolationSet
 from PythonProtocols.SceneSetup_pb2 import SceneSetup
 from PythonProtocols.ScatterSample_pb2 import ScatterSample
 from PythonProtocols.DisneyDescriptor_pb2 import DisneyDescriptor
@@ -37,8 +38,8 @@ class BaseDataset(data.Dataset):
     def getDisneyDescriptor(self):
         return self.__getProtocol(DisneyDescriptor)
 
-    def getBakedDescriptor(self):
-        return self.__getProtocol(BakedDescriptor)
+    def getBakedInterpolationSet(self):
+        return self.__getProtocol(BakedInterpolationSet)
 
     def getResult(self):
         return self.__getProtocol(Result)

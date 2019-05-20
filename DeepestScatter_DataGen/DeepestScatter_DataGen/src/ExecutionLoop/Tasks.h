@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Hypodermic/Hypodermic.h"
 #include "GuiExecutionLoop.h"
+#include "installers.h"
 #include "Util/Dataset/Dataset.h"
 
 namespace Persistance

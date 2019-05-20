@@ -32,7 +32,10 @@ class LogModel(torch.nn.Module):
         return torch.log(val)
 
     def forward(self, input):
-        return LogModel.logEps(self.model(*input))
+        if isinstance(input, tuple) or isinstance(input, list):
+            return LogModel.logEps(self.model(*input))
+        else:
+            return LogModel.logEps(self.model(input))
 
 
 def set_seed(seed: int):
@@ -87,7 +90,7 @@ class Trainer:
         writer = SummaryWriter()
 
         # Generators
-        lmdbDatasets = LmdbDatasets("..\Data\Dataset")
+        lmdbDatasets = LmdbDatasets("D:\\Dataset")
 
         trainingSet = self.createDataset(lmdbDatasets.train)
         trainingGenerator = data.DataLoader(trainingSet, **params)
@@ -108,10 +111,10 @@ class Trainer:
             # Training
             for batchId, (args, labels) in enumerate(trainingGenerator):
                 # Transfer to GPU
-                if isinstance(args, tuple):
-                    args = args.to(self.device)
-                else:
+                if isinstance(args, tuple) or isinstance(args, list):
                     args = [x.to(self.device) for x in args]
+                else:
+                    args = args.to(self.device)
                 labels = labels.to(self.device)
                 labels = logModel.logEps(labels)
 

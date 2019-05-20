@@ -20,7 +20,7 @@ DESCRIPTOR = _descriptor.FileDescriptor(
   package='Persistance',
   syntax='proto3',
   serialized_options=None,
-  serialized_pb=_b('\n\x15\x42\x61kedDescriptor.proto\x12\x0bPersistance\x1a\x0cVector.proto\"p\n\x0f\x42\x61kedDescriptor\x12\x0c\n\x04grid\x18\x01 \x01(\x0c\x12&\n\x08position\x18\x02 \x01(\x0b\x32\x14.Persistance.Vector3\x12\'\n\tdirection\x18\x03 \x01(\x0b\x32\x14.Persistance.Vector3b\x06proto3')
+  serialized_pb=_b('\n\x15\x42\x61kedDescriptor.proto\x12\x0bPersistance\x1a\x0cVector.proto\"\x7f\n\x0f\x42\x61kedDescriptor\x12\x0c\n\x04grid\x18\x01 \x01(\x0c\x12&\n\x08position\x18\x02 \x01(\x0b\x32\x14.Persistance.Vector3\x12\'\n\tdirection\x18\x03 \x01(\x0b\x32\x14.Persistance.Vector3\x12\r\n\x05power\x18\x04 \x01(\x02\x62\x06proto3')
   ,
   dependencies=[Vector__pb2.DESCRIPTOR,])
 
@@ -55,6 +55,13 @@ _BAKEDDESCRIPTOR = _descriptor.Descriptor(
       message_type=None, enum_type=None, containing_type=None,
       is_extension=False, extension_scope=None,
       serialized_options=None, file=DESCRIPTOR),
+    _descriptor.FieldDescriptor(
+      name='power', full_name='Persistance.BakedDescriptor.power', index=3,
+      number=4, type=2, cpp_type=6, label=1,
+      has_default_value=False, default_value=float(0),
+      message_type=None, enum_type=None, containing_type=None,
+      is_extension=False, extension_scope=None,
+      serialized_options=None, file=DESCRIPTOR),
   ],
   extensions=[
   ],
@@ -68,7 +75,7 @@ _BAKEDDESCRIPTOR = _descriptor.Descriptor(
   oneofs=[
   ],
   serialized_start=52,
-  serialized_end=164,
+  serialized_end=179,
 )
 
 _BAKEDDESCRIPTOR.fields_by_name['position'].message_type = Vector__pb2._VECTOR3

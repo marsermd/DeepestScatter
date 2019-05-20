@@ -4,12 +4,12 @@ from LightProbeModel import LightProbeModel
 from ProbeRenderModel import ProbeRendererModel
 
 
-class BakedModel(torch.nn.Module):
+class MimicModel(torch.nn.Module):
     LIGHT_PROBE_DIMENSION = 200
     LIGHT_PROBE_DIMENSION_WITH_META = LIGHT_PROBE_DIMENSION + 2
 
     def __init__(self, bakedLayers, realtimeLayers):
-        super(BakedModel, self).__init__()
+        super(MimicModel, self).__init__()
 
         self.lightProbe = LightProbeModel(self.LIGHT_PROBE_DIMENSION, bakedLayers)
         self.renderer = ProbeRendererModel(self.LIGHT_PROBE_DIMENSION_WITH_META, realtimeLayers)

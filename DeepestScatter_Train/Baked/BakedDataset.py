@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 
+from BakedInterpolationSet_pb2 import BakedInterpolationSet
 from BaseDataset import BaseDataset
 from PythonProtocols.BakedDescriptor_pb2 import BakedDescriptor
 from Vector import angleBetween, npVector, descriptorBasis, projectionOn
@@ -11,7 +12,7 @@ class BakedDataset(BaseDataset):
     def __init__(self, lmdbDataset, bakedLayers, realtimeLayers):
         self.bakedLayers = bakedLayers
         self.realtimeLayers = realtimeLayers
-        super(BakedDataset, self).__init__(lmdbDataset, BakedDescriptor)
+        super(BakedDataset, self).__init__(lmdbDataset, BakedInterpolationSet)
 
     def __doGetItem__(self):
         bakedDescriptor = self.__getBakedDescriptor()
@@ -19,12 +20,7 @@ class BakedDataset(BaseDataset):
         alpha = self.__getDescriptorAngle()
         light = self.__getLightIntensity()
 
-        disneyDescriptor = torch.cat(
-            (
-                self.__getDisneyDescriptor(),
-                omega.repeat(self.realtimeLayers, 1),
-                alpha.repeat(self.realtimeLayers, 1)
-            ), dim=1)
+        disneyDescriptor = self.__getDisneyDescriptor()
 
         return (bakedDescriptor, disneyDescriptor, omega, alpha), light
 
@@ -68,7 +64,6 @@ class BakedDataset(BaseDataset):
         alpha = angleBetween(y1, y2)
 
         return torch.tensor(alpha, dtype=torch.float32)
-
 
     def __getLightIntensity(self):
         result = self.getResult()

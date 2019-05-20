@@ -1,5 +1,5 @@
 #pragma once
-#include <optixu/optixu_math_namespace.h>
+#include "DisneyDescriptor.h"
 
 namespace DeepestScatter
 {
@@ -8,8 +8,7 @@ namespace DeepestScatter
         class LightProbe
         {
         public:
-            static const size_t RESOLUTION = 150;
-            static const size_t PROBE_COUNT = RESOLUTION + 1;
+            static const size_t STEP_IN_MEAN_FREE_PATH = 6;
 
             static const size_t LENGTH = 200;
             float data[LENGTH];
@@ -22,6 +21,24 @@ namespace DeepestScatter
 
             float omega;
             float alpha;
+        };
+
+        class BakedInterpolationSet
+        {
+        public:
+            class Probe
+            {
+            public:
+                DisneyDescriptor descriptor;
+                float power;
+                optix::float3 position;
+                optix::float3 direction;
+            };
+
+            Probe a;
+            Probe b;
+            Probe c;
+            Probe d;
         };
     }
 }

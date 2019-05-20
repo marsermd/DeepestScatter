@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package Persistance;
+
+import "BakedDescriptor.proto";
+
+message BakedInterpolationSet {
+    BakedDescriptor a = 1;
+    BakedDescriptor b = 2;
+    BakedDescriptor c = 3;
+    BakedDescriptor d = 4;
+}
