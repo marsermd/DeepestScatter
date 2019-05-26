@@ -125,15 +125,19 @@ static __host__ __device__ __inline__ void lerp(
     }
 }
 
+static __host__ __device__ __inline__ bool isCloseToVertex(const float3& localOffset, const float3& vertex)
+{
+    constexpr float distanceToPlane = 0.577350269190; // 1 / sqrt(3)
+    const float3 normal = normalize(make_float3(0.5f) - vertex);
+    return dot(localOffset - vertex, normal) < distanceToPlane;
+}
+
 static __host__ __device__ __inline__ LightProbeInterpolation getLightProbeInterpolation(const float3& v)
 {
-    constexpr float distanceToPlane = 1 / 0.577350269190; // 1 / sqrt(3)
-    constexpr float sqrDistanceToPlane = 1 / 3;
-
     float3 localOffset;
     uint3 id = floorId(v, localOffset);
 
-    if (sqrLength(localOffset) < sqrDistanceToPlane)
+    if (isCloseToVertex(localOffset, make_float3(0, 0, 0)))
     {
         return LightProbeInterpolation(id, localOffset,
             make_uint3(0),
@@ -142,7 +146,7 @@ static __host__ __device__ __inline__ LightProbeInterpolation getLightProbeInter
             make_uint3(0, 0, 1)
         );
     }
-    else if (sqrLength(localOffset - make_float3(0, 1, 1)) < sqrDistanceToPlane)
+    else if (isCloseToVertex(localOffset, make_float3(0, 1, 1)))
     {
         return LightProbeInterpolation(id, localOffset,
             make_uint3(0, 1, 1),
@@ -151,7 +155,7 @@ static __host__ __device__ __inline__ LightProbeInterpolation getLightProbeInter
             make_uint3(1, 1, 1)
         );
     }
-    else if (sqrLength(localOffset - make_float3(1, 0, 1)) < sqrDistanceToPlane)
+    else if (isCloseToVertex(localOffset, make_float3(1, 0, 1)))
     {
         return LightProbeInterpolation(id, localOffset,
             make_uint3(1, 0, 1),
@@ -160,7 +164,7 @@ static __host__ __device__ __inline__ LightProbeInterpolation getLightProbeInter
             make_uint3(1, 1, 1)
         );
     }
-    else if (sqrLength(localOffset - make_float3(1, 1, 0)) < sqrDistanceToPlane)
+    else if (isCloseToVertex(localOffset, make_float3(1, 1, 0)))
     {
         return LightProbeInterpolation(id, localOffset,
             make_uint3(1, 1, 0),

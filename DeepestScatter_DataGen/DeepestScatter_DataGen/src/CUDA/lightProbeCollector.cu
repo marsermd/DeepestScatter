@@ -25,7 +25,7 @@ static __host__ __device__ __inline__ float3 probeIdToWorld(size_t3 id)
     return make_float3(id) * LightProbe::STEP_IN_MEAN_FREE_PATH / densityMultiplier - bboxSize * 0.5f;
 }
 
-static __host__ __device__ __inline__ float3 setupInterpolationProbe(
+static __host__ __device__ __inline__ void setupInterpolationProbe(
     BakedInterpolationSet::Probe& probe, 
     const size_t3& id, float power, const float3& direction)
 {

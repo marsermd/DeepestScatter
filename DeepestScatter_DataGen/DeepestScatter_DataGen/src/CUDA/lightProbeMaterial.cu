@@ -49,6 +49,15 @@ RT_PROGRAM void sampleLightProbe()
     {
         rayData.intersectionInfo->hasScattered = true;
         rayData.intersectionInfo->radiance = getInScattering(scatter, direction, false);
+
+        //TODO: REMOVE
+        // auto interpolationData = getLightProbeInterpolation(scatter.scatterPos);
+        // rayData.intersectionInfo->radiance =
+        //     make_float3(bakedLightProbes[interpolationData.a].data[1], 0, 0) * interpolationData.w.x +
+        //     make_float3(bakedLightProbes[interpolationData.b].data[1], 0, 0) * interpolationData.w.y +
+        //     make_float3(bakedLightProbes[interpolationData.c].data[1], 0, 0) * interpolationData.w.z +
+        //     make_float3(bakedLightProbes[interpolationData.d].data[1], 0, 0) * interpolationData.w.w;
+        // rayData.intersectionInfo->radiance /= 5;
         
         const float3 eZ1 = normalize(lightDirection);
         const float3 eX1 = normalize(cross(lightDirection, direction));
