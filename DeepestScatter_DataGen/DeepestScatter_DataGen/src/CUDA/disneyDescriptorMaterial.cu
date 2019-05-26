@@ -30,12 +30,13 @@ RT_PROGRAM void sampleDisneyDescriptor()
 
     if (!scatter.hasScattered || !isInBox(scatter.scatterPos))
     {
-        resultDescriptor.intersectionInfo.hasScattered = false;
+        resultDescriptor.intersectionInfo->hasScattered = false;
+        resultDescriptor.intersectionInfo->radiance = make_float3(0);
     }
     else
     {
-        resultDescriptor.intersectionInfo.hasScattered = true;
-        resultDescriptor.intersectionInfo.radiance = getInScattering(scatter, direction, false);
+        resultDescriptor.intersectionInfo->hasScattered = true;
+        resultDescriptor.intersectionInfo->radiance = getInScattering(scatter, direction, false);
         setupHierarchicalDescriptor<DisneyNetworkInput, float>(
             *resultDescriptor.descriptor, scatter.scatterPos - 0.5f * bboxSize, direction);
     }

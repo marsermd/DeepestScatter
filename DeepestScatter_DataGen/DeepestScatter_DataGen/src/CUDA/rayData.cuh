@@ -36,7 +36,7 @@ struct DisneyDescriptorRayData
     DECLARE_RAY_ID(2u)
 
     DeepestScatter::Gpu::DisneyNetworkInput* descriptor;
-    IntersectionInfo intersectionInfo;
+    IntersectionInfo* intersectionInfo;
 };
 
 struct LightProbeRayData

@@ -1,6 +1,7 @@
 #include "cloud.cuh"
-
 #include "rayData.cuh"
+
+static const int MAX_DEPTH = 2000;
 
 rtDeclareVariable(RadianceRayData, resultRadiance, rtPayload, );
 rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
@@ -20,13 +21,14 @@ RT_PROGRAM void totalRadiance()
     unsigned int seed = tea<4>(launchID.x * 4096 + launchID.y);
 
     float skySampleProbability = 0.1f;
-    bool shouldSampleSky = subframeId % 10 == 0;
+    //Uncomment to enable sky:
+    bool shouldSampleSky = false;//subframeId % 10 == 0;
 
     int depth = 0;
     while (isInBox(pos))
     {
         depth++;
-        if (depth == 1000)
+        if (depth == MAX_DEPTH)
         {
             break;
         }
@@ -81,11 +83,12 @@ RT_PROGRAM void multipleScatterSunRadiance()
 
     unsigned int seed = tea<4>(launchID.x * 4096 + launchID.y);
 
+    direction = getNewDirection(seed, direction);
     int depth = 0;
     while (isInBox(pos))
     {
         depth++;
-        if (depth == 1000)
+        if (depth == MAX_DEPTH)
         {
             break;
         }
@@ -98,11 +101,8 @@ RT_PROGRAM void multipleScatterSunRadiance()
         }
         else
         {
-            if (depth > 1)
-            {
-                // next event estimation
-                radiance += getInScattering(scatter, direction, true);
-            }
+            // next event estimation
+            radiance += getInScattering(scatter, direction, true);
 
             pos = scatter.scatterPos;
 

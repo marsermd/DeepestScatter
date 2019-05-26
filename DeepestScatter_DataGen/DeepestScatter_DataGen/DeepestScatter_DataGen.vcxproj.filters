@@ -96,12 +96,12 @@
     <ClCompile Include="src\Scene\Cameras\EmptyRenderer.cpp">
       <Filter>src\Scene\Cameras</Filter>
     </ClCompile>
+    <ClCompile Include="src\Scene\Cameras\PathTracingRenderer.cpp">
+      <Filter>src\Scene\Cameras</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CudaCompile Include="src\CUDA\inScatter.cu">
-      <Filter>src\CUDA</Filter>
-    </CudaCompile>
-    <CudaCompile Include="src\CUDA\pinholeCamera.cu">
       <Filter>src\CUDA</Filter>
     </CudaCompile>
     <CudaCompile Include="src\CUDA\reinhard.cu">
@@ -144,6 +144,9 @@
       <Filter>src\CUDA</Filter>
     </CudaCompile>
     <CudaCompile Include="src\CUDA\lightProbeCollector.cu">
+      <Filter>src\CUDA</Filter>
+    </CudaCompile>
+    <CudaCompile Include="src\CUDA\pathTracingCamera.cu">
       <Filter>src\CUDA</Filter>
     </CudaCompile>
   </ItemGroup>
@@ -542,6 +545,12 @@
       <Filter>src\Uitl</Filter>
     </ClInclude>
     <ClInclude Include="src\CUDA\LightProbe.cuh">
+      <Filter>src\CUDA</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Scene\Cameras\PathTracingRenderer.h">
+      <Filter>src\Scene\Cameras</Filter>
+    </ClInclude>
+    <ClInclude Include="src\CUDA\cameraCommon.cuh">
       <Filter>src\CUDA</Filter>
     </ClInclude>
   </ItemGroup>

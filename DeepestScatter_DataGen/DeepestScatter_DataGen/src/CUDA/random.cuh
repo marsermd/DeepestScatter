@@ -132,40 +132,40 @@ static __host__ __device__ __inline__ optix::float3 uniformOnSphereCircle(unsign
 
 static __host__ __device__ __inline__ optix::float3 uniformOnSphere(unsigned int& prev)
 {
-    float u = rnd(prev);
-    float v = rnd(prev);
+    const float u = rnd(prev);
+    const float v = rnd(prev);
 
-    float phi = u * M_PIf * 2;
-    // This works because the surface of a sphere strip between two parralel planes 
+    const float phi = u * M_PIf * 2;
+    // This works because the surface of a sphere strip between two parallel planes 
     // only depends on the distance between the planes.
-    float cosTheta = 2 * v - 1;
-    float sinTheta = sqrt(1 - cosTheta * cosTheta);
+    const float cosTheta = 2 * v - 1;
+    const float sinTheta = sqrt(1 - cosTheta * cosTheta);
 
-    float x = cos(phi) * sinTheta;
-    float y = sin(phi) * sinTheta;
-    float z = cosTheta;
+    const float x = cos(phi) * sinTheta;
+    const float y = sin(phi) * sinTheta;
+    const float z = cosTheta;
 
     return optix::make_float3(x, y, z);
 }
 
 static __host__ __device__ __inline__ optix::float2 uniformOnDisc(unsigned int& prev)
 {
-    float theta = rnd(prev) * M_PIf * 2;
-    float sqrtR = sqrt(rnd(prev));
+    const float theta = rnd(prev) * M_PIf * 2;
+    const float sqrtR = sqrt(rnd(prev));
 
-    float x = sqrtR * cos(theta);
-    float y = sqrtR * sin(theta);
+    const float x = sqrtR * cos(theta);
+    const float y = sqrtR * sin(theta);
 
     return optix::make_float2(x, y);
 }
 
 static __host__ __device__ __inline__ optix::float3 uniformOnDisc(unsigned int& prev, optix::float3 normal)
 {
-    float theta = rnd(prev) * M_PIf * 2;
-    float sqrtR = sqrt(rnd(prev));
+    const float theta = rnd(prev) * M_PIf * 2;
+    const float sqrtR = sqrt(rnd(prev));
 
-    float x = sqrtR * cos(theta);
-    float y = sqrtR * sin(theta);
+    const float x = sqrtR * cos(theta);
+    const float y = sqrtR * sin(theta);
 
     optix::Onb onb(normal);
     optix::float3 result = optix::make_float3(x, 0, y);

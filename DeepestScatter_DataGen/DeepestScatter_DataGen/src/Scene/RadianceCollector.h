@@ -36,8 +36,6 @@ namespace DeepestScatter
         int32_t getConvergedCount() const;
         int32_t getRemainingCount() const;
     private:
-        static constexpr uint32_t MAX_THREAD_COUNT = 20 * 2048;
-
         void setupVariables(optix::Program& handle);
         void scheduleTasks(const gsl::span<Gpu::PointRadianceTask>& tasks);
         void recordToDataset();

@@ -11,9 +11,11 @@
 
 #pragma warning (push, 0)
 #include "ExecutionLoop/Tasks.h"
+#include "Result.pb.h"
 #include "BakedDescriptor.pb.h"
 #include "BakedInterpolationSet.pb.h"
 #include "DisneyDescriptor.pb.h"
+#include "ScatterSample.pb.h"
 #pragma warning (pop)
 
 namespace di = Hypodermic;
@@ -56,7 +58,7 @@ int main(int argc, char* argv[])
         {
             GuiExecutionLoop loop(argc, argv);
 
-            //loop.run(Tasks::collect<Persistance::BakedInterpolationSet>(databasePath, cloudRoot, Tasks::CollectMode::Reset));
+            //loop.run(Tasks::collect<Persistance::Result>(databasePath, cloudRoot, Tasks::CollectMode::Contunue));
 
             loop.run(Tasks::renderCloud(cloudPath, 7000));
         }

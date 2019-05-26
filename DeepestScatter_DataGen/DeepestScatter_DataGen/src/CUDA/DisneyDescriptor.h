@@ -98,7 +98,6 @@ namespace DeepestScatter
             {
             public:
                 float omega;
-                float alpha;
             };
 
             class Descriptor

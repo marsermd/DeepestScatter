@@ -16,7 +16,7 @@ class BaseDataset(data.Dataset):
 
     def __init__(self, lmdbDataset, mainProtocolType):
         self.lmdbDataset = lmdbDataset
-        self.length = self.lmdbDataset.getCountOf(mainProtocolType)
+        self.length = min(self.lmdbDataset.getCountOf(mainProtocolType), self.lmdbDataset.getCountOf(Result))
         self.cache = {}
 
     def __len__(self):

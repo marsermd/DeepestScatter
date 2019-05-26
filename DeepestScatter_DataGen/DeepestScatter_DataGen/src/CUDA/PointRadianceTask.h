@@ -3,7 +3,7 @@
 #include <optixu/optixu_math_namespace.h>
 #include <cinttypes>
 #include <cfloat>
-#include <cassert>
+#include <stdexcept>
 
 namespace DeepestScatter
 {
@@ -53,8 +53,12 @@ namespace DeepestScatter
              */
             inline __host__ PointRadianceTask& operator+=(const PointRadianceTask& other)
             {
-                assert(other.id == id);
-                const float newWeight = other.experimentCount / (experimentCount + other.experimentCount);
+                if (other.id != id)
+                {
+                    throw std::invalid_argument("Different point radiance tasks cannot be merged into one!");
+                }
+
+                const float newWeight = other.experimentCount * 1.0f / (experimentCount + other.experimentCount);
 
                 radiance += (other.radiance - radiance) * newWeight;
                 runningVariance += other.runningVariance;

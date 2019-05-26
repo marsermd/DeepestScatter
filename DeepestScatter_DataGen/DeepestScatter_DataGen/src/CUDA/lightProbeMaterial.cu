@@ -13,6 +13,17 @@ using namespace DeepestScatter::Gpu;
 rtDeclareVariable(LightProbeRayData, rayData, rtPayload, );
 rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
 
+static __host__ __device__ __inline__ float getSignedAngle(const float3& v1, const float3& v2, const float3& normal)
+{
+    float angle = acos(dot(v1, v2));
+
+    if (dot(normal, cross(v1, v2)) < 0)
+    {
+        angle = -angle;
+    }
+    return angle;
+}
+
 RT_PROGRAM void sampleLightProbe()
 {
     float3 hitPoint = ray.origin + tHit * ray.direction;
@@ -48,7 +59,7 @@ RT_PROGRAM void sampleLightProbe()
         const float3 eY2 = cross(eX2, eZ2);
 
         rayData.lightProbe->omega = acos(dot(lightDirection, direction));
-        rayData.lightProbe->alpha = acos(dot(eY1, eY2));
+        rayData.lightProbe->alpha = getSignedAngle(eY1, eY2, eZ1);
         
         interpolateLightProbe(scatter.scatterPos, rayData.lightProbe->lightProbe);
         
@@ -57,7 +68,6 @@ RT_PROGRAM void sampleLightProbe()
         for (size_t layer = 0; layer < rayData.descriptor->descriptor.LAYERS_CNT; layer++)
         {
             rayData.descriptor->descriptor.layers[layer].meta.omega = rayData.lightProbe->omega;
-            rayData.descriptor->descriptor.layers[layer].meta.alpha = rayData.lightProbe->alpha;
         }
     }
 

@@ -14,6 +14,8 @@
 
 namespace DeepestScatter
 {
+    static const uint32_t MAX_THREAD_COUNT = 40 * 2048;
+
     void RadianceCollector::init()
     {
         resetProgram = resources->loadProgram("pointEmissionCamera.cu", "clear");
@@ -110,6 +112,10 @@ namespace DeepestScatter
                 bool isConverged =
                     representative.getRelativeConfidenceInterval() < 0.02f ||
                     representative.getAbsoluteConfidenceInterval() < 1e-2f;
+                if (representative.radiance < FLT_EPSILON)
+                {
+                    isConverged = representative.experimentCount > 10000;
+                }
                 if (isConverged)
                 {
                     convergedTasks.push_back(representative);

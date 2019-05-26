@@ -2,10 +2,10 @@ from lmdb import Environment
 
 import os
 
+from BakedInterpolationSet_pb2 import BakedInterpolationSet
 from PythonProtocols.SceneSetup_pb2 import SceneSetup
 from PythonProtocols.ScatterSample_pb2 import ScatterSample
 from PythonProtocols.DisneyDescriptor_pb2 import DisneyDescriptor
-from PythonProtocols.BakedDescriptor_pb2 import BakedDescriptor
 from PythonProtocols.Result_pb2 import Result
 
 
@@ -34,7 +34,7 @@ class LmdbDataset:
         self.__addDb(SceneSetup, create=create)
         self.__addDb(ScatterSample, create=create)
         self.__addDb(DisneyDescriptor, create=create)
-        self.__addDb(BakedDescriptor, create=create)
+        self.__addDb(BakedInterpolationSet, create=create)
         self.__addDb(Result, create=create)
 
     def __addDb(self, protocol, create):

@@ -140,35 +140,39 @@ namespace DeepestScatter
 
     void Camera::render()
     {
-        uint32_t previousSubframe;
-        if (context["subframeId"]->getType() != RT_OBJECTTYPE_UNKNOWN)
+        if (!isConverged())
         {
-            context["subframeId"]->getUint(previousSubframe);
-        }
+            //TODO: previous subframe???
+            uint32_t previousSubframe;
+            if (context["subframeId"]->getType() != RT_OBJECTTYPE_UNKNOWN)
+            {
+                context["subframeId"]->getUint(previousSubframe);
+            }
 
-        //todo: configurable subframe count
-        for (int i = 0; i < 1; i++)
-        {
-            subframeId++;
-            context["subframeId"]->setUint(subframeId);
-            std::cout << "rendering subframe " << subframeId << std::endl;
+            //todo: configurable subframe count
+            for (int i = 0; i < 1; i++)
+            {
+                subframeId++;
+                context["subframeId"]->setUint(subframeId);
+                std::cout << "rendering subframe " << subframeId << std::endl;
 
-            renderer->render(frameResultBuffer);
+                renderer->render(frameResultBuffer);
 
-            context->setRayGenerationProgram(0, updateFrameResult);
-            context->validate();
+                context->setRayGenerationProgram(0, updateFrameResult);
+                context->validate();
+                context->launch(0, width, height);
+            }
+
+            context->setRayGenerationProgram(0, reinhardFirstPass);
+            context->launch(0, width, 1);
+
+            context->setRayGenerationProgram(0, reinhardSecondPass);
+            context->launch(0, 1, 1);
+
+            context["exposure"]->setFloat(exposure);
+            context->setRayGenerationProgram(0, reinhardLastPass);
             context->launch(0, width, height);
         }
-
-        context->setRayGenerationProgram(0, reinhardFirstPass);
-        context->launch(0, width, 1);
-
-        context->setRayGenerationProgram(0, reinhardSecondPass);
-        context->launch(0, 1, 1);
-
-        context["exposure"]->setFloat(exposure);
-        context->setRayGenerationProgram(0, reinhardLastPass);
-        context->launch(0, width, height);
 
         GLenum glDataType = GL_UNSIGNED_BYTE;
         GLenum glFormat = GL_RGBA;
@@ -178,6 +182,43 @@ namespace DeepestScatter
             BufferBind<optix::uchar4> screen(screenBuffer);
             glDrawPixels(width, height, glFormat, glDataType, static_cast<GLvoid*>(&screen[0]));
         }
+    }
+
+    bool Camera::isConverged()
+    {
+        if (subframeId < 10)
+        {
+            return false;
+        }
+
+        BufferBind<optix::float4> runningVariance(varianceBuffer);
+        BufferBind<optix::float4> progressive(progressiveBuffer);
+
+        bool isConverged = true;
+
+        size_t convergedCount = 0;
+        for (size_t id = 0; id < runningVariance.getData().size(); id++)
+        {
+            const float pixelRunningVariance = runningVariance[id].x;
+            const float N = gsl::narrow<float>(subframeId);
+            const float sigma = sqrtf(pixelRunningVariance / N);
+            const float absoluteConfidence = 1.96f * sigma / sqrtf(N);
+            const float relativeConfidence = absoluteConfidence / (progressive[id].x + FLT_EPSILON);
+
+            const bool isConvergedPixel =
+                relativeConfidence < 0.02f ||
+                absoluteConfidence < 1e-2f;
+            isConverged &= isConvergedPixel;
+
+            if (isConvergedPixel)
+            {
+                convergedCount++;
+            }
+        }
+        std::cout << "Converged: " << convergedCount << "/" << runningVariance.getData().size() 
+            << " --- " << runningVariance.getData().size() - convergedCount << "left" << std::endl;
+
+        return isConverged;
     }
 
     void Camera::increaseExposure()

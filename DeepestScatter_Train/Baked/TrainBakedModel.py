@@ -23,28 +23,24 @@ class BakedTrainer(Trainer):
         torch.set_printoptions(precision=10)
         torch.set_printoptions(threshold=5000)
 
-        lightProbeModel = model.lightProbe
-        rendererModel = model.renderer
+        lightProbeModel = model.lightProbeModel
+        rendererModel = model.rendererModel
 
         dataloader = data.DataLoader(dataset, batch_size=1, shuffle=False)
         args, labels = next(iter(dataloader))
-        bakedDescriptor, disneyDescriptor, omega, alpha = [x.to(self.device) for x in args]
+        bakedDescriptors, bakedPowers, disneyDescriptor, omega, alpha = self.toCuda(args)
 
-        lightProbe = lightProbeModel(bakedDescriptor)
-        lightProbe = torch.cat(
-            (
-                lightProbe,
-                omega.unsqueeze(1),
-                alpha.unsqueeze(1)
-            ),
-            dim=1
-        )
+        lightProbes = [lightProbeModel(descriptor) for descriptor in bakedDescriptors]
+        lightProbe = sum([lightProbe * power.repeat(1, 200) for (lightProbe, power) in zip(lightProbes, bakedPowers)])
+
+        lightProbe = model.applyAnglesToLightProbe(lightProbe, omega, alpha)
+
         out = rendererModel(lightProbe, disneyDescriptor)
 
         print(labels)
         print(out)
 
-        self.exportModel(lightProbeModel, bakedDescriptor)
+        self.exportModel(lightProbeModel, bakedDescriptors[0])
         self.exportModel(rendererModel, (lightProbe, disneyDescriptor))
 
 

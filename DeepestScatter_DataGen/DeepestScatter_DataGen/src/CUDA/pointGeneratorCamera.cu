@@ -19,11 +19,11 @@ rtDeclareVariable(float, sceneEPS, , );
 
 RT_PROGRAM void generatePoints()
 {
-    unsigned int seed = tea<6>(launchID);
+    unsigned int seed = tea<4>(launchID);
     while (true)
     {
         float3 discNormal = uniformOnSphere(seed);
-        float discRadius = sqrtf(3) / 2;
+        const float discRadius = sqrtf(3) / 2;
         float3 position = uniformOnDisc(seed, discNormal) * discRadius;
 
         ScatteringRayData scatter;

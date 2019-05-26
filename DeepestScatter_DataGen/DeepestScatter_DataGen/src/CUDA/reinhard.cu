@@ -75,9 +75,9 @@ RT_PROGRAM void applyReinhard()
     rgb.y = powf(rgb.y, 1.f / 2.2f);
     rgb.z = powf(rgb.z, 1.f / 2.2f);
 
-
-    //float N = subframeId;
-    //rgb = make_float4(clamp(sqrt(varianceBuffer[launchID].z / N) / progressiveBuffer[launchID].z / sqrtf(N), 0.f, 1.f));
+    //uncomment to show variance.
+    // float N = subframeId;
+    // rgb = make_float4(clamp(sqrt(varianceBuffer[launchID].z / N) / progressiveBuffer[launchID].z / sqrtf(N), 0.f, 1.f));
     rgb = rgb * 255;
 
     screenBuffer[launchID] = make_uchar4(rgb.x, rgb.y, rgb.z, 255);

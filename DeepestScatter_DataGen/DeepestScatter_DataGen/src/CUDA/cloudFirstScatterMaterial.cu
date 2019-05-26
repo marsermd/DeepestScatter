@@ -17,7 +17,7 @@ RT_PROGRAM void firstScatterPosition()
     unsigned int seed = tea<4>(launchID.x * 4096 + launchID.y);
 
     ScatteringEvent scatter = getNextScatteringEvent(seed, pos, direction);
-    if (isInBox(scatter.scatterPos))
+    if (isInBox(scatter.scatterPos) && scatter.hasScattered)
     {
         firstScatter.position = scatter.scatterPos - 0.5f * bboxSize;
         firstScatter.hasScattered = true;

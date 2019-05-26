@@ -76,7 +76,7 @@ namespace DeepestScatter
             {
                 Cloud::Rendering
                 {
-                    Cloud::Rendering::SampleStep{1.0f / 1024.f},
+                    Cloud::Rendering::SampleStep{1.0f / 512.f},
                     renderingMode
                 },
                 Cloud::Model

@@ -10,6 +10,9 @@
 #include "Scene/Cameras/BakedRenderer.h"
 #include "Scene/Cameras/EmptyRenderer.h"
 #include "BakedInterpolationSet.pb.h"
+#include "Scene/Cameras/PathTracingRenderer.h"
+#include "ScatterSample.pb.h"
+#include "Scene/ScatterSampleCollector.h"
 
 namespace DeepestScatter
 {
@@ -39,7 +42,7 @@ namespace DeepestScatter
             taskBuilder.addRegistrations(installFramework(width, height));
             taskBuilder.addRegistrations(installSceneSetup(sceneSetup, ".", Cloud::Rendering::Mode::SunAndSkyAllScatter, Cloud::Model::Mipmaps::On));
             taskBuilder.addRegistrations(installApp());
-            taskBuilder.registerType<DisneyRenderer>().as<ARenderer>().singleInstance();
+            taskBuilder.registerType<BakedRenderer>().as<ARenderer>().singleInstance();
 
             auto container = taskBuilder.build();
 
@@ -93,6 +96,13 @@ namespace DeepestScatter
         }
 
         return tasks;
+    }
+
+
+    template<>
+    void Tasks::addCollector<Persistance::ScatterSample>(Hypodermic::ContainerBuilder& builder)
+    {
+        builder.registerType<ScatterSampleCollector>().as<SceneItem>().asSelf().singleInstance();
     }
 
     template<>

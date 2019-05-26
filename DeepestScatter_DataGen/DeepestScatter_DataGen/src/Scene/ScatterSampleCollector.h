@@ -30,7 +30,7 @@ namespace DeepestScatter
 
         void init() override;
         void reset() override;
-        void update() override {};
+        void update() override;
 
     private:
         template <class T>

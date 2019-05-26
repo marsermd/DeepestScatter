@@ -18,7 +18,10 @@ namespace DeepestScatter
 
         setupVariables(resetProgram);
         setupVariables(generateProgram);
+    }
 
+    void ScatterSampleCollector::update()
+    {
         reset();
         collect();
     }

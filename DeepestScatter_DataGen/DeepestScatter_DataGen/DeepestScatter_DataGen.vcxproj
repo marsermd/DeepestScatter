@@ -25,6 +25,7 @@
     <ClCompile Include="src\Scene\Cameras\Camera.cpp" />
     <ClCompile Include="src\Scene\Cameras\DisneyRenderer.cpp" />
     <ClCompile Include="src\Scene\Cameras\EmptyRenderer.cpp" />
+    <ClCompile Include="src\Scene\Cameras\PathTracingRenderer.cpp" />
     <ClCompile Include="src\Scene\CloudMaterial.cpp" />
     <ClCompile Include="src\Scene\DisneyDescriptorCollector.cpp" />
     <ClCompile Include="src\Scene\RadianceCollector.cpp" />
@@ -49,11 +50,12 @@
     <CudaCompile Include="src\CUDA\lightProbeMaterial.cu" />
     <CudaCompile Include="src\CUDA\pointGeneratorCamera.cu" />
     <CudaCompile Include="src\CUDA\inScatter.cu" />
-    <CudaCompile Include="src\CUDA\pinholeCamera.cu" />
+    <CudaCompile Include="src\CUDA\pathTracingCamera.cu" />
     <CudaCompile Include="src\CUDA\progressive.cu" />
     <CudaCompile Include="src\CUDA\reinhard.cu" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\CUDA\cameraCommon.cuh" />
     <ClInclude Include="src\CUDA\cloud.cuh" />
     <ClInclude Include="src\CUDA\DisneyDescriptor.cuh" />
     <ClInclude Include="src\CUDA\DisneyDescriptor.h" />
@@ -173,6 +175,7 @@
     <ClInclude Include="src\Scene\Cameras\Camera.h" />
     <ClInclude Include="src\Scene\Cameras\DisneyRenderer.h" />
     <ClInclude Include="src\Scene\Cameras\EmptyRenderer.h" />
+    <ClInclude Include="src\Scene\Cameras\PathTracingRenderer.h" />
     <ClInclude Include="src\Scene\CloudMaterial.h" />
     <ClInclude Include="src\Scene\DisneyDescriptorCollector.h" />
     <ClInclude Include="src\Scene\RadianceCollector.h" />

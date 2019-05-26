@@ -1,10 +1,8 @@
 import torch
-import numpy as np
 
 from BakedInterpolationSet_pb2 import BakedInterpolationSet
 from BaseDataset import BaseDataset
-from PythonProtocols.BakedDescriptor_pb2 import BakedDescriptor
-from Vector import angleBetween, npVector, descriptorBasis, projectionOn
+from Vector import angleBetween, npVector, descriptorBasis, signedAngleBetween
 
 
 class BakedDataset(BaseDataset):
@@ -15,24 +13,28 @@ class BakedDataset(BaseDataset):
         super(BakedDataset, self).__init__(lmdbDataset, BakedInterpolationSet)
 
     def __doGetItem__(self):
-        bakedDescriptor = self.__getBakedDescriptor()
+        bakedDescriptors, powers = self.__getBakedDescriptors()
         omega = self.__getViewLightAngle()
         alpha = self.__getDescriptorAngle()
         light = self.__getLightIntensity()
 
         disneyDescriptor = self.__getDisneyDescriptor()
+        disneyDescriptor = torch.cat((disneyDescriptor, omega.repeat(self.realtimeLayers, 1)), dim=1)
 
-        return (bakedDescriptor, disneyDescriptor, omega, alpha), light
+        return (bakedDescriptors, powers, disneyDescriptor, omega, alpha), light
 
-    def __getBakedDescriptor(self):
-        descriptor = self.getBakedDescriptor()
+    def __getBakedDescriptors(self):
+        interpolationSet = self.getBakedInterpolationSet()
+
+        descriptors = [interpolationSet.a, interpolationSet.b, interpolationSet.c, interpolationSet.d]
+        powers = [torch.tensor([descriptor.power], dtype=torch.float32) for descriptor in descriptors]
 
         # Grid values are stored as bytes. Let's convert them to 0-1 range
-        descriptor = torch.tensor(list(descriptor.grid), dtype=torch.float32) / 256
+        descriptors = [torch.tensor(list(descriptor.grid), dtype=torch.float32) / 256 for descriptor in descriptors]
         # Shape the grid according to the layers
-        descriptor = descriptor.view((10, -1)).narrow(0, 0, self.bakedLayers)
+        descriptors = [descriptor.view((10, -1)).narrow(0, 0, self.bakedLayers) for descriptor in descriptors]
 
-        return descriptor
+        return descriptors, powers
 
     def __getDisneyDescriptor(self):
         descriptor = self.getDisneyDescriptor()
@@ -54,14 +56,15 @@ class BakedDataset(BaseDataset):
     def __getDescriptorAngle(self):
         scene = self.getScene()
         sample = self.getScatterSample()
-        descriptor = self.getBakedDescriptor()
+        # We can take any of the 4 descriptors. They will all have the same angle.
+        descriptor = self.getBakedInterpolationSet().a
 
         lightDirection = npVector(scene.light_direction)
 
         x1, y1, z1 = descriptorBasis(lightDirection, npVector(sample.view_direction))
         x2, y2, z2 = descriptorBasis(lightDirection, npVector(descriptor.direction))
 
-        alpha = angleBetween(y1, y2)
+        alpha = signedAngleBetween(y1, y2, z1)
 
         return torch.tensor(alpha, dtype=torch.float32)
 

@@ -79,6 +79,13 @@ class Trainer:
     def createModel(self):
         pass
 
+    def toCuda(self, args):
+        if isinstance(args, tuple) or isinstance(args, list):
+            args = [self.toCuda(x) for x in args]
+        else:
+            args = args.to(self.device)
+        return args
+
     def run(self):
         # Parameters
         params = {'batch_size': 1024,
@@ -90,7 +97,10 @@ class Trainer:
         writer = SummaryWriter()
 
         # Generators
-        lmdbDatasets = LmdbDatasets("D:\\Dataset")
+        #TODO:
+        datasetPath = "..\Data\Dataset"#"D:\\Dataset"
+        print("USING DATASET AT: ", datasetPath.upper())
+        lmdbDatasets = LmdbDatasets(datasetPath)
 
         trainingSet = self.createDataset(lmdbDatasets.train)
         trainingGenerator = data.DataLoader(trainingSet, **params)
@@ -111,10 +121,8 @@ class Trainer:
             # Training
             for batchId, (args, labels) in enumerate(trainingGenerator):
                 # Transfer to GPU
-                if isinstance(args, tuple) or isinstance(args, list):
-                    args = [x.to(self.device) for x in args]
-                else:
-                    args = args.to(self.device)
+                args = self.toCuda(args)
+
                 labels = labels.to(self.device)
                 labels = logModel.logEps(labels)
 
@@ -136,13 +144,16 @@ class Trainer:
                 optimizer.step(closure)
 
                 print((datetime.datetime.now() - start))
-                self.saveCheckpoint({
-                    'epoch': epoch + 1,
-                    'state_dict': model.state_dict(),  # using model on purpose, LogModel is only used for calculating loss
-                    'optimizer': optimizer.state_dict(),
-                }, True)
 
-                self.save(model, trainingSet)
+                if batchId % 10 == 0:
+                    self.saveCheckpoint({
+                        'epoch': epoch + 1,
+                        'state_dict': model.state_dict(),
+                    # using model on purpose, LogModel is only used for calculating loss
+                        'optimizer': optimizer.state_dict(),
+                    }, True)
+
+                    self.save(model, trainingSet)
 
             # Todo: calculate loss on validation dataset
             # id = 0

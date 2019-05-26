@@ -8,7 +8,7 @@
 namespace DeepestScatter
 {
     static constexpr optix::uint2 RECT_SIZE{ 128, 128 };
-    static const std::string modelDirectory = "../../DeepestScatter_Train/runs/BakedModel/1024_joint_noInterpolation_7_4/";
+    static const std::string modelDirectory = "../../DeepestScatter_Train/runs/May26_01-54-01_DESKTOP-D5QPR6V/";
 
     optix::Program BakedRenderer::getCamera()
     {
@@ -35,7 +35,7 @@ namespace DeepestScatter
         std::cout << std::endl << sizeof(Gpu::LightProbeRendererInput) << std::endl;
         lightProbeInputBuffer->setDevicePointer(context->getEnabledDevices()[0], lightProbeInput.data_ptr());
 
-        auto descriptorInput = torch::zeros({ RECT_SIZE.x * RECT_SIZE.y, (int)Gpu::BakedRendererDescriptor::Descriptor::LAYERS_CNT, 227 }, options);
+        auto descriptorInput = torch::zeros({ RECT_SIZE.x * RECT_SIZE.y, (int)Gpu::BakedRendererDescriptor::Descriptor::LAYERS_CNT, 226 }, options);
         rendererInputs.emplace_back(descriptorInput);
         descriptorInputBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
         descriptorInputBuffer->setElementSize(sizeof(Gpu::BakedRendererDescriptor));

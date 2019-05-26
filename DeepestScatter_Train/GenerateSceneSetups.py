@@ -12,7 +12,7 @@ def uniformOnSphere():
     cosTheta = np.random.uniform(-1, 1)
     phi = np.random.uniform(0, np.pi * 2)
 
-    sinTheta = np.sqrt(1 - cosTheta * cosTheta);
+    sinTheta = np.sqrt(1 - cosTheta * cosTheta)
 
     x = np.cos(phi) * sinTheta
     y = np.sin(phi) * sinTheta
@@ -45,8 +45,8 @@ def addScenes(clouds, scenesPerCloud, datasets):
         dataset = np.random.choice(datasets, p=weights)
 
         for i in range(scenesPerCloud):
-            minSize = 500
-            maxSize = 20_000
+            minSize = 1000
+            maxSize = 12_000
             logSizeMeters = np.random.uniform(np.log(minSize), np.log(maxSize))
             sizeMeters = np.exp(logSizeMeters)
             lightDirection = uniformOnSphere()
@@ -59,7 +59,7 @@ if __name__ == "__main__":
     parser.add_argument("--cloudsRoot")
     parser.add_argument("--datasetRoot")
 
-    parser.add_argument("--scenesPerCloud", type=int)
+    parser.add_argument("--scenesPerCloud", type=int, default=30)
 
     args = parser.parse_args()
 

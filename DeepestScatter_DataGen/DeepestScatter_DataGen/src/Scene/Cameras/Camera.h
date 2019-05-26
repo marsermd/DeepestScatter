@@ -59,6 +59,8 @@ namespace DeepestScatter
 
         void updatePosition();
 
+        bool isConverged();
+
         uint32_t width;
         uint32_t height;
 

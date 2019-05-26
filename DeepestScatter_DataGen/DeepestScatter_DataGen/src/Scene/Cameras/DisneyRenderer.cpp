@@ -15,7 +15,7 @@ namespace DeepestScatter
 
     void DisneyRenderer::init()
     {
-        const std::string modelPath = "../../DeepestScatter_Train/runs/May20_23-13-35_DESKTOP-D5QPR6V/DisneyModel.pt";
+        const std::string modelPath = "../../DeepestScatter_Train/runs/May25_14-30-59_DESKTOP-D5QPR6V/DisneyModel.pt";
         module = torch::jit::load(modelPath);
         module->eval();
 
