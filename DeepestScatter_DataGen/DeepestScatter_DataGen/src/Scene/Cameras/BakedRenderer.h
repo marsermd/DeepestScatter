@@ -54,7 +54,7 @@ namespace DeepestScatter
 
         void setupVariables(optix::Program& program);
 
-        void renderRect(optix::uint2 start, optix::Buffer frameResultBuffer);
+        void renderRect(optix::uint2 start);
 
         std::shared_ptr<torch::jit::script::Module> renderModel;
 
@@ -62,6 +62,7 @@ namespace DeepestScatter
         std::shared_ptr<Resources> resources;
 
         optix::Program camera;
+        optix::Program blit;
 
         std::vector<torch::jit::IValue> rendererInputs;
 
@@ -71,5 +72,6 @@ namespace DeepestScatter
         optix::Buffer lightProbeInputBuffer;
         optix::Buffer descriptorInputBuffer;
         optix::Buffer directRadianceBuffer;
+        optix::Buffer predictedRadianceBuffer;
     };
 }

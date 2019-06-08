@@ -1,14 +1,13 @@
 import torch
-import numpy as np
 
 from BaseDataset import BaseDataset
 from PythonProtocols.DisneyDescriptor_pb2 import DisneyDescriptor
 from Vector import angleBetween, npVector
 
 
-class DisneyDescriptorDataset(BaseDataset):
+class DisneyDataset(BaseDataset):
     def __init__(self, lmdbDataset):
-        super(DisneyDescriptorDataset, self).__init__(lmdbDataset, DisneyDescriptor)
+        super(DisneyDataset, self).__init__(lmdbDataset, DisneyDescriptor)
 
     def __doGetItem__(self):
         descriptor = self.__getDescriptor()
@@ -41,4 +40,4 @@ class DisneyDescriptorDataset(BaseDataset):
         result = self.getResult()
         assert result.is_converged
 
-        return result.light_intensity
+        return torch.tensor(result.light_intensity)

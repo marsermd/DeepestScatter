@@ -9,6 +9,14 @@
 #include "Util/BufferBind.h"
 #include "CUDA/rayData.cuh"
 
+#include <OpenEXR/ImfOutputFile.h>
+#include <OpenEXR/ImfInputFile.h>
+#include <OpenEXR/ImfChannelList.h>
+#include <OpenEXR/ImfStringAttribute.h>
+#include <OpenEXR/ImfMatrixAttribute.h>
+#include <OpenEXR/ImfArray.h>
+
+
 namespace DeepestScatter
 {
     void Camera::init()
@@ -138,6 +146,35 @@ namespace DeepestScatter
         program["averageLuminance"]->setBuffer(reinhardAverageLuminance);
     }
 
+    void Camera::saveToDisk()
+    {
+        using namespace Imath;
+        using namespace Imf;
+
+        Header header(width, height, 1, V2f(0, 0), 1, DECREASING_Y);
+        header.lineOrder() = DECREASING_Y;
+        header.channels().insert("R", Channel(Imf::FLOAT));
+        header.channels().insert("G", Channel(Imf::FLOAT));
+        header.channels().insert("B", Channel(Imf::FLOAT));
+
+        BufferBind<optix::float4> frame(progressiveBuffer);
+
+        optix::float4* start = &frame[0];
+        const size_t xStride = sizeof(optix::float4);
+        const size_t yStride = sizeof(optix::float4) * width;
+
+        std::cout << frame[width * height / 2 + width / 2].x << std::endl;
+
+        OutputFile file("test.exr", header);
+        FrameBuffer frameBuffer;
+        frameBuffer.insert("R", Slice(Imf::FLOAT, reinterpret_cast<char*>(start++), xStride, yStride));
+        frameBuffer.insert("G", Slice(Imf::FLOAT, reinterpret_cast<char*>(start++), xStride, yStride));
+        frameBuffer.insert("B", Slice(Imf::FLOAT, reinterpret_cast<char*>(start++), xStride, yStride));
+        file.setFrameBuffer(frameBuffer);
+        
+        file.writePixels(gsl::narrow<int>(height));
+    }
+
     void Camera::render()
     {
         if (!isConverged())
@@ -172,6 +209,15 @@ namespace DeepestScatter
             context["exposure"]->setFloat(exposure);
             context->setRayGenerationProgram(0, reinhardLastPass);
             context->launch(0, width, height);
+            if (subframeId % 40 == 0)
+            {
+                saveToDisk();
+            }
+        }
+        else
+        {
+
+            saveToDisk();
         }
 
         GLenum glDataType = GL_UNSIGNED_BYTE;
@@ -186,7 +232,7 @@ namespace DeepestScatter
 
     bool Camera::isConverged()
     {
-        if (subframeId < 10)
+        if (subframeId < 1000)
         {
             return false;
         }

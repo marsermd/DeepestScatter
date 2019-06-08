@@ -3,6 +3,7 @@
 #include "Util/Resources.h"
 #include "Util/BufferBind.h"
 #include "CUDA/rayData.cuh"
+#include <torch/csrc/api/include/torch/utils.h>
 
 namespace DeepestScatter
 {
@@ -15,7 +16,7 @@ namespace DeepestScatter
 
     void DisneyRenderer::init()
     {
-        const std::string modelPath = "../../DeepestScatter_Train/runs/May25_14-30-59_DESKTOP-D5QPR6V/DisneyModel.pt";
+        const std::string modelPath = "../../DeepestScatter_Train/runs/Jun05_21-09-52_DESKTOP-D5QPR6V/DisneyModel.pt";
         module = torch::jit::load(modelPath);
         module->eval();
 
@@ -49,6 +50,8 @@ namespace DeepestScatter
     {
         size_t width, height;
         frameResultBuffer->getSize(width, height);
+
+        torch::NoGradGuard no_grad_guard;
 
         for (uint32_t x = 0; x < width; x += RECT_SIZE.x)
         {

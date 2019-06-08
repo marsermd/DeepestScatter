@@ -8,9 +8,9 @@ from Vector import angleBetween, npVector, descriptorBasis, signedAngleBetween
 class BakedDataset(BaseDataset):
 
     def __init__(self, lmdbDataset, bakedLayers, realtimeLayers):
+        super(BakedDataset, self).__init__(lmdbDataset, BakedInterpolationSet)
         self.bakedLayers = bakedLayers
         self.realtimeLayers = realtimeLayers
-        super(BakedDataset, self).__init__(lmdbDataset, BakedInterpolationSet)
 
     def __doGetItem__(self):
         bakedDescriptors, powers = self.__getBakedDescriptors()
@@ -72,4 +72,4 @@ class BakedDataset(BaseDataset):
         result = self.getResult()
         assert result.is_converged
 
-        return result.light_intensity
+        return torch.tensor(result.light_intensity)

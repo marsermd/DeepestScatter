@@ -7,8 +7,8 @@ from Trainer import Trainer
 
 
 class BakedTrainer(Trainer):
-    BAKED_LAYERS = 7
-    REALTIME_LAYERS = 4
+    BAKED_LAYERS = 9
+    REALTIME_LAYERS = 3
 
     def __init__(self):
         super(BakedTrainer, self).__init__()
@@ -21,7 +21,6 @@ class BakedTrainer(Trainer):
 
     def save(self, model, dataset):
         torch.set_printoptions(precision=10)
-        torch.set_printoptions(threshold=5000)
 
         lightProbeModel = model.lightProbeModel
         rendererModel = model.rendererModel

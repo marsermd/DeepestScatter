@@ -18,8 +18,8 @@ namespace DeepestScatter
 {
     namespace di = Hypodermic;
 
-    uint32_t width = 1024u;
-    uint32_t height = 768u;
+    uint32_t width = 512u;
+    uint32_t height = 256u;
 
     std::queue<GuiExecutionLoop::LazyTask> Tasks::renderCloud(const std::string &cloudPath, float sizeM)
     {

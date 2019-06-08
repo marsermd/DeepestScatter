@@ -1,7 +1,7 @@
 import torch
 from torch.utils import data
 
-from DisneyDescriptorDataset import DisneyDescriptorDataset
+from DisneyDataset import DisneyDataset
 from DisneyModel import DisneyModel
 from Trainer import Trainer
 
@@ -12,7 +12,7 @@ class DisneyTrainer(Trainer):
         super(DisneyTrainer, self).__init__()
 
     def createDataset(self, lmdbDataset):
-        return DisneyDescriptorDataset(lmdbDataset)
+        return DisneyDataset(lmdbDataset)
 
     def createModel(self):
         return DisneyModel()

@@ -4,11 +4,12 @@
 #include "Util/BufferBind.h"
 #include "CUDA/rayData.cuh"
 #include "Util/optixExtraMath.h"
+#include <torch/csrc/api/include/torch/utils.h>
 
 namespace DeepestScatter
 {
-    static constexpr optix::uint2 RECT_SIZE{ 128, 128 };
-    static const std::string modelDirectory = "../../DeepestScatter_Train/runs/May26_01-54-01_DESKTOP-D5QPR6V/";
+    static constexpr optix::uint2 RECT_SIZE{ 512, 256 };
+    static const std::string modelDirectory = "../../DeepestScatter_Train/runs/Jun06_23-37-32_DESKTOP-D5QPR6V/";
 
     optix::Program BakedRenderer::getCamera()
     {
@@ -20,11 +21,12 @@ namespace DeepestScatter
         context->setPrintEnabled(true);
 
         const std::string renderModelPath = modelDirectory + "ProbeRendererModel.pt";
-        renderModel = torch::jit::load(renderModelPath);
+        renderModel = torch::jit::load(renderModelPath, torch::kCUDA);
         renderModel->eval();
 
         const std::string cameraFile = "bakedCamera.cu";
         camera = resources->loadProgram(cameraFile, "pinholeCamera");
+        blit = resources->loadProgram(cameraFile, "copyToFrameResult");
 
         const auto options = torch::TensorOptions().device(torch::kCUDA, -1).requires_grad(false);
         auto lightProbeInput = torch::zeros({ RECT_SIZE.x * RECT_SIZE.y, 202 }, options);
@@ -52,7 +54,10 @@ namespace DeepestScatter
         directRadianceBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
         directRadianceBuffer->setElementSize(sizeof(IntersectionInfo));
 
+        predictedRadianceBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT, RECT_SIZE.x, RECT_SIZE.y);
+
         setupVariables(camera);
+        setupVariables(blit);
     }
 
     BakedRenderer::Baker::Baker(optix::Context context, std::shared_ptr<Resources> resources, optix::size_t3 probeCount):
@@ -81,6 +86,8 @@ namespace DeepestScatter
     optix::Buffer BakedRenderer::Baker::bake()
     {
         std::cout << "Baking Light Probes... " << probeCount.x << " " << probeCount.y << " " << probeCount.z << std::endl;
+
+        torch::NoGradGuard no_grad_guard;
         for (uint32_t i = 0; i < probeCount.z; i++)
         {
             bakeAtZ(i);
@@ -104,8 +111,8 @@ namespace DeepestScatter
             BufferBind<Gpu::LightProbe> lightProbes(result);
 
             at::Tensor predicted = lightProbeModel->forward(lightProbeInputs).toTensor();
-            predicted = predicted.cpu();
-            float* output = predicted.data<float>();
+            predicted = predicted.mul_(256).to(torch::kUInt8).cpu();
+            uint8_t* output = predicted.data<uint8_t>();
 
             size_t width, height, depth;
             result->getSize(width, height, depth);
@@ -119,68 +126,53 @@ namespace DeepestScatter
         program["lightProbeInputBuffer"]->setBuffer(lightProbeInputBuffer);
         program["descriptorInputBuffer"]->setBuffer(descriptorInputBuffer);
         program["directRadianceBuffer"]->setBuffer(directRadianceBuffer);
+        program["predictedRadianceBuffer"]->setBuffer(predictedRadianceBuffer);
     }
 
     void BakedRenderer::render(optix::Buffer frameResultBuffer)
     {
+        torch::NoGradGuard no_grad_guard;
         size_t width, height;
         frameResultBuffer->getSize(width, height);
+
+        blit["frameResultBuffer"]->setBuffer(frameResultBuffer);
+        camera["frameResultBuffer"]->setBuffer(frameResultBuffer);
+
+        context->setEntryPointCount(2u);
+        context->setRayGenerationProgram(0, camera);
+        context->setRayGenerationProgram(1, blit);
+        context->validate();
 
         for (size_t x = 0; x < width; x += RECT_SIZE.x)
         {
             for (size_t y = 0; y < height; y += RECT_SIZE.y)
             {
-                renderRect(optix::make_uint2(x, y), frameResultBuffer);
+                renderRect(optix::make_uint2(x, y));
             }
         }
     }
 
-    void BakedRenderer::renderRect(optix::uint2 start, optix::Buffer frameResultBuffer)
+    void BakedRenderer::renderRect(optix::uint2 start)
     {
         context["rectOrigin"]->setUint(start);
-        camera["frameResultBuffer"]->setBuffer(frameResultBuffer);
 
-        context->setRayGenerationProgram(0, camera);
-        context->validate();
         context->launch(0, RECT_SIZE.x, RECT_SIZE.y);
 
         {
             BufferBind<IntersectionInfo> intersectionInfo(directRadianceBuffer);
-            BufferBind<optix::float4> screen(frameResultBuffer);
 
-            bool hasActiveDescriptors = std::any_of(
+            const bool hasActiveDescriptors = std::any_of(
                 intersectionInfo.getData().begin(), intersectionInfo.getData().end(), [&](const auto& x) { return x.hasScattered; });
-
-            for (int i = 0; i < intersectionInfo.getData().size(); i++)
-            {
-                hasActiveDescriptors |= intersectionInfo[i].hasScattered;
-            }
 
             if (!hasActiveDescriptors)
             {
                 return;
             }
-
-            at::Tensor predicted = renderModel->forward(rendererInputs).toTensor();
-            predicted = predicted.cpu();
-            float* output = predicted.data<float>();
-
-            size_t width, height;
-            frameResultBuffer->getSize(width, height);
-
-            size_t rectPixelId = 0;
-            for (size_t y = start.y; y < start.y + RECT_SIZE.y; y++)
-            {
-                for (size_t x = start.x; x < start.x + RECT_SIZE.x; x++)
-                {
-                    if (intersectionInfo[rectPixelId].hasScattered)
-                    {
-                        screen[y * width + x] = optix::make_float4(output[rectPixelId]) + optix::make_float4(intersectionInfo[rectPixelId].radiance);
-                    }
-
-                    rectPixelId++;
-                }
-            }
         }
+
+        at::Tensor predicted = renderModel->forward(rendererInputs).toTensor();
+        predictedRadianceBuffer->setDevicePointer(context->getEnabledDevices()[0], predicted.data_ptr());
+        
+        context->launch(1, RECT_SIZE.x, RECT_SIZE.y);
     }
 }

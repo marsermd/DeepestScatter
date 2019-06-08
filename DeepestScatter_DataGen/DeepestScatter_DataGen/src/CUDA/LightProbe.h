@@ -11,14 +11,19 @@ namespace DeepestScatter
             static const size_t STEP_IN_MEAN_FREE_PATH = 6;
 
             static const size_t LENGTH = 200;
-            float data[LENGTH];
+            uint8_t data[LENGTH];
         };
 
         class LightProbeRendererInput
         {
         public:
-            LightProbe lightProbe;
+            class Probe
+            {
+            public:
+                float data[LightProbe::LENGTH];
+            };
 
+            Probe probe;
             float omega;
             float alpha;
         };

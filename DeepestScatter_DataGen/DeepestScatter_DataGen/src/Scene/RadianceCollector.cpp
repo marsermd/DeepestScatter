@@ -14,7 +14,7 @@
 
 namespace DeepestScatter
 {
-    static const uint32_t MAX_THREAD_COUNT = 40 * 2048;
+    static const uint32_t MAX_THREAD_COUNT = 80 * 2048;
 
     void RadianceCollector::init()
     {
@@ -110,11 +110,11 @@ namespace DeepestScatter
                 }
 
                 bool isConverged =
-                    representative.getRelativeConfidenceInterval() < 0.02f ||
+                    representative.getRelativeConfidenceInterval() < 2e-2f ||
                     representative.getAbsoluteConfidenceInterval() < 1e-2f;
                 if (representative.radiance < FLT_EPSILON)
                 {
-                    isConverged = representative.experimentCount > 10000;
+                    isConverged = representative.experimentCount > 100000;
                 }
                 if (isConverged)
                 {
@@ -161,7 +161,6 @@ namespace DeepestScatter
         {
             results[i].set_light_intensity(convergedTasks[i].radiance);
             results[i].set_is_converged(true);
-            std::cout << convergedTasks[i].radiance << std::endl;
         }
 
         std::cout << "Writing emissions..." << std::endl;

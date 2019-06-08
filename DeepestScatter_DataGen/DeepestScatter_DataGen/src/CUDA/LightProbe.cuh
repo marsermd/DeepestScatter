@@ -108,20 +108,22 @@ public:
 
 static __host__ __device__ __inline__ void lerp(
     const LightProbeInterpolation& interpolation,
-    LightProbe& result)
+    LightProbeRendererInput::Probe& result)
 {
-    float* la = bakedLightProbes[interpolation.a].data;
-    float* lb = bakedLightProbes[interpolation.b].data;
-    float* lc = bakedLightProbes[interpolation.c].data;
-    float* ld = bakedLightProbes[interpolation.d].data;
+    uint8_t* la = bakedLightProbes[interpolation.a].data;
+    uint8_t* lb = bakedLightProbes[interpolation.b].data;
+    uint8_t* lc = bakedLightProbes[interpolation.c].data;
+    uint8_t* ld = bakedLightProbes[interpolation.d].data;
 
-    for (size_t i = 0; i < result.LENGTH; i++)
+    for (size_t i = 0; i < LightProbe::LENGTH; i++)
     {
         result.data[i] =
-            interpolation.w.x * la[i] +
-            interpolation.w.y * lb[i] +
-            interpolation.w.z * lc[i] +
-            interpolation.w.w * ld[i];
+            (
+                interpolation.w.x * la[i] +
+                interpolation.w.y * lb[i] +
+                interpolation.w.z * lc[i] +
+                interpolation.w.w * ld[i]
+            ) / 256.0f;
     }
 }
 
@@ -137,55 +139,48 @@ static __host__ __device__ __inline__ LightProbeInterpolation getLightProbeInter
     float3 localOffset;
     uint3 id = floorId(v, localOffset);
 
+    uint3 a, b, c, d;
     if (isCloseToVertex(localOffset, make_float3(0, 0, 0)))
     {
-        return LightProbeInterpolation(id, localOffset,
-            make_uint3(0),
-            make_uint3(1, 0, 0),
-            make_uint3(0, 1, 0),
-            make_uint3(0, 0, 1)
-        );
+        a = make_uint3(0);
+        b = make_uint3(1, 0, 0);
+        c = make_uint3(0, 1, 0);
+        d = make_uint3(0, 0, 1);
     }
     else if (isCloseToVertex(localOffset, make_float3(0, 1, 1)))
     {
-        return LightProbeInterpolation(id, localOffset,
-            make_uint3(0, 1, 1),
-            make_uint3(0, 0, 1),
-            make_uint3(0, 1, 0),
-            make_uint3(1, 1, 1)
-        );
+        a = make_uint3(0, 1, 1);
+        b = make_uint3(0, 0, 1);
+        c = make_uint3(0, 1, 0);
+        d = make_uint3(1, 1, 1);
     }
     else if (isCloseToVertex(localOffset, make_float3(1, 0, 1)))
     {
-        return LightProbeInterpolation(id, localOffset,
-            make_uint3(1, 0, 1),
-            make_uint3(0, 0, 1),
-            make_uint3(1, 0, 0),
-            make_uint3(1, 1, 1)
-        );
+        a = make_uint3(1, 0, 1);
+        b = make_uint3(0, 0, 1);
+        c = make_uint3(1, 0, 0);
+        d = make_uint3(1, 1, 1);
     }
     else if (isCloseToVertex(localOffset, make_float3(1, 1, 0)))
     {
-        return LightProbeInterpolation(id, localOffset,
-            make_uint3(1, 1, 0),
-            make_uint3(0, 1, 0),
-            make_uint3(1, 0, 0),
-            make_uint3(1, 1, 1)
-        );
+        a = make_uint3(1, 1, 0);
+        b = make_uint3(0, 1, 0);
+        c = make_uint3(1, 0, 0);
+        d = make_uint3(1, 1, 1);
     }
     else
     {
-        return LightProbeInterpolation(id, localOffset,
-            make_uint3(1, 0, 0),
-            make_uint3(0, 1, 0),
-            make_uint3(0, 0, 1),
-            make_uint3(1, 1, 1)
-        );
+        a = make_uint3(1, 0, 0);
+        b = make_uint3(0, 1, 0);
+        c = make_uint3(0, 0, 1);
+        d = make_uint3(1, 1, 1);
     }
+    
+    return LightProbeInterpolation(id, localOffset, a, b, c, d);
 }
 
 
-static __host__ __device__ __inline__ void interpolateLightProbe(const float3& v, LightProbe& result)
+static __host__ __device__ __inline__ void interpolateLightProbe(const float3& v, LightProbeRendererInput::Probe& result)
 {
     LightProbeInterpolation interpolation = getLightProbeInterpolation(v);
     lerp(interpolation, result);

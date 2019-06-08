@@ -55,6 +55,8 @@ namespace DeepestScatter
     private:
         void setupVariables(optix::Program& program);
 
+        void saveToDisk();
+
         void render();
 
         void updatePosition();

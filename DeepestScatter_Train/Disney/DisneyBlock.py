@@ -9,7 +9,8 @@ class DisneyBlock(torch.nn.Module):
         """
         super(DisneyBlock, self).__init__()
 
-        self.f1 = torch.nn.Linear(zD + oD, outD, bias=True)
+        self.f1z = torch.nn.Linear(zD, outD, bias=True)
+        self.f1o = torch.nn.Linear(oD, outD, bias=True)
         self.f2 = torch.nn.Linear(outD, outD, bias=True)
 
         self.activation = torch.nn.ReLU()
@@ -20,9 +21,8 @@ class DisneyBlock(torch.nn.Module):
         :param z: one layer of hierarchical descriptor
         :param out: ouput of current block
         """
-        out = torch.cat((o, z), dim=1)
 
-        out = self.f1(out)
+        out = self.f1o(o).add_(self.f1z(z))
         out = self.activation(out)
 
         out = self.f2(out)

@@ -5,7 +5,7 @@ from torch.utils import data
 import glob
 import os
 
-from DisneyDescriptorDataset import DisneyDescriptorDataset
+from DisneyDataset import DisneyDataset
 from LmdbDataset import LmdbDatasets
 
 
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     directory = os.path.dirname(onnxFile)
 
     lmdbDatasets = LmdbDatasets("..\Data\Dataset")
-    trainingSet = DisneyDescriptorDataset(lmdbDatasets.train)
+    trainingSet = DisneyDataset(lmdbDatasets.train)
     dataloader = data.DataLoader(trainingSet, batch_size=1, shuffle=False)
     zLayers, labels = next(iter(dataloader))
     zLayers = [z.fill_(1.5).numpy() for z in zLayers]

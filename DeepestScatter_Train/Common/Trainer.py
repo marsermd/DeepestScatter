@@ -12,9 +12,8 @@ from torch.utils import data
 import torch.optim as optim
 import torch.onnx
 
-from DisneyDescriptorDataset import DisneyDescriptorDataset
-from DisneyModel import DisneyModel
 from LmdbDataset import LmdbDatasets
+from nonechucks import SafeDataset
 
 from tensorboardX import SummaryWriter
 
@@ -83,27 +82,29 @@ class Trainer:
         if isinstance(args, tuple) or isinstance(args, list):
             args = [self.toCuda(x) for x in args]
         else:
-            args = args.to(self.device)
+            args = args.to(self.device, non_blocking=True)
         return args
 
     def run(self):
         # Parameters
         params = {'batch_size': 1024,
                   'shuffle': True,
-                  'num_workers': 8,
-                  'drop_last': True}
+                  'num_workers': 6,
+                  'drop_last': True,
+                  'pin_memory': True}
         maxEpochs = 200
 
-        writer = SummaryWriter()
-
         # Generators
-        #TODO:
-        datasetPath = "..\Data\Dataset"#"D:\\Dataset"
+        datasetPath = "D:\\Dataset"
         print("USING DATASET AT: ", datasetPath.upper())
         lmdbDatasets = LmdbDatasets(datasetPath)
 
         trainingSet = self.createDataset(lmdbDatasets.train)
         trainingGenerator = data.DataLoader(trainingSet, **params)
+        params['batch_size'] = 2048
+        params['shuffle'] = True
+        params['num_workers'] = 1
+        validationGenerator = data.DataLoader(self.createDataset(lmdbDatasets.validation), **params)
 
         model = self.createModel()
         logModel = LogModel(model)
@@ -113,47 +114,75 @@ class Trainer:
         lr = 1.e-3
         optimizer = optim.Adam(logModel.parameters(), lr, amsgrad=True)
 
-        for epoch in range(maxEpochs):
-            optimizer.lr = lr / math.sqrt(epoch + 1)
-            print(f"going through epoch {epoch} with lr: {optimizer.lr}")
+        writer = SummaryWriter()
 
-            start = datetime.datetime.now()
-            # Training
-            for batchId, (args, labels) in enumerate(trainingGenerator):
-                # Transfer to GPU
+        def getLoss(args, labels):
+            return criterion(logModel(args).squeeze(1), labels.float())
+
+        def train(args, labels):
+            logModel.train()
+            args = self.toCuda(args)
+
+            labels = labels.to(self.device)
+            labels = logModel.logEps(labels)
+
+            def closure():
+                optimizer.zero_grad()
+                loss = getLoss(args, labels)
+                loss.backward()
+                return loss
+
+            optimizer.step(closure)
+
+        def getNextValidationBatch():
+            batch = next(getNextValidationBatch.iterator, None)
+            if batch is None:
+                getNextValidationBatch.iterator = iter(validationGenerator)
+                batch = next(getNextValidationBatch.iterator)
+            return batch
+        getNextValidationBatch.iterator = iter(validationGenerator)
+
+        def validateAndSave():
+            with torch.set_grad_enabled(False):
+                logModel.eval()
+                args, labels = getNextValidationBatch()
                 args = self.toCuda(args)
-
                 labels = labels.to(self.device)
                 labels = logModel.logEps(labels)
-
-                def closure():
-                    optimizer.zero_grad()
-                    out = logModel(args)
-                    loss = criterion(out.squeeze(1), labels.float())
-                    loss.backward()
-                    return loss
-
-                loss = closure()
-                print("Train #", epoch, batchId, loss)
+                loss = getLoss(args, labels)
                 writer.add_scalar('loss', loss, batchId + epoch * len(trainingGenerator))
 
                 if math.isnan(loss):
                     print("Got NAN loss!")
                     exit(0)
 
-                optimizer.step(closure)
-
                 print((datetime.datetime.now() - start))
 
-                if batchId % 10 == 0:
-                    self.saveCheckpoint({
-                        'epoch': epoch + 1,
-                        'state_dict': model.state_dict(),
+                isBest = loss.item() < validateAndSave.bestLoss
+                if isBest:
+                    validateAndSave.bestLoss = loss.item()
+                self.saveCheckpoint({
+                    'epoch': epoch + 1,
+                    'state_dict': model.state_dict(),
                     # using model on purpose, LogModel is only used for calculating loss
-                        'optimizer': optimizer.state_dict(),
-                    }, True)
+                    'optimizer': optimizer.state_dict(),
+                }, isBest)
 
+                if (isBest):
                     self.save(model, trainingSet)
+
+        validateAndSave.bestLoss = float("inf")
+
+        for epoch in range(maxEpochs):
+
+            start = datetime.datetime.now()
+            # Training
+            for batchId, (args, labels) in enumerate(trainingGenerator):
+                train(args, labels)
+                print("Train #", epoch, batchId)
+
+                if batchId % 40 == 0:
+                    validateAndSave()
 
             # Todo: calculate loss on validation dataset
             # id = 0

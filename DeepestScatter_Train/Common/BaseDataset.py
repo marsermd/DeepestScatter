@@ -11,12 +11,15 @@ from PythonProtocols.DisneyDescriptor_pb2 import DisneyDescriptor
 from PythonProtocols.Result_pb2 import Result
 from GlobalSettings import BATCH_SIZE
 
+
 class BaseDataset(data.Dataset):
     __metaclass__ = abc.ABCMeta
 
     def __init__(self, lmdbDataset, mainProtocolType):
         self.lmdbDataset = lmdbDataset
-        self.length = min(self.lmdbDataset.getCountOf(mainProtocolType), self.lmdbDataset.getCountOf(Result))
+        #TODO: remove
+        maxLength = self.lmdbDataset.getCountBeforeLastFlatCloud()
+        self.length = min(maxLength, self.lmdbDataset.getCountOf(mainProtocolType))
         self.cache = {}
 
     def __len__(self):
@@ -36,10 +39,10 @@ class BaseDataset(data.Dataset):
         return self.__getProtocol(SceneSetup, self.__sceneId)
 
     def getDisneyDescriptor(self):
-        return self.__getProtocol(DisneyDescriptor)
+        return self.__getProtocol(DisneyDescriptor, buffers=True)
 
     def getBakedInterpolationSet(self):
-        return self.__getProtocol(BakedInterpolationSet)
+        return self.__getProtocol(BakedInterpolationSet, buffers=True)
 
     def getResult(self):
         return self.__getProtocol(Result)
@@ -47,14 +50,14 @@ class BaseDataset(data.Dataset):
     def getScatterSample(self):
         return self.__getProtocol(ScatterSample)
 
-    def __getProtocol(self, protocolType, id=None):
+    def __getProtocol(self, protocolType, id=None, buffers=False):
         if id is None:
             id = self.__sampleId
 
         if protocolType in self.cache.keys():
             return self.cache[protocolType]
 
-        res = self.lmdbDataset.get(protocolType, id)
+        res = self.lmdbDataset.get(protocolType, id, buffers)
         self.cache[protocolType] = res
         return res
 

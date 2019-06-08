@@ -19,8 +19,6 @@
 %% Данные пакеты необязательны к использованию в бакалаврских/магистерских
 %% Они нужны для иллюстративных целей
 %% Начало
-\usepackage{tikz}
-\usetikzlibrary{arrows}
 \usepackage{filecontents}
 
 %% Указываем файл с библиографией.
@@ -101,7 +99,7 @@ But recently Disney's research group has released a paper, describing a new appr
 %% Начало содержательной части.
 
 \chapter{Motivation}
-# TODO: write something about motivation:)
+TODO: write something about motivation:)
 
 \chapter{Related Work}
 
@@ -129,13 +127,12 @@ TODO: explain the approach and technique of "Deep Scattering"
 %% Так помечается конец обзора.
 \finishrelatedwork
 
-\chapter{Rendering with a neural network}
+\chapter{Model}
 \section{Light Rendering Equation}\label{sec:LightRenderingEquation}
 TODO: derive the light rendering equation and explain the exponentially increasing time with each bounce for clouds rendering
 \section{Predicting radiance with a neural network}\label{sec:PredictingRadianceWithNN}
 TODO: describe how to use neural networks to mitigate the exponentialy increasing rendering time.
 
-\chapter{Rendering with partially baked neural networks}
 \section{Key Iidea}\label{sec:keyIdea}
 TODO: describe the general idea of llight backing and it's problems
 \section{Network Architecture}\label{sec:architecture}
@@ -149,8 +146,9 @@ TODO: describe how the dataset is generated
 \section{Training}\label{sec:training}
 TODO: describe how the NN was trained: parameters, loss function, ...
 
-\chapter{Results}
+\chapter{Evaluation}
 TODO: compare new results with old ones (performance and quality)
+\chapter{Conclusion}
 
 
 \end{document}

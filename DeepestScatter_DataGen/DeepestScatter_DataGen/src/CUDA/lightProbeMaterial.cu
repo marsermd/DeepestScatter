@@ -70,10 +70,10 @@ RT_PROGRAM void sampleLightProbe()
         rayData.lightProbe->omega = acos(dot(lightDirection, direction));
         rayData.lightProbe->alpha = getSignedAngle(eY1, eY2, eZ1);
         
-        interpolateLightProbe(scatter.scatterPos, rayData.lightProbe->lightProbe);
+        interpolateLightProbe(scatter.scatterPos, rayData.lightProbe->probe);
         
         setupHierarchicalDescriptor<BakedRendererDescriptor::Descriptor, float>(rayData.descriptor->descriptor, scatter.scatterPos - 0.5f * bboxSize, direction);
-
+        
         for (size_t layer = 0; layer < rayData.descriptor->descriptor.LAYERS_CNT; layer++)
         {
             rayData.descriptor->descriptor.layers[layer].meta.omega = rayData.lightProbe->omega;

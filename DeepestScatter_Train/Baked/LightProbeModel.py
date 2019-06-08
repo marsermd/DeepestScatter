@@ -62,5 +62,5 @@ class LightProbeModel(torch.nn.Module):
             torch.nn.Linear(self.LAYER_DIMENSION, self.LAYER_DIMENSION),
             torch.nn.ReLU(),
             torch.nn.Linear(self.LAYER_DIMENSION, self.outputDimenstion),
-            torch.nn.ReLU()
+            torch.nn.Sigmoid()
         )

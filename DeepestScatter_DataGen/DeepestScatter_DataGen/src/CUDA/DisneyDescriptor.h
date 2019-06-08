@@ -120,7 +120,7 @@ namespace DeepestScatter
                     Meta meta;
                 };
 
-                const static size_t LAYERS_CNT = 4;
+                const static size_t LAYERS_CNT = 3;
 
                 /**
                  * Each layer's support is 2x bigger than the previous.

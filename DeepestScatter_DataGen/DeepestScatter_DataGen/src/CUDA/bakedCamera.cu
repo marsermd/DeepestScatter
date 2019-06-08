@@ -13,6 +13,7 @@ rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
 rtBuffer<LightProbeRendererInput, 2> lightProbeInputBuffer;
 rtBuffer<BakedRendererDescriptor, 2> descriptorInputBuffer;
 rtBuffer<IntersectionInfo, 2> directRadianceBuffer;
+rtBuffer<float, 2> predictedRadianceBuffer;
 rtBuffer<float4, 2> frameResultBuffer;
 
 rtDeclareVariable(float3, lightDirection, , );
@@ -30,4 +31,14 @@ RT_PROGRAM void pinholeCamera()
     prd.intersectionInfo->radiance = make_float3(0);
 
     trace(prd, launchID + rectOrigin, frameResultBuffer.size());
+}
+
+RT_PROGRAM void copyToFrameResult()
+{
+    if (directRadianceBuffer[launchID].hasScattered)
+    {
+        frameResultBuffer[launchID + rectOrigin] = 
+            make_float4(predictedRadianceBuffer[launchID]) + 
+            make_float4(directRadianceBuffer[launchID].radiance);
+    }
 }

@@ -16,14 +16,20 @@ namespace DeepestScatter
     {
     public:
 
-        ScatterSampleCollector(std::shared_ptr<optix::Context> context, std::shared_ptr<Resources> resources, std::shared_ptr<Dataset> dataset,
-            std::shared_ptr<BatchSettings> settings, std::shared_ptr<SceneDescription> sceneDescription) :
+        ScatterSampleCollector(
+            std::shared_ptr<optix::Context> context, 
+            std::shared_ptr<Resources> resources, 
+            std::shared_ptr<Dataset> dataset,
+            std::shared_ptr<BatchSettings> settings, 
+            std::shared_ptr<SceneDescription> sceneDescription,
+            std::shared_ptr<VDBCloud> cloud) :
             context(*context.get()),
             resources(std::move(resources)),
             dataset(std::move(dataset)),
             settings(*settings.get()),
             sceneDescription(*sceneDescription.get())
         {
+            cloud->disableRendering();
         }
 
         void collect();

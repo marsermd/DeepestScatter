@@ -8,13 +8,15 @@ from PythonProtocols.ScatterSample_pb2 import ScatterSample
 from PythonProtocols.DisneyDescriptor_pb2 import DisneyDescriptor
 from PythonProtocols.Result_pb2 import Result
 
+from GlobalSettings import BATCH_SIZE
+
 
 class LmdbDataset:
+
     def __init__(self, databasePath, readonly=True):
         self.databasePath = databasePath
         self.readonly = readonly
         self.__init()
-
 
     def __init(self):
         create = not self.readonly
@@ -57,16 +59,29 @@ class LmdbDataset:
         with self.env.begin() as transaction:
             return transaction.stat(db)['entries']
 
-    def get(self, protocolType, id):
+    def get(self, protocolType, id, buffers=False):
         _, db = self.__getNameAndDb(protocolType)
 
-        with self.env.begin() as transaction:
+        with self.env.begin(db=db, buffers=buffers) as transaction:
             serialized = transaction.get(id.to_bytes(4, 'little'), db=db)
 
             protocol = protocolType()
 
             protocol.ParseFromString(serialized)
             return protocol
+
+    def getCountBeforeLastFlatCloud(self):
+        with self.env.begin() as transaction:
+            _, db = self.__getNameAndDb(SceneSetup)
+            cursor = transaction.cursor(db)
+            cursor.first()
+            id = 0
+            for key, value in cursor:
+                scene = SceneSetup()
+                scene.ParseFromString(value)
+                if "RoundClouds" in scene.cloud_path:
+                    return id
+                id += BATCH_SIZE
 
     def __getNameAndDb(self, protocolType):
         name = protocolType.DESCRIPTOR.name
@@ -100,7 +115,7 @@ class LmdbDatasets:
 
     def __initDatasets(self):
         self.train = self.__createDataset(TRAIN_NAME)
-        #self.validation = self.__createDataset(VALIDATION_NAME)
+        self.validation = self.__createDataset(VALIDATION_NAME)
         #self.test = self.__createDataset(TEST_NAME)
 
     def __createDataset(self, name):
