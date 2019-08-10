@@ -16,13 +16,14 @@ namespace DeepestScatter
 
     void DisneyRenderer::init()
     {
-        const std::string modelPath = "../../DeepestScatter_Train/runs/Jun05_21-09-52_DESKTOP-D5QPR6V/DisneyModel.pt";
+        const std::string modelPath = "../../DeepestScatter_Train/runs/Jun09_22-12-48_DESKTOP-D5QPR6V/DisneyModel.pt";
         module = torch::jit::load(modelPath);
         module->eval();
 
         const std::string cameraFile = "disneyCamera.cu";
 
         camera = resources->loadProgram(cameraFile, "pinholeCamera");
+        blit = resources->loadProgram(cameraFile, "copyToFrameResult");
         clearRect = resources->loadProgram(cameraFile, "clearRect");
 
         const auto options = torch::TensorOptions().device(torch::kCUDA, -1).requires_grad(false);
@@ -36,7 +37,10 @@ namespace DeepestScatter
         directRadianceBuffer = context->createBuffer(RT_BUFFER_INPUT_OUTPUT, RT_FORMAT_USER, RECT_SIZE.x, RECT_SIZE.y);
         directRadianceBuffer->setElementSize(sizeof(IntersectionInfo));
 
+        predictedRadianceBuffer = context->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT, RECT_SIZE.x, RECT_SIZE.y);
+
         setupVariables(camera);
+        setupVariables(blit);
         setupVariables(clearRect);
     }
 
@@ -44,6 +48,7 @@ namespace DeepestScatter
     {
         program["networkInputBuffer"]->setBuffer(networkInputBuffer);
         program["directRadianceBuffer"]->setBuffer(directRadianceBuffer);
+        program["predictedRadianceBuffer"]->setBuffer(predictedRadianceBuffer);
     }
 
     void DisneyRenderer::render(optix::Buffer frameResultBuffer)
@@ -51,7 +56,15 @@ namespace DeepestScatter
         size_t width, height;
         frameResultBuffer->getSize(width, height);
 
-        torch::NoGradGuard no_grad_guard;
+        blit["frameResultBuffer"]->setBuffer(frameResultBuffer);
+        camera["frameResultBuffer"]->setBuffer(frameResultBuffer);
+
+        context->setEntryPointCount(2u);
+        context->setRayGenerationProgram(0, camera);
+        context->setRayGenerationProgram(1, blit);
+        context->validate();
+
+        torch::NoGradGuard noGradGuard;
 
         for (uint32_t x = 0; x < width; x += RECT_SIZE.x)
         {
@@ -65,17 +78,11 @@ namespace DeepestScatter
     void DisneyRenderer::renderRect(optix::uint2 start, optix::Buffer frameResultBuffer)
     {
         context["rectOrigin"]->setUint(start);
-        camera["frameResultBuffer"]->setBuffer(frameResultBuffer);
 
-        context->setRayGenerationProgram(0, camera);
-        context->validate();
         context->launch(0, RECT_SIZE.x, RECT_SIZE.y);
 
         {
             BufferBind<IntersectionInfo> intersectionInfo(directRadianceBuffer);
-            BufferBind<optix::float4> screen(frameResultBuffer);
-
-            std::cout << screen[0].x << std::endl;
 
             const bool hasActiveDescriptors = std::any_of(
                 intersectionInfo.getData().begin(), intersectionInfo.getData().end(), [&](const auto& x) { return x.hasScattered; });
@@ -84,27 +91,11 @@ namespace DeepestScatter
             {
                 return;
             }
-
-            at::Tensor predicted = module->forward(networkInputs).toTensor();
-            predicted = predicted.cpu();
-            float* output = predicted.data<float>();
-
-            size_t width, height;
-            frameResultBuffer->getSize(width, height);
-
-            size_t rectPixelId = 0;
-            for (size_t y = start.y; y < start.y + RECT_SIZE.y; y++)
-            {
-                for (size_t x = start.x; x < start.x + RECT_SIZE.x; x++)
-                {
-                    if (intersectionInfo[rectPixelId].hasScattered)
-                    {
-                        screen[y * width + x] = optix::make_float4(output[rectPixelId]) + optix::make_float4(intersectionInfo[rectPixelId].radiance);
-                    }
-
-                    rectPixelId++;
-                }
-            }
         }
+
+        at::Tensor predicted = module->forward(networkInputs).toTensor();
+        predictedRadianceBuffer->setDevicePointer(context->getEnabledDevices()[0], predicted.data_ptr());
+
+        context->launch(1, RECT_SIZE.x, RECT_SIZE.y);
     }
 }

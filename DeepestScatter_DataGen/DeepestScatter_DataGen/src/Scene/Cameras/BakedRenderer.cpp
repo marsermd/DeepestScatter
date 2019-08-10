@@ -9,7 +9,7 @@
 namespace DeepestScatter
 {
     static constexpr optix::uint2 RECT_SIZE{ 512, 256 };
-    static const std::string modelDirectory = "../../DeepestScatter_Train/runs/Jun06_23-37-32_DESKTOP-D5QPR6V/";
+    static const std::string modelDirectory = "../../DeepestScatter_Train/runs/Jun09_01-00-29_DESKTOP-D5QPR6V/";
 
     optix::Program BakedRenderer::getCamera()
     {
@@ -87,7 +87,7 @@ namespace DeepestScatter
     {
         std::cout << "Baking Light Probes... " << probeCount.x << " " << probeCount.y << " " << probeCount.z << std::endl;
 
-        torch::NoGradGuard no_grad_guard;
+        torch::NoGradGuard noGradGuard;
         for (uint32_t i = 0; i < probeCount.z; i++)
         {
             bakeAtZ(i);
@@ -131,7 +131,7 @@ namespace DeepestScatter
 
     void BakedRenderer::render(optix::Buffer frameResultBuffer)
     {
-        torch::NoGradGuard no_grad_guard;
+        torch::NoGradGuard noGradGuard;
         size_t width, height;
         frameResultBuffer->getSize(width, height);
 

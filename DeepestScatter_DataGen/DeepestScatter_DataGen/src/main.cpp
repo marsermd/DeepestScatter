@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
             printUsageAndExit(argv[0]);
         }
         const std::string cloudPath = argv[1];
-        const std::string databasePath = "D://Dataset/Validation.lmdb";
+        const std::string databasePath = "D://Dataset/Train.lmdb";
         const std::string cloudRoot = "../../Data/Clouds_Train";
 
         for (int i = 2; i < argc; i++)
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
         {
             GuiExecutionLoop loop(argc, argv);
 
-            //loop.run(Tasks::collect<Persistance::DisneyDescriptor>(databasePath, cloudRoot, Tasks::CollectMode::Continue));
+            //loop.run(Tasks::collect<Persistance::Result>(databasePath, cloudRoot, Tasks::CollectMode::Continue));
 
             loop.run(Tasks::renderCloud(cloudPath, 7000));
         }

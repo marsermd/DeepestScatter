@@ -70,6 +70,13 @@ namespace DeepestScatter
     {
         std::filesystem::path cloudPath(cloudsRoot);
         cloudPath /= sceneSetup.cloud_path();
+
+        const optix::float3 lightDirection = optix::normalize(optix::make_float3(
+            sceneSetup.light_direction().x(),
+            sceneSetup.light_direction().y(),
+            sceneSetup.light_direction().z()
+        ));
+
         auto scene = SceneDescription
         {
             Cloud
@@ -88,11 +95,7 @@ namespace DeepestScatter
             },
             DirectionalLight
             {
-                optix::make_float3(
-                    sceneSetup.light_direction().x(), 
-                    sceneSetup.light_direction().y(),
-                    sceneSetup.light_direction().z()
-                ),
+                lightDirection,
                 Color{optix::make_float3(1, 1, 1)},
                 1e6
             }
@@ -101,11 +104,11 @@ namespace DeepestScatter
         return bindSceneDescription(scene);
     }
 
-    di::ContainerBuilder installFramework(uint32_t width, uint32_t height)
+    di::ContainerBuilder installFramework(uint32_t width, uint32_t height, const std::filesystem::path& outputPath)
     {
         di::ContainerBuilder builder;
 
-        builder.registerInstance(std::make_shared<Camera::Settings>(width, height));
+        builder.registerInstance(std::make_shared<Camera::Settings>(width, height, outputPath));
 
         builder.registerInstance(std::make_shared<optix::Context>(optix::Context::create()));
         builder.registerType<Resources>().singleInstance();

@@ -116,7 +116,7 @@ class LmdbDatasets:
     def __initDatasets(self):
         self.train = self.__createDataset(TRAIN_NAME)
         self.validation = self.__createDataset(VALIDATION_NAME)
-        #self.test = self.__createDataset(TEST_NAME)
+        self.test = self.__createDataset(TEST_NAME)
 
     def __createDataset(self, name):
         return LmdbDataset(os.path.join(self.datasetRoot, name), self.readonly)

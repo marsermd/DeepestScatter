@@ -101,7 +101,7 @@ class Trainer:
 
         trainingSet = self.createDataset(lmdbDatasets.train)
         trainingGenerator = data.DataLoader(trainingSet, **params)
-        params['batch_size'] = 2048
+        params['batch_size'] = 4096
         params['shuffle'] = True
         params['num_workers'] = 1
         validationGenerator = data.DataLoader(self.createDataset(lmdbDatasets.validation), **params)
@@ -168,8 +168,7 @@ class Trainer:
                     'optimizer': optimizer.state_dict(),
                 }, isBest)
 
-                if (isBest):
-                    self.save(model, trainingSet)
+                self.save(model, trainingSet)
 
         validateAndSave.bestLoss = float("inf")
 

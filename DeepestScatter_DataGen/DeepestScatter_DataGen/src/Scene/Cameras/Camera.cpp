@@ -146,26 +146,25 @@ namespace DeepestScatter
         program["averageLuminance"]->setBuffer(reinhardAverageLuminance);
     }
 
-    void Camera::saveToDisk()
+    void Camera::saveToDisk() const
     {
         using namespace Imath;
         using namespace Imf;
 
         Header header(width, height, 1, V2f(0, 0), 1, DECREASING_Y);
-        header.lineOrder() = DECREASING_Y;
         header.channels().insert("R", Channel(Imf::FLOAT));
         header.channels().insert("G", Channel(Imf::FLOAT));
         header.channels().insert("B", Channel(Imf::FLOAT));
 
         BufferBind<optix::float4> frame(progressiveBuffer);
 
-        optix::float4* start = &frame[0];
+        float* start = reinterpret_cast<float*>(&frame[0]);
         const size_t xStride = sizeof(optix::float4);
         const size_t yStride = sizeof(optix::float4) * width;
 
         std::cout << frame[width * height / 2 + width / 2].x << std::endl;
 
-        OutputFile file("test.exr", header);
+        OutputFile file(outputFile.string().c_str(), header);
         FrameBuffer frameBuffer;
         frameBuffer.insert("R", Slice(Imf::FLOAT, reinterpret_cast<char*>(start++), xStride, yStride));
         frameBuffer.insert("G", Slice(Imf::FLOAT, reinterpret_cast<char*>(start++), xStride, yStride));
@@ -216,8 +215,8 @@ namespace DeepestScatter
         }
         else
         {
-
-            saveToDisk();
+            completed = true;
+            std::cout << "rendering subframe " << subframeId << std::endl;
         }
 
         GLenum glDataType = GL_UNSIGNED_BYTE;
@@ -232,7 +231,7 @@ namespace DeepestScatter
 
     bool Camera::isConverged()
     {
-        if (subframeId < 1000)
+        if (subframeId < 100)
         {
             return false;
         }

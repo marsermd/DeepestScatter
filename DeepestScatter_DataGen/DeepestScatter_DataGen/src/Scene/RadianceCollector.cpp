@@ -14,7 +14,7 @@
 
 namespace DeepestScatter
 {
-    static const uint32_t MAX_THREAD_COUNT = 80 * 2048;
+    static const uint32_t MAX_THREAD_COUNT = 10 * 2048;
 
     void RadianceCollector::init()
     {
@@ -111,7 +111,7 @@ namespace DeepestScatter
 
                 bool isConverged =
                     representative.getRelativeConfidenceInterval() < 2e-2f ||
-                    representative.getAbsoluteConfidenceInterval() < 1e-2f;
+                    representative.getAbsoluteConfidenceInterval() < 1e-4f;
                 if (representative.radiance < FLT_EPSILON)
                 {
                     isConverged = representative.experimentCount > 100000;

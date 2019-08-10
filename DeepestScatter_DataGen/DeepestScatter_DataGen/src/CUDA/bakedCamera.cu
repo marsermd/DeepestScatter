@@ -38,7 +38,7 @@ RT_PROGRAM void copyToFrameResult()
     if (directRadianceBuffer[launchID].hasScattered)
     {
         frameResultBuffer[launchID + rectOrigin] = 
-            make_float4(predictedRadianceBuffer[launchID]) + 
-            make_float4(directRadianceBuffer[launchID].radiance);
+            (make_float4(predictedRadianceBuffer[launchID]) +
+            make_float4(directRadianceBuffer[launchID].radiance)) * (1 - directRadianceBuffer[launchID].transmittance);
     }
 }

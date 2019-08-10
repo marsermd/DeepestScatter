@@ -11,6 +11,7 @@ using namespace DeepestScatter::Gpu;
 rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
 rtBuffer<DisneyNetworkInput, 2> networkInputBuffer;
 rtBuffer<IntersectionInfo, 2> directRadianceBuffer;
+rtBuffer<float, 2> predictedRadianceBuffer;
 rtBuffer<float4, 2> frameResultBuffer;
 
 rtDeclareVariable(float3, lightDirection, , );
@@ -31,6 +32,16 @@ RT_PROGRAM void pinholeCamera()
     for (int i = 0; i < DisneyDescriptor::LAYERS_CNT; i++)
     {
         prd.descriptor->layers[i].angle = angle;
+    }
+}
+
+RT_PROGRAM void copyToFrameResult()
+{
+    if (directRadianceBuffer[launchID].hasScattered)
+    {
+        frameResultBuffer[launchID + rectOrigin] =
+            (make_float4(predictedRadianceBuffer[launchID]) +
+            make_float4(directRadianceBuffer[launchID].radiance)) * (1 - directRadianceBuffer[launchID].transmittance);
     }
 }
 

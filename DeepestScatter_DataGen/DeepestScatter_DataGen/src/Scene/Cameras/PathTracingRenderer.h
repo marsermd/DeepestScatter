@@ -22,6 +22,7 @@ namespace DeepestScatter
         void init() override;
         void render(optix::Buffer frameResultBuffer) override;
 
+        inline static const std::string NAME = "PT";
     private:
         optix::Context context;
         std::shared_ptr<Resources> resources;

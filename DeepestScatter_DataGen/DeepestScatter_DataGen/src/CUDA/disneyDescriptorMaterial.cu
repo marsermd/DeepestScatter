@@ -8,7 +8,7 @@
 
 using namespace DeepestScatter::Gpu;
 
-rtDeclareVariable(DisneyDescriptorRayData, resultDescriptor, rtPayload, );
+rtDeclareVariable(DisneyDescriptorRayData, rayData, rtPayload, );
 rtDeclareVariable(uint2, launchID, rtLaunchIndex, );
 
 RT_PROGRAM void sampleDisneyDescriptor()
@@ -26,19 +26,22 @@ RT_PROGRAM void sampleDisneyDescriptor()
     //const float jitter = rnd(seed) / step;
     //float opticalDistance = (subframeId % step) * 1.0f / step + jitter;
 
-    const ScatteringEvent scatter = getNextScatteringEvent(seed, pos, direction);
+    const float transmittance = getNextScatteringEvent(seed, pos, direction, false).transmittance;
+    const ScatteringEvent scatter = getNextScatteringEvent(1 - rnd(seed) * (1 - transmittance), pos, direction);
+
+    rayData.intersectionInfo->transmittance = transmittance;
 
     if (!scatter.hasScattered || !isInBox(scatter.scatterPos))
     {
-        resultDescriptor.intersectionInfo->hasScattered = false;
-        resultDescriptor.intersectionInfo->radiance = make_float3(0);
+        rayData.intersectionInfo->hasScattered = false;
+        rayData.intersectionInfo->radiance = make_float3(0);
     }
     else
     {
-        resultDescriptor.intersectionInfo->hasScattered = true;
-        resultDescriptor.intersectionInfo->radiance = getInScattering(scatter, direction, false);
+        rayData.intersectionInfo->hasScattered = true;
+        rayData.intersectionInfo->radiance = getInScattering(scatter, direction, false);
         setupHierarchicalDescriptor<DisneyNetworkInput, float>(
-            *resultDescriptor.descriptor, scatter.scatterPos - 0.5f * bboxSize, direction);
+            *rayData.descriptor, scatter.scatterPos - 0.5f * bboxSize, direction);
     }
 
 }

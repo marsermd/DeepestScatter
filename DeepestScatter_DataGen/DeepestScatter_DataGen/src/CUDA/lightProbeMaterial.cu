@@ -39,11 +39,15 @@ RT_PROGRAM void sampleLightProbe()
     //const float jitter = rnd(seed) / step;
     //float opticalDistance = (subframeId % step) * 1.0f / step + jitter;
 
-    const ScatteringEvent scatter = getNextScatteringEvent(seed, pos, direction);
+    const float transmittance = getNextScatteringEvent(seed, pos, direction, false).transmittance;
+    const ScatteringEvent scatter = getNextScatteringEvent(1 - rnd(seed) * (1 - transmittance), pos, direction);
+
+    rayData.intersectionInfo->transmittance = transmittance;
 
     if (!scatter.hasScattered || !isInBox(scatter.scatterPos))
     {
         rayData.intersectionInfo->hasScattered = false;
+        rayData.intersectionInfo->radiance = make_float3(0);
     }
     else
     {

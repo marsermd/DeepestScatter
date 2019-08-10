@@ -8,6 +8,7 @@
 
 #include "Scene/SceneItem.h"
 #include "ARenderer.h"
+#include <filesystem>
 
 namespace DeepestScatter
 {
@@ -18,11 +19,12 @@ namespace DeepestScatter
     public:
         struct Settings
         {
-            Settings(uint32_t width, uint32_t height) :
-                width(width), height(height) {}
+            Settings(uint32_t width, uint32_t height, std::filesystem::path outputFile) :
+                width(width), height(height), outputFile(outputFile) {}
 
             uint32_t width;
             uint32_t height;
+            std::filesystem::path outputFile;
         };
 
         Camera(
@@ -30,7 +32,7 @@ namespace DeepestScatter
             std::shared_ptr<optix::Context> context,
             std::shared_ptr<Resources> resources,
             std::shared_ptr<ARenderer> renderer) :
-            width(settings->width), height(settings->height),
+            width(settings->width), height(settings->height), outputFile(settings->outputFile),
             context(*context.get()),
             resources(std::move(resources)),
             renderer(std::move(renderer))
@@ -55,7 +57,7 @@ namespace DeepestScatter
     private:
         void setupVariables(optix::Program& program);
 
-        void saveToDisk();
+        void saveToDisk() const;
 
         void render();
 
@@ -65,6 +67,7 @@ namespace DeepestScatter
 
         uint32_t width;
         uint32_t height;
+        std::filesystem::path outputFile;
 
         optix::Context context;
         std::shared_ptr<Resources> resources;

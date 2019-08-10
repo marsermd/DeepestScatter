@@ -28,6 +28,7 @@ namespace DeepestScatter
         void init() override;
         void render(optix::Buffer frameResultBuffer) override;
 
+        inline static const std::string NAME = "BNN";
     private:
 
         class Baker

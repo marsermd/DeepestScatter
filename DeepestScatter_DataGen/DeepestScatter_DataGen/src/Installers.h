@@ -8,6 +8,12 @@
 
 #include "Scene/CloudMaterial.h"
 
+namespace std {
+    namespace filesystem {
+        class path;
+    }
+}
+
 namespace DeepestScatter
 {
     Hypodermic::ContainerBuilder installApp();
@@ -20,5 +26,5 @@ namespace DeepestScatter
         Cloud::Rendering::Mode renderingMode,
         Cloud::Model::Mipmaps mipmaps);
 
-    Hypodermic::ContainerBuilder installFramework(uint32_t width, uint32_t height);
+    Hypodermic::ContainerBuilder installFramework(uint32_t width, uint32_t height, const std::filesystem::path& ouputPath);
 }

@@ -28,6 +28,7 @@ struct ScatteringRayData
 struct IntersectionInfo
 {
     optix::float3 radiance;
+    float transmittance;
     bool hasScattered;
 };
 

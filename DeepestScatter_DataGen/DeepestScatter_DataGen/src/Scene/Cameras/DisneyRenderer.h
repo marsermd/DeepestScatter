@@ -27,6 +27,7 @@ namespace DeepestScatter
         void init() override;
         void render(optix::Buffer frameResultBuffer) override;
 
+        inline static const std::string NAME = "NN";
     private:
         void setupVariables(optix::Program& program);
 
@@ -38,11 +39,13 @@ namespace DeepestScatter
         std::shared_ptr<Resources> resources;
 
         optix::Program clearRect;
+        optix::Program blit;
         optix::Program camera;
 
         std::vector<torch::jit::IValue> networkInputs;
 
         optix::Buffer  networkInputBuffer;
         optix::Buffer  directRadianceBuffer;
+        optix::Buffer  predictedRadianceBuffer;
     };
 }

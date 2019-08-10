@@ -17,9 +17,11 @@ class BaseDataset(data.Dataset):
 
     def __init__(self, lmdbDataset, mainProtocolType):
         self.lmdbDataset = lmdbDataset
+        self.length = self.lmdbDataset.getCountOf(mainProtocolType)
+        maxLength = self.lmdbDataset.getCountOf(Result)
         #TODO: remove
-        maxLength = self.lmdbDataset.getCountBeforeLastFlatCloud()
-        self.length = min(maxLength, self.lmdbDataset.getCountOf(mainProtocolType))
+        #maxLength = self.lmdbDataset.getCountBeforeLastFlatCloud()
+        self.length = min(maxLength, self.length)
         self.cache = {}
 
     def __len__(self):
