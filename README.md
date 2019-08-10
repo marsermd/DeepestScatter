@@ -32,15 +32,15 @@ This is an enchancement on paper by Disney Research [Deep Scattering](http://drz
 - [x] Build a model in pytorch as described in the original paper
 - [x] Train the model
 - [x] Implement an efficient neural-based renderer in c++
-- [ ] Compare to the original results   
+- [x] Compare to the original results   
   <p float="left">
   <img src="/images/neural_rendering_7000_meters.png" width="45%" />
-  <img src="/images/neural_rendering_12000_meters.png" width="45%" /> 
 </p>
 
 *Research*
 Experiments with different architectures.
-- [ ] Try out different grids layout and evaluate convergence
-- [ ] Light prebacking
-- [ ] Progressive NN evaluation for light rebacking
-- [ ] Evaluate radiocity only for the outer layers of the cloud
+- [x] Shadow maps
+- [x] Latent space light probes
+- [x] Light probe rotation
+- [x] Light probe interpolation (trilinear, barycentric)
+- [x] Evaluate radiance only for the outer layers of the cloud
