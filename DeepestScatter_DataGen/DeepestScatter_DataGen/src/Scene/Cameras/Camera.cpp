@@ -186,7 +186,7 @@ namespace DeepestScatter
             }
 
             //todo: configurable subframe count
-            for (int i = 0; i < 1; i++)
+            for (int i = 0; i < 10; i++)
             {
                 subframeId++;
                 context["subframeId"]->setUint(subframeId);
@@ -263,7 +263,8 @@ namespace DeepestScatter
         std::cout << "Converged: " << convergedCount << "/" << runningVariance.getData().size() 
             << " --- " << runningVariance.getData().size() - convergedCount << "left" << std::endl;
 
-        return isConverged;
+        //TODO:
+        return runningVariance.getData().size() - convergedCount < 500;
     }
 
     void Camera::increaseExposure()

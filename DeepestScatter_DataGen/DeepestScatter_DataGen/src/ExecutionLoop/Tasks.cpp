@@ -19,14 +19,35 @@
 
 namespace DeepestScatter
 {
-    namespace di = Hypodermic;
-
-    uint32_t width = 1792u;
-    uint32_t height = 1024u;
-
     enum class LightDirection {
         Front, Back, Side
     };
+}
+
+namespace std
+{
+    std::string to_string(DeepestScatter::LightDirection direction)
+    {
+        switch (direction)
+        {
+        case DeepestScatter::LightDirection::Front:
+            return "Front";
+        case DeepestScatter::LightDirection::Back:
+            return "Back";
+        case DeepestScatter::LightDirection::Side:
+            return "Side";
+        default:
+            throw std::exception("Unexpected direction");
+        }
+    }
+}
+
+namespace DeepestScatter
+{
+    namespace di = Hypodermic;
+
+    uint32_t width = 512u;
+    uint32_t height = 256u;
 
     optix::float3 getLightDirection(LightDirection direction)
     {
@@ -43,11 +64,9 @@ namespace DeepestScatter
 
     }
 
-    std::queue<GuiExecutionLoop::LazyTask> Tasks::renderCloud(const std::string &cloudPath, float sizeM)
+    GuiExecutionLoop::LazyTask renderCloudSingleTask(const std::string &cloudPath, float sizeM, LightDirection lightDirection)
     {
-        std::queue<GuiExecutionLoop::LazyTask> tasks;
-
-        GuiExecutionLoop::LazyTask task = [=]()
+        return [=]()
         {
             di::ContainerBuilder taskBuilder;
 
@@ -55,7 +74,7 @@ namespace DeepestScatter
             sceneSetup.set_cloud_path(cloudPath);
             sceneSetup.set_cloud_size_m(sizeM);
 
-            optix::float3 direction = getLightDirection(LightDirection::Front);
+            optix::float3 direction = getLightDirection(lightDirection);
             sceneSetup.mutable_light_direction()->set_x(direction.x);
             sceneSetup.mutable_light_direction()->set_y(direction.y);
             sceneSetup.mutable_light_direction()->set_z(direction.z);
@@ -68,7 +87,7 @@ namespace DeepestScatter
             taskBuilder.registerType<TRenderer>().as<ARenderer>().singleInstance();
             auto outputPath = 
                 std::filesystem::path("../../Data/Renders") / 
-                std::filesystem::path(cloudPath).filename().replace_extension(TRenderer::NAME + ".exr");
+                std::filesystem::path(cloudPath).filename().replace_extension(std::to_string(lightDirection) + "." + TRenderer::NAME + ".exr");
             taskBuilder.addRegistrations(installFramework(width, height, outputPath));
             taskBuilder.addRegistrations(installSceneSetup(sceneSetup, ".", Cloud::Rendering::Mode::SunAndSkyAllScatter, Cloud::Model::Mipmaps::On));
             taskBuilder.addRegistrations(installApp());
@@ -80,8 +99,14 @@ namespace DeepestScatter
 
             return container;
         };
+    }
 
-        tasks.push(task);
+    std::queue<GuiExecutionLoop::LazyTask> Tasks::renderCloud(const std::string &cloudPath, float sizeM)
+    {
+        std::queue<GuiExecutionLoop::LazyTask> tasks;
+
+        tasks.push(renderCloudSingleTask(cloudPath, sizeM, LightDirection::Side));
+        tasks.push(renderCloudSingleTask(cloudPath, sizeM, LightDirection::Back));
 
         return tasks;
     }
