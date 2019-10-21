@@ -82,7 +82,7 @@ pytils==0.3
 pytz==2018.9
 PyWavelets==1.0.1
 pywinpty==0.5.4
-PyYAML==3.13
+PyYAML==5.1
 pyzmq==17.1.2
 qtconsole==4.4.2
 readchar==2.0.1
