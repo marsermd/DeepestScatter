@@ -3,6 +3,11 @@ Real-time photo-realistic clouds path tracer with Lorenz-Mie scattering.
 
 This is an enchancement on paper by Disney Research [Deep Scattering](http://drz.disneyresearch.com/~jnovak/publications/DeepScattering/DeepScattering.pdf).
 
+# Result
+
+[Published and presented at SIGGRAPG Asia](https://dl.acm.org/doi/10.1145/3355088.3365150)
+[![Video](https://github.com/marsermd/DeepestScatter/blob/master/FasterRPNN.gif)](https://youtu.be/R9ZHtkmyH1U)
+
 # State of the project
 *Preparation*
 - [x] Generate a sample cloud in Houdini
