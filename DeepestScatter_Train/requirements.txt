@@ -114,7 +114,7 @@ tuna==0.2.0
 typing==3.6.6
 typing-extensions==3.6.6
 Unidecode==1.0.22
-urllib3==1.24.2
+urllib3==1.26.5
 virtualenv==16.0.0
 wcwidth==0.1.7
 webencodings==0.5.1
